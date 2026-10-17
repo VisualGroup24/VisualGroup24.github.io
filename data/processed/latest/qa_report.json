@@ -1,0 +1,82 @@
+{
+  "generated_at": "2026-10-17T14:52:05+00:00",
+  "passed": 15,
+  "failed": 0,
+  "checks": [
+    {
+      "check": "file:market.json",
+      "ok": true,
+      "detail": "772233 bytes"
+    },
+    {
+      "check": "file:districts.json",
+      "ok": true,
+      "detail": "574920 bytes"
+    },
+    {
+      "check": "file:districts.geojson",
+      "ok": true,
+      "detail": "46912 bytes"
+    },
+    {
+      "check": "file:pca.json",
+      "ok": true,
+      "detail": "16603 bytes"
+    },
+    {
+      "check": "file:manifest.json",
+      "ok": true,
+      "detail": "1078 bytes"
+    },
+    {
+      "check": "rvd rows",
+      "ok": true,
+      "detail": "3232 rows"
+    },
+    {
+      "check": "rvd latest",
+      "ok": true,
+      "detail": "2026-09"
+    },
+    {
+      "check": "18 boundaries",
+      "ok": true,
+      "detail": "18 features"
+    },
+    {
+      "check": "18 districts in panel",
+      "ok": true,
+      "detail": "18 districts"
+    },
+    {
+      "check": "panel rows",
+      "ok": true,
+      "detail": "1820 rows"
+    },
+    {
+      "check": "affordability rows",
+      "ok": true,
+      "detail": "384 rows"
+    },
+    {
+      "check": "estates",
+      "ok": true,
+      "detail": "43 estates"
+    },
+    {
+      "check": "pca sample",
+      "ok": true,
+      "detail": "129 listings"
+    },
+    {
+      "check": "pca loadings",
+      "ok": true,
+      "detail": "7 features"
+    },
+    {
+      "check": "manifest as_of",
+      "ok": true,
+      "detail": "2026-Q4"
+    }
+  ]
+}

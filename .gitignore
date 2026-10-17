@@ -1,0 +1,25 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Node / build
+node_modules/
+app/dist/
+*.tsbuildinfo
+
+# Generated data
+data/raw/
+data/interim/
+data/processed/*.parquet
+app/public/data/latest/
+app/public/data/cache/
+
+# Local scratch
+*.log
+tmp/
+.DS_Store
+Thumbs.db

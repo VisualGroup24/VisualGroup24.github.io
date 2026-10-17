@@ -1,0 +1,40 @@
+# Curated policy / market events shown as bands on the time-series charts.
+# Dates are month-level; verify the exact effective date and source before
+# publishing. `type` is used only for styling.
+events:
+  - date: "2010-11-20"
+    label: "Extra stamp duty (SSD)"
+    type: policy
+    source: "https://www.ird.gov.hk/eng/faq/ssd.htm"
+  - date: "2012-10-27"
+    label: "Buyer's stamp duty + higher SSD"
+    type: policy
+    source: "https://www.ird.gov.hk/eng/faq/bsd.htm"
+  - date: "2013-02-23"
+    label: "Double stamp duty"
+    type: policy
+    source: "https://www.ird.gov.hk/eng/faq/dsd.htm"
+  - date: "2016-11-05"
+    label: "Stamp duty raised to 15%"
+    type: policy
+    source: "https://www.info.gov.hk/gia/general/201611/04/P2016110400772.htm"
+  - date: "2021-08-01"
+    label: "Price-cycle peak"
+    type: market
+    source: "RVD price index"
+  - date: "2022-03-17"
+    label: "US rate-hike cycle begins"
+    type: rates
+    source: "https://www.federalreserve.gov/newsevents/pressreleases/monetary20220316a.htm"
+  - date: "2023-10-25"
+    label: "Stamp-duty relief"
+    type: policy
+    source: "https://www.info.gov.hk/gia/general/202310/25/P2023102500272.htm"
+  - date: "2024-02-28"
+    label: "Cooling measures removed"
+    type: policy
+    source: "https://www.info.gov.hk/gia/general/202402/28/P2024022800280.htm"
+  - date: "2024-09-19"
+    label: "HKMA cuts base rate"
+    type: rates
+    source: "https://www.hkma.gov.hk/eng/news-and-media/press-releases/2024/09/20240919-3/"

@@ -1,0 +1,36 @@
+{
+  "stage": "build",
+  "generated_at": "2026-10-17T14:52:05+00:00",
+  "as_of": "2026-Q4",
+  "files": {
+    "market.json": {
+      "file": "market.json",
+      "as_of": "2026-09",
+      "rvd_rows": 3232,
+      "yield_rows": 1660,
+      "income_rows": 475,
+      "landreg_months": 69
+    },
+    "districts.geojson": {
+      "file": "districts.geojson",
+      "features": 18
+    },
+    "districts.json": {
+      "bytes": 574920,
+      "rows": 1820,
+      "as_of": "2026-Q4"
+    },
+    "pca.json": {
+      "bytes": 16603,
+      "rows": 129,
+      "as_of": null
+    }
+  },
+  "sources": {
+    "rvd": "https://www.rvd.gov.hk/en/publications/property_market_statistics.html",
+    "hkma": "https://www.hkma.gov.hk/eng/data-publications-and-research/data-and-statistics/monthly-statistical-bulletin/",
+    "csd": "https://www.censtatd.gov.hk/en/web_table.html?id=130-06806",
+    "landreg": "https://data.gov.hk/en-data/dataset/hk-lr-data4-landreg",
+    "geo": "https://data.gov.hk/en-data/dataset/hk-had-json1-hong-kong-administrative-boundaries"
+  }
+}

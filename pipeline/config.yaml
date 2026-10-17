@@ -1,0 +1,26 @@
+project:
+  name: HK Housing Atlas
+  as_of: auto
+
+paths:
+  raw: data/raw
+  interim: data/interim
+  processed: data/processed/latest
+  app_data: app/public/data/latest
+
+http:
+  user_agent: "HKHousingAtlas/1.0 (academic project; contact: set-me@example.com)"
+  timeout: 90
+  retries: 3
+  delay_seconds: 0.4
+
+squarefoot:
+  base_url: "https://www.squarefoot.com.hk"
+  sitemap_url: "https://www.squarefoot.com.hk/sitemap.xml.gz"
+  robots_url: "https://www.squarefoot.com.hk/robots.txt"
+  delay_seconds: 1.4
+  max_listings_per_district: 120
+  max_index_pages: 30
+  max_estates: 1200
+  max_estates_per_district: 80
+  transaction_pages: 2
