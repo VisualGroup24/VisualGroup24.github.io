@@ -91,7 +91,7 @@ app/src/
 
 - Charts are ECharts; the district map is Leaflet (no WebGL requirement, so it works in headless browsers and older machines).
 - Routes are lazy-loaded; the initial bundle is ~267 kB (84 kB gzip), with ECharts and the map split out.
-- Shared filters (tenure, district, class) are in Zustand and are ready to be serialised to the URL.
+- Shared filters (tenure, district, class) are in Zustand and serialised to the URL, e.g. `/districts?district=M&tenure=rent&class=C`. Navigation between dashboards preserves them, and copied links rehydrate the state.
 
 ## Key definitions
 

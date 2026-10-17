@@ -8,6 +8,7 @@ type FilterState = {
   compareDistrict: string | null;
   propertyClass: string;
   setTenure: (tenure: Tenure) => void;
+  setSelectedDistrict: (code: string | null) => void;
   selectDistrict: (code: string | null) => void;
   setCompareDistrict: (code: string | null) => void;
   setPropertyClass: (propertyClass: string) => void;
@@ -20,6 +21,7 @@ export const useFilters = create<FilterState>((set) => ({
   compareDistrict: null,
   propertyClass: "ALL",
   setTenure: (tenure) => set({ tenure }),
+  setSelectedDistrict: (selectedDistrict) => set({ selectedDistrict }),
   selectDistrict: (selectedDistrict) =>
     set((state) => ({
       selectedDistrict: state.selectedDistrict === selectedDistrict ? null : selectedDistrict,

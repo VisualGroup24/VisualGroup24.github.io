@@ -1,5 +1,7 @@
 import { Suspense, useEffect, useState } from "react";
 import { Link, NavLink, Outlet } from "react-router-dom";
+import { buildFilterSearch, parseFilterSearch } from "../lib/filterUrl";
+import { useFilters } from "../state/filters";
 import { LoadingCard } from "./Cards";
 
 const TABS = [
@@ -32,11 +34,43 @@ function ThemeToggle() {
 }
 
 export default function Layout() {
+  const selectedDistrict = useFilters((state) => state.selectedDistrict);
+  const compareDistrict = useFilters((state) => state.compareDistrict);
+  const tenure = useFilters((state) => state.tenure);
+  const propertyClass = useFilters((state) => state.propertyClass);
+  const [hydrated, setHydrated] = useState(false);
+
+  // Hydrate from a shared link, then keep the URL in sync without adding
+  // history entries for every filter click.
+  useEffect(() => {
+    useFilters.setState(parseFilterSearch(window.location.search));
+    setHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    const filterSearch = buildFilterSearch({
+      selectedDistrict,
+      compareDistrict,
+      tenure,
+      propertyClass,
+    });
+    const url = `${window.location.pathname}${filterSearch}${window.location.hash}`;
+    window.history.replaceState(null, "", url);
+  }, [hydrated, selectedDistrict, compareDistrict, tenure, propertyClass]);
+
+  const filterSearch = buildFilterSearch({
+    selectedDistrict,
+    compareDistrict,
+    tenure,
+    propertyClass,
+  });
+
   return (
     <div className="min-h-screen">
       <header className="sticky top-0 z-40 border-b border-[var(--border)] bg-[var(--bg)]">
         <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-3 sm:px-6">
-          <Link to="/" className="flex items-center gap-3">
+          <Link to={{ pathname: "/", search: filterSearch }} className="flex items-center gap-3">
             <span className="grid h-9 w-9 place-items-center rounded-lg bg-teal-800 text-sm font-bold text-white">
               HK
             </span>
@@ -52,7 +86,7 @@ export default function Layout() {
             {TABS.map((tab) => (
               <NavLink
                 key={tab.to}
-                to={tab.to}
+                to={{ pathname: tab.to, search: filterSearch }}
                 className={({ isActive }) =>
                   [
                     "rounded-full px-3 py-1.5 text-sm transition",
@@ -82,7 +116,7 @@ export default function Layout() {
           {TABS.map((tab) => (
             <NavLink
               key={tab.to}
-              to={tab.to}
+              to={{ pathname: tab.to, search: filterSearch }}
               className={({ isActive }) =>
                 [
                   "whitespace-nowrap rounded-full px-3 py-1.5 text-xs transition",
@@ -111,7 +145,7 @@ export default function Layout() {
             research and illustration; not financial advice.
           </p>
           <div className="flex gap-4">
-            <Link to="/methods" className="underline-offset-2 hover:underline">
+            <Link to={{ pathname: "/methods", search: filterSearch }} className="underline-offset-2 hover:underline">
               Methods &amp; data
             </Link>
             <a
