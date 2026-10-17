@@ -792,7 +792,12 @@ export default function Market() {
           note="index ratio"
           accent="amber"
         />
-        <KpiCard label="Gross yield" value={fmtPctPlain(view.yieldLatest)} note="RVD, class" accent="blue" />
+        <KpiCard
+          label="Gross yield"
+          value={fmtPctPlain(view.yieldLatest)}
+          note={view.cls === "ALL" ? "mean A–E" : `RVD class ${view.cls}`}
+          accent="blue"
+        />
         <KpiCard
           label="Monthly ASPs"
           value={latestSales?.total_count ? latestSales.total_count.toLocaleString() : "—"}
