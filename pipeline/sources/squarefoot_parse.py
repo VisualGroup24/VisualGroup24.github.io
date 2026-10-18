@@ -235,8 +235,10 @@ def parse_listing(html: str, url: str) -> dict[str, Any]:
     listing_type = "rent" if "/rent/" in url else "sale"
     building_type = None
     path_parts = [part for part in urlparse(url).path.split("/") if part]
-    if len(path_parts) >= 3 and path_parts[0] == "en":
-        building_type = path_parts[2].replace("-", " ")
+    if path_parts and path_parts[0] == "en":
+        path_parts = path_parts[1:]
+    if len(path_parts) >= 2:
+        building_type = path_parts[1].replace("-", " ")
 
     price_label = "Monthly Rental" if listing_type == "rent" else "Sell Price"
     price = parse_money(pairs.get(price_label, ""))
@@ -445,7 +447,13 @@ def parse_estate(html: str, url: str) -> dict[str, Any]:
         "source": "squarefoot",
         "url": url,
         "estate_id": estate_id,
-        "name": title.split(" Price Trend")[0].strip() or _text(entity.get("name")),
+        "name": (
+            title.split(" Price Trend")[0].strip()
+            if " Price Trend" in title and len(title.split(" Price Trend")[0].strip()) < 80
+            else _text(entity.get("name"))
+            or address.get("addressLocality")
+            or title.split(" ultimate guide")[0].strip()
+        ),
         "name_zh": entity.get("alternateName"),
         "address": address.get("streetAddress") or address.get("addressLocality"),
         "address_locality": address.get("addressLocality"),

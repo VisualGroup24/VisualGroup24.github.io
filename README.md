@@ -22,6 +22,9 @@ powershell -File scripts\build-data.ps1
 # 3. Optional: refresh the Squarefoot sample (respects robots.txt; ~20 min)
 powershell -File scripts\build-data.ps1 -Crawl
 
+# 3b. Optional: full residential crawl (~26,000 pages; about 7-10 hours)
+powershell -File scripts\crawl-full.ps1
+
 # 4. Run the app
 powershell -File scripts\dev.ps1
 # open http://127.0.0.1:5173
@@ -45,12 +48,12 @@ npm --prefix app run preview
 | Home Affairs Department | 18 District Council boundaries | [data.gov.hk](https://data.gov.hk/en-data/dataset/hk-had-json1-hong-kong-administrative-boundaries) |
 | Squarefoot (28Hse group) | Current listings and estate-level quarterly price series | Polite crawl; derived statistics only |
 
-The current sample contains **82 estate pages** (55 with quarterly price charts, 43 contributing to the latest district panel) and **137 current listings** across all 18 districts. The crawl is deliberately capped; see `pipeline/config.yaml` and the CLI flags in `pipeline/sources/squarefoot.py` to widen it.
+The checked-in sample contains **82 estate pages** (55 with quarterly price charts, 43 contributing to the latest district panel) and **137 current listings** across all 18 districts. `pipeline/full_crawl.py` scales this to the housing subset of the sitemap: **13,959 listings and 12,012 estate pages**. Office, shop, carpark and news pages are excluded.
 
 ### Crawl compliance
 
 - Squarefoot's `robots.txt` allows path-based pages and disallows search-query submissions; the crawler only uses path pages and the sitemap.
-- One request at a time, 1.4 s delay, gzip cache, retries with backoff, and a stop on 403/429.
+- One request at a time, 1.0–1.4 s delay, gzip cache, retries with backoff, and a stop on 403/429.
 - No login, agent-contact or photo pages. Only property attributes are stored; agent names, phone numbers, photos and descriptions are not.
 - Raw HTML is cached under `data/raw/` (git-ignored) and is not redistributed. The app ships derived aggregates and a small listing sample only.
 - Confirm Squarefoot's terms for your own use before a large crawl. If bulk crawling is not permitted, use the official data and the aggregate estate fields.
@@ -64,6 +67,18 @@ The current sample contains **82 estate pages** (55 with quarterly price charts,
 .\.venv\Scripts\python -m pipeline.build --stage build       # export JSON for the app
 .\.venv\Scripts\python -m pipeline.build --stage all         # all of the above
 ```
+
+Full residential crawl:
+
+```powershell
+.\.venv\Scripts\python -m pipeline.full_crawl --delay 1.0
+```
+
+It reads the sitemap, normalises every URL to the English locale, and resumes
+from `data/raw/squarefoot/listings.jsonl` and `estates.jsonl`. Progress is
+written to `full_crawl_progress.json`; failures go to `crawl_errors.jsonl`.
+At roughly one request per second the full run takes 7–10 hours. After it
+finishes, rebuild the derived data with the analytics and build stages.
 
 Outputs:
 
