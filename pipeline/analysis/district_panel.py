@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import json
 import math
+import re
 from pathlib import Path
 from typing import Any, Iterable
 
@@ -107,10 +108,70 @@ def weighted_quantile(values: Iterable[float], weights: Iterable[float], q: floa
     return pairs[-1][0]
 
 
+def _normalise_label(value: Any) -> str:
+    return re.sub(r"\s+", " ", str(value or "")).strip().lower()
+
+
+def _district_lookup() -> dict[tuple[str, str], str]:
+    """Map Squarefoot (region, sub-district) labels to HAD district codes.
+
+    Estate pages without coordinates often still carry a breadcrumb such as
+    "New Territories / Tuen Mun", which matches one of the 130 district-group
+    labels. This recovers a large share of the estate chart series that would
+    otherwise be dropped.
+    """
+    path = path_for("raw") / "squarefoot" / "groups.json"
+    if not path.exists():
+        return {}
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    lookup: dict[tuple[str, str], str] = {}
+    for group in payload.get("groups", []):
+        code = group.get("district_code")
+        label = group.get("label")
+        region = group.get("region_name")
+        if not code or not label or not region:
+            continue
+        normalized = _normalise_label(label)
+        lookup[(str(region), normalized)] = code
+        for token in normalized.split(","):
+            token = token.strip()
+            if token:
+                lookup.setdefault((str(region), token), code)
+    return lookup
+
+
+def _estate_district(estate: dict[str, Any], lookup: dict[tuple[str, str], str]) -> str | None:
+    district = estate.get("district_code")
+    if district:
+        return district
+    region = str(estate.get("region_label") or "")
+    candidates = [
+        estate.get("subdistrict_label"),
+        estate.get("address_locality"),
+    ]
+    for candidate in candidates:
+        normalized = _normalise_label(candidate)
+        if not normalized:
+            continue
+        code = lookup.get((region, normalized))
+        if code:
+            return code
+    # Fall back to any region if the region label was parsed slightly differently.
+    for candidate in candidates:
+        normalized = _normalise_label(candidate)
+        if not normalized:
+            continue
+        for (_, label), code in lookup.items():
+            if label == normalized:
+                return code
+    return None
+
+
 def build_estate_quarters(estates: list[dict[str, Any]]) -> pd.DataFrame:
     records: list[dict[str, Any]] = []
+    lookup = _district_lookup()
     for estate in estates:
-        district = estate.get("district_code")
+        district = _estate_district(estate, lookup)
         chart = estate.get("chart") or {}
         quarters = chart.get("quarters") or []
         series = chart.get("series") or {}

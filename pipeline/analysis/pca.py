@@ -9,6 +9,7 @@ input (it would otherwise dominate the first component by construction).
 from __future__ import annotations
 
 import json
+import math
 from pathlib import Path
 from typing import Any
 
@@ -78,8 +79,10 @@ def run() -> dict[str, Any]:
     matrix = frame[[key for key, _ in features]].copy()
     for key, _ in features:
         matrix[key] = pd.to_numeric(matrix[key], errors="coerce")
+        matrix[key] = matrix[key].replace([np.inf, -np.inf], np.nan)
         if matrix[key].isna().any():
-            matrix[key] = matrix[key].fillna(matrix[key].median())
+            median = matrix[key].median()
+            matrix[key] = matrix[key].fillna(median if pd.notna(median) else 0.0)
     matrix = matrix.dropna()
     if len(matrix) < 20:
         print(f"PCA: only {len(matrix)} complete listings; skipping")
@@ -87,6 +90,13 @@ def run() -> dict[str, Any]:
 
     scaler = StandardScaler()
     scaled = scaler.fit_transform(matrix.to_numpy(dtype=float))
+    finite_rows = np.isfinite(scaled).all(axis=1)
+    if not finite_rows.all():
+        matrix = matrix.loc[finite_rows]
+        scaled = scaled[finite_rows]
+    if len(matrix) < 20:
+        print(f"PCA: only {len(matrix)} finite listings; skipping")
+        return {"n": len(matrix)}
     model = PCA(n_components=min(4, scaled.shape[1]))
     scores = model.fit_transform(scaled)
 
@@ -103,16 +113,27 @@ def run() -> dict[str, Any]:
             }
         )
 
+    def finite(value: Any, digits: int = 3) -> float | None:
+        try:
+            number = float(value)
+        except (TypeError, ValueError):
+            return None
+        return round(number, digits) if math.isfinite(number) else None
+
     score_rows = []
     for position, (_, row) in enumerate(frame.loc[matrix.index].iterrows()):
+        pc1 = finite(scores[position, 0])
+        pc2 = finite(scores[position, 1]) if scores.shape[1] > 1 else 0.0
+        if pc1 is None or pc2 is None:
+            continue
         score_rows.append(
             {
-                "pc1": round(float(scores[position, 0]), 3),
-                "pc2": round(float(scores[position, 1]), 3) if scores.shape[1] > 1 else 0,
+                "pc1": pc1,
+                "pc2": pc2,
                 "district_code": row.get("district_code"),
                 "tenure": row.get("listing_type"),
-                "price_psf": round(float(row["price_psf_value"]), 0),
-                "area": round(float(row["area"]), 0),
+                "price_psf": finite(row["price_psf_value"], 0),
+                "area": finite(row["area"], 0),
                 "rent": row.get("rental") == 1.0,
             }
         )

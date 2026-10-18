@@ -11,8 +11,8 @@
 | Income | 2001–2025 | C&SD, annual |
 | District price panel | 1996-Q1 – 2026-Q4 | Estate charts; app shows 2018+ |
 | District rents | latest quarter + modelled history | Estate 90-day stats + RVD rent index |
-| Listings | current snapshot | Asking prices |
-| PCA | current snapshot | 129 complete listings |
+| Listings | current snapshot | 13,962 records; asking prices |
+| PCA | current snapshot | 13,431 complete listings |
 
 ## 2. District price and rent
 
@@ -107,7 +107,8 @@ Price per ft² is a supplementary variable for the biplot colour, not an input. 
 - District price series are estate-based; estates are not a random sample of the housing stock. Volume weighting mitigates but does not remove selection bias.
 - Rent history is modelled, not observed. Short-run district rent changes should be read as the RVD cycle applied to current district levels.
 - Asking prices exceed transaction prices; trend and yield calculations use transactions where available.
-- The listing sample is capped and current; it is not a ten-year panel.
-- The PCA sample is small (129 listings); component signs and loadings can change as the crawl expands.
+- The full crawl is a **current snapshot**, not a ten-year listing panel. Historical analysis still comes from RVD and estate charts.
+- 4,887 estates have a chart but only 4,709 can be assigned to a district; 1,337 have transactions in the latest quarter. Coverage varies by district.
+- The PCA uses 13,431 complete listings. It is still a current-sample description, not a representative survey; component signs and loadings can change as listings turn over.
 - Affordability uses household income and a standard flat, not actual buyer income or actual unit sizes.
 - No causal identification: the drivers panel and event bands are descriptive.

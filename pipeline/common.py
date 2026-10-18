@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -40,9 +41,26 @@ def utc_now() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
 
+def _finite(value: Any) -> Any:
+    """Recursively replace NaN/Infinity with JSON null."""
+    if isinstance(value, float) and not math.isfinite(value):
+        return None
+    if isinstance(value, dict):
+        return {key: _finite(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_finite(item) for item in value]
+    return value
+
+
 def write_json(path: Path, payload: Any, *, indent: int | None = 2) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    text = json.dumps(payload, ensure_ascii=False, indent=indent, default=str, allow_nan=False)
+    text = json.dumps(
+        _finite(payload),
+        ensure_ascii=False,
+        indent=indent,
+        default=str,
+        allow_nan=False,
+    )
     path.write_text(text, encoding="utf-8")
 
 

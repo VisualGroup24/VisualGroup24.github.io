@@ -48,14 +48,14 @@ npm --prefix app run preview
 | Home Affairs Department | 18 District Council boundaries | [data.gov.hk](https://data.gov.hk/en-data/dataset/hk-had-json1-hong-kong-administrative-boundaries) |
 | Squarefoot (28Hse group) | Current listings and estate-level quarterly price series | Polite crawl; derived statistics only |
 
-The checked-in sample contains **82 estate pages** (55 with quarterly price charts, 43 contributing to the latest district panel) and **137 current listings** across all 18 districts. `pipeline/full_crawl.py` scales this to the housing subset of the sitemap: **13,959 listings and 12,012 estate pages**. Office, shop, carpark and news pages are excluded.
+The current build uses the completed full residential crawl: **13,962 listing records**, **12,013 estate pages**, **4,887 estates with quarterly charts**, **4,709 estates with an assigned district** and **13,431 listings** in the PCA. The latest panel quarter contains **1,337 estates** and **7,442 transactions**. One estate URL in the sitemap returns 404 and is logged. Office, shop, carpark and news pages are excluded.
 
 ### Crawl compliance
 
 - Squarefoot's `robots.txt` allows path-based pages and disallows search-query submissions; the crawler only uses path pages and the sitemap.
 - One request at a time, 1.0–1.4 s delay, gzip cache, retries with backoff, and a stop on 403/429.
 - No login, agent-contact or photo pages. Only property attributes are stored; agent names, phone numbers, photos and descriptions are not.
-- Raw HTML is cached under `data/raw/` (git-ignored) and is not redistributed. The app ships derived aggregates and a small listing sample only.
+- Raw HTML is cached under `data/raw/` (git-ignored) and is not redistributed. The app ships derived aggregates and anonymised listing attributes only.
 - Confirm Squarefoot's terms for your own use before a large crawl. If bulk crawling is not permitted, use the official data and the aggregate estate fields.
 
 ## Pipeline

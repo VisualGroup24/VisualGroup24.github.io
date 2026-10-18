@@ -22,10 +22,11 @@ All sources were accessed in October 2026. Coverage is measured on the files act
 ## Squarefoot crawl
 
 - `robots.txt` at `https://www.squarefoot.com.hk/robots.txt` allows path pages and disallows `search_words_thing` and `sortBy_by_text` query submissions. The crawler uses only path pages, the sitemap and detail pages.
-- Requests are serialised at 1.4 s, with gzip caching, three retries and a stop on HTTP 403/429.
+- Requests are serialised at 1.0–1.4 s, with gzip caching, three retries and a stop on HTTP 403/429.
 - The crawler does not fetch agent pages, login, or contact details. It stores property attributes only.
-- The current build includes 82 estate pages (55 with quarterly charts) and 137 listings. The crawl caps are in `pipeline/config.yaml` and `pipeline/sources/squarefoot.py`.
-- **Before a large crawl**, review Squarefoot's terms of use. If bulk crawling is not permitted for your use, keep the official data and the estate-level aggregates, and do not expand the listing sample.
+- The current build is the completed full residential crawl: **13,962 listing records**, **12,013 estate pages**, **4,887 estates with quarterly charts** and **4,709 with an assigned district**. One sitemap estate URL returns 404 and is recorded in `data/raw/squarefoot/crawl_errors.jsonl`.
+- The sitemap contains 32,427 URLs; the housing subset is 13,959 buy/rent apartment listings and 12,012 estate pages. Office, shop, carpark, new-properties and news URLs are excluded.
+- **Before a large crawl**, review Squarefoot's terms of use. If bulk crawling is not permitted for your use, keep the official data and the estate-level aggregates, and do not expand the listing crawl.
 
 ## Known coverage gaps
 
