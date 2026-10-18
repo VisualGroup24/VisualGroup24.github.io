@@ -14,11 +14,17 @@ from typing import Any
 import pandas as pd
 from shapely import set_precision
 from shapely.geometry import Point, mapping, shape
+from shapely.ops import unary_union
 from shapely.strtree import STRtree
+from shapely.validation import make_valid
 
 from pipeline.common import HttpClient, path_for, read_json, write_json
 
 URL = "https://www.had.gov.hk/psi/hong-kong-administrative-boundaries/hksar_18_district_boundary.json"
+# Land-only district polygons (census2001), used to erase the maritime parts of
+# the statutory HAD boundaries. The low-resolution file is ~200 KB and keeps the
+# web map legible; the result is simplified again before it is shipped.
+LAND_URL = "https://raw.githubusercontent.com/hupili/geohk/master/census2001/dc_land.lowres.geo.json"
 
 CODE_NAMES = {
     "A": "Central and Western",
@@ -57,12 +63,47 @@ def _simplify(geometry: Any, tolerance: float = 0.00035) -> Any:
     return simplified
 
 
+def _land_union(client: HttpClient) -> Any | None:
+    try:
+        payload = client.get_json(LAND_URL, suffix="json")
+        geometries = [make_valid(shape(feature["geometry"])) for feature in payload.get("features", [])]
+        if not geometries:
+            return None
+        land = unary_union(geometries)
+        return land if land.is_valid else land.buffer(0)
+    except Exception as exc:  # noqa: BLE001
+        print(f"!! land clipping source unavailable ({exc}); using HAD boundaries as-is")
+        return None
+
+
+def _land_only(geometry: Any, land: Any | None) -> Any:
+    if land is None:
+        return geometry
+    try:
+        clipped = geometry.intersection(land)
+        if clipped.is_empty:
+            return geometry
+        if clipped.geom_type == "GeometryCollection":
+            parts = [
+                part
+                for part in clipped.geoms
+                if part.geom_type in {"Polygon", "MultiPolygon"}
+            ]
+            if not parts:
+                return geometry
+            clipped = unary_union(parts)
+        return clipped
+    except Exception:  # noqa: BLE001
+        return geometry
+
+
 def run(client: HttpClient) -> dict[str, Any]:
     payload = client.get_json(URL, suffix="json")
     features = payload.get("features", [])
     if len(features) != 18:
         raise RuntimeError(f"expected 18 district features, got {len(features)}")
 
+    land = _land_union(client)
     out_features: list[dict[str, Any]] = []
     rows: list[dict[str, Any]] = []
     for feature in features:
@@ -72,7 +113,7 @@ def run(client: HttpClient) -> dict[str, Any]:
             raise RuntimeError(f"unknown district code: {code!r}")
         name_en = CODE_NAMES[code]
         name_zh = str(properties.get("地區") or "").strip()
-        geometry = shape(feature["geometry"])
+        geometry = _land_only(shape(feature["geometry"]), land)
         centroid = geometry.representative_point()
         out_features.append(
             {

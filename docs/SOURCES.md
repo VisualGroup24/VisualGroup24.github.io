@@ -17,6 +17,7 @@ All sources were accessed in October 2026. Coverage is measured on the files act
 | Income / household size | C&SD | `https://www.censtatd.gov.hk/api/get.php?id=130-06806&lang=en&full_series=1` | JSON | 2001–2025, 18 districts + HK | Annual |
 | ASP counts | Land Registry | dataset `hk-lr-data4-landreg`; files `https://www.landreg.gov.hk/datagovhk/YYYYMM_data.json` | JSON | 2021-01 – 2026-09 | Monthly |
 | District boundaries | HAD | `https://www.had.gov.hk/psi/hong-kong-administrative-boundaries/hksar_18_district_boundary.json` | GeoJSON | 18 features | Rare |
+| Land-only district geometry | geohk (census2001) | `https://raw.githubusercontent.com/hupili/geohk/master/census2001/dc_land.lowres.geo.json` | GeoJSON | 18 features, low-resolution | Static |
 | Estate prices / rent / listings | Squarefoot | `https://www.squarefoot.com.hk/sitemap.xml.gz`; estate and property detail pages | HTML | Current snapshot; estate series from 1996 for older estates | Weekly/monthly |
 
 ## Squarefoot crawl
@@ -35,9 +36,11 @@ All sources were accessed in October 2026. Coverage is measured on the files act
 - Land Registry's published JSON begins in **2021-01** and groups transactions into ten broad areas, not 18 districts.
 - C&SD income is annual and currently ends at **2025**; 2026 affordability is therefore a 2025-income calculation against 2026 prices and is labelled accordingly.
 - Some districts have no estate with a usable quarterly chart (notably Islands, which appears with a rent-only listing fallback). These are flagged in the panel as `basis = "listings"` / `"listings_rent"`.
+- The land-only clip uses **census2001** district geometry. Coastline changes and reclamation after 2001 are not represented; the statutory HAD district lines are preserved inside the land mask.
 
 ## Licences and attribution
 
 - RVD, HKMA, C&SD, Land Registry and HAD data are used under the Government's open-data terms with attribution. See [data.gov.hk](https://data.gov.hk/en/terms-and-conditions).
+- The land-only district geometry is from [hupili/geohk](https://github.com/hupili/geohk), derived from census2001 data; it is used for research and map clipping. Check the repository's notes before redistribution.
 - Squarefoot content remains the property of 28Hse Ltd. The app shows derived statistics and anonymised listing attributes; it does not reproduce photographs, descriptions or agent contact details.
 - Code in this repository is MIT licensed.

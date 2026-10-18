@@ -23,8 +23,13 @@ const SOURCES = [
   },
   {
     name: "Home Affairs Department",
-    what: "18 District Council boundary polygons and district codes.",
+    what: "18 District Council boundary polygons and district codes, clipped to land-only shapes for the map.",
     href: "https://data.gov.hk/en-data/dataset/hk-had-json1-hong-kong-administrative-boundaries",
+  },
+  {
+    name: "geohk / census2001",
+    what: "Land-only district geometry used to remove sea from the HAD boundaries. Coastline vintage is 2001.",
+    href: "https://github.com/hupili/geohk",
   },
   {
     name: "Squarefoot (28Hse group)",
@@ -104,6 +109,10 @@ export default function Methods() {
           <li>
             Affordability uses household income, not buyer income; stamp duty, legal fees,
             management fees and vacancy costs are excluded.
+          </li>
+          <li>
+            The district map is clipped to a land-only census2001 coastline, so the choropleth has no
+            sea but does not show reclamation after 2001.
           </li>
           <li>Relationships shown are associations. Nothing here is a causal estimate or investment advice.</li>
         </ul>

@@ -98,6 +98,7 @@ Price per ft² is a supplementary variable for the biplot colour, not an input. 
 - C&SD: `MED_DH_INC_XEI_XFDH` is used as median household income (excludes external domestic helpers and foreign domestic households); `ADHS` is average household size.
 - Land Registry: JSON descriptions mapped to ten published areas; `Units` parsed with commas; `-` treated as missing.
 - Squarefoot: listing IDs from the URL; coordinates from `initNearbyMap`; districts assigned by point-in-polygon against HAD boundaries, with the group label and estate link as fallbacks.
+- Map geometry: HAD district polygons are intersected with the **land-only census2001** district geometry from geohk, then simplified. This removes sea from the choropleth while keeping the statutory district lines. The 2001 coastline vintage is noted in the map documentation.
 - Duplicate listing IDs, estate-quarter rows and district-month rows are removed keeping the latest value.
 - Cells with n < 10 or fewer than three estates are suppressed or flagged; they are never shown as zero.
 - JSON export uses `allow_nan=False`; pandas `to_json` converts missing numeric values to `null`.
@@ -109,6 +110,7 @@ Price per ft² is a supplementary variable for the biplot colour, not an input. 
 - Asking prices exceed transaction prices; trend and yield calculations use transactions where available.
 - The full crawl is a **current snapshot**, not a ten-year listing panel. Historical analysis still comes from RVD and estate charts.
 - 4,887 estates have a chart but only 4,709 can be assigned to a district; 1,337 have transactions in the latest quarter. Coverage varies by district.
+- The map uses a 2001 land mask; reclamation after 2001 is not shown, and very small islets may be simplified away.
 - The PCA uses 13,431 complete listings. It is still a current-sample description, not a representative survey; component signs and loadings can change as listings turn over.
 - Affordability uses household income and a standard flat, not actual buyer income or actual unit sizes.
 - No causal identification: the drivers panel and event bands are descriptive.

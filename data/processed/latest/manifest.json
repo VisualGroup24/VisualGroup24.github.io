@@ -1,6 +1,6 @@
 {
   "stage": "build",
-  "generated_at": "2026-10-18T16:03:52+00:00",
+  "generated_at": "2026-10-18T16:43:09+00:00",
   "as_of": "2026-Q4",
   "files": {
     "market.json": {
@@ -16,7 +16,7 @@
       "features": 18
     },
     "districts.json": {
-      "bytes": 1036312,
+      "bytes": 1036305,
       "rows": 2231,
       "as_of": "2026-Q4"
     },

@@ -45,10 +45,12 @@ npm --prefix app run preview
 | Hong Kong Monetary Authority (HKMA) | Mortgage survey, HIBOR, best lending rate | [HKMA API](https://apidocs.hkma.gov.hk/), bulletin workbooks |
 | Census and Statistics Department (C&SD) | Median household income and household size by district, 2001–2025 | [Table 130-06806](https://www.censtatd.gov.hk/en/web_table.html?id=130-06806) |
 | Land Registry | Monthly ASP counts and consideration, 2021–2026 | [data.gov.hk](https://data.gov.hk/en-data/dataset/hk-lr-data4-landreg) |
-| Home Affairs Department | 18 District Council boundaries | [data.gov.hk](https://data.gov.hk/en-data/dataset/hk-had-json1-hong-kong-administrative-boundaries) |
+| Home Affairs Department | 18 District Council boundaries, clipped to land-only shapes for the map | [data.gov.hk](https://data.gov.hk/en-data/dataset/hk-had-json1-hong-kong-administrative-boundaries); land clip from [geohk](https://github.com/hupili/geohk) |
 | Squarefoot (28Hse group) | Current listings and estate-level quarterly price series | Polite crawl; derived statistics only |
 
 The current build uses the completed full residential crawl: **13,962 listing records**, **12,013 estate pages**, **4,887 estates with quarterly charts**, **4,709 estates with an assigned district** and **13,431 listings** in the PCA. The latest panel quarter contains **1,337 estates** and **7,442 transactions**. One estate URL in the sitemap returns 404 and is logged. Office, shop, carpark and news pages are excluded.
+
+The district polygons are intersected with the **land-only census2001 district geometry** from [geohk](https://github.com/hupili/geohk), so the choropleth excludes sea while keeping the statutory HAD district lines. The coastline vintage is 2001; recent reclamation is not represented.
 
 ### Crawl compliance
 
