@@ -85,7 +85,7 @@ PCA is descriptive. Inputs are standardised:
 - bathrooms
 - floor-zone ordinal (ground/low = 1, middle = 2, high = 3, top = 4)
 - building age
-- walking minutes to MTR (from the estate introduction, merged by estate)
+- walking minutes to MTR, parsed from the "about N min(s) walking distance to MTR" phrase in the estate introduction and merged by estate
 - rental-listing dummy
 
 Price per ft² is a supplementary variable for the biplot colour, not an input. Missing numeric values are median-imputed. The scree plot reports variance explained; the loading heatmap shows PC1–PC3; the biplot shows PC1/PC2 scores and loading vectors. A loading arrow indicates the direction in which an attribute increases; arrows pointing together are correlated/redundant.
@@ -112,5 +112,6 @@ Price per ft² is a supplementary variable for the biplot colour, not an input. 
 - 4,887 estates have a chart but only 4,709 can be assigned to a district; 1,337 have transactions in the latest quarter. Coverage varies by district.
 - The map uses a 2001 land mask; reclamation after 2001 is not shown, and very small islets may be simplified away.
 - The PCA uses 13,431 complete listings. It is still a current-sample description, not a representative survey; component signs and loadings can change as listings turn over.
+- MTR walking time is the value stated in Squarefoot's estate introduction, not a routed distance. Only 3,543 of 12,013 estates state one (461 of the 1,337 latest-quarter estates); the PCA median-imputes it for the rest.
 - Affordability uses household income and a standard flat, not actual buyer income or actual unit sizes.
 - No causal identification: the drivers panel and event bands are descriptive.

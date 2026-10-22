@@ -58,6 +58,12 @@ function metricFormat(metric: Metric) {
   return (value: number | null) => fmtPsf(value);
 }
 
+/** KPI cards already label the unit as $/ft², so drop the suffix to fit seven columns. */
+function fmtKpiPsf(value: number | null | undefined): string {
+  const formatted = fmtPsf(value);
+  return formatted === "—" ? formatted : formatted.replace("/ft²", "");
+}
+
 export default function Districts() {
   const { data, error, loading } = useDistrictData();
   const { data: geo, loading: geoLoading } = useDistricts();
@@ -108,6 +114,17 @@ export default function Districts() {
       selectedRow?.sale_psf && selectedPrevious?.sale_psf
         ? ((selectedRow.sale_psf - selectedPrevious.sale_psf) / selectedPrevious.sale_psf) * 100
         : null;
+    const selectedListings = selected ? (data.listing_counts?.[selected] ?? null) : null;
+    const hkYoyValues = orderedCodes
+      .map((code) =>
+        metricValue(
+          rowAt(code, latestQuarter),
+          rowAt(code, shiftQuarter(latestQuarter, -4)),
+          "sale_yoy",
+        ),
+      )
+      .filter((value): value is number => value !== null);
+    const hkYoy = hkYoyValues.length ? median(hkYoyValues) : null;
 
     const heatQuarters = quarters.filter((q) => q >= "2018-Q1");
     const heatData: Array<[number, number, number]> = [];
@@ -121,15 +138,23 @@ export default function Districts() {
     const heatMin = heatValues.length ? Math.min(...heatValues) : 0;
     const heatMax = heatValues.length ? Math.max(...heatValues) : 1;
 
-    const startQuarter = heatQuarters[0] ?? quarters[0];
     const rankRows = (q: string) =>
       orderedCodes
         .map((code) => ({ code, value: rowAt(code, q)?.sale_psf ?? null }))
         .filter((row): row is { code: string; value: number } => row.value !== null)
         .sort((a, b) => b.value - a.value)
         .map((row, index) => ({ code: row.code, rank: index + 1 }));
-    const startRanks = new Map(rankRows(startQuarter).map((row) => [row.code, row.rank]));
-    const endRanks = new Map(rankRows(latestQuarter).map((row) => [row.code, row.rank]));
+    const slopeQuarters = heatQuarters.length ? heatQuarters : [latestQuarter];
+    const ranksByQuarter = new Map(
+      slopeQuarters.map((q) => [
+        q,
+        new Map(rankRows(q).map((row) => [row.code, row.rank] as const)),
+      ]),
+    );
+    const finalRanks = ranksByQuarter.get(slopeQuarters[slopeQuarters.length - 1]) ?? new Map<string, number>();
+    const finalOrder = [...finalRanks.entries()]
+      .sort((a, b) => a[1] - b[1])
+      .map(([code]) => code);
 
     return {
       panel,
@@ -144,13 +169,15 @@ export default function Districts() {
       aggregate,
       selectedRow,
       selectedYoy,
+      selectedListings,
+      hkYoy,
       heatData,
       heatMin,
       heatMax,
-      startQuarter,
+      slopeQuarters,
+      ranksByQuarter,
+      finalOrder,
       latestLabel: latestQuarter,
-      startRanks,
-      endRanks,
     };
   }, [data, metric, quarter, selected]);
 
@@ -280,47 +307,83 @@ export default function Districts() {
 
   const slopeOption = {
     animationDuration: 400,
-    grid: { left: 40, right: 110, top: 20, bottom: 30 },
+    grid: { left: 42, right: 126, top: 20, bottom: 30 },
     tooltip: {
       trigger: "item",
       backgroundColor: "rgba(15,23,42,0.92)",
       borderWidth: 0,
       textStyle: { color: "#f8fafc", fontSize: 11 },
+      formatter: (params: { seriesName?: string; value?: number | null; dataIndex: number }) => {
+        if (params.value === null || params.value === undefined) return "";
+        const quarter = view.slopeQuarters[params.dataIndex];
+        return `<strong>${params.seriesName}</strong><br/>${quarterLabel(quarter)} · rank #${params.value}`;
+      },
     },
     xAxis: {
       type: "category",
-      data: [view.startQuarter, view.latestQuarter],
+      data: view.slopeQuarters.map(quarterLabel),
       boundaryGap: false,
-      axisLabel: { color: "#64748b", fontSize: 10 },
+      axisLabel: {
+        color: "#64748b",
+        fontSize: 10,
+        interval: (index: number) => index % 4 === 0,
+        hideOverlap: true,
+        formatter: (value: string) => value.split(" ")[0],
+      },
       axisLine: { lineStyle: { color: "rgba(100,116,139,0.25)" } },
       axisTick: { show: false },
     },
-    yAxis: {
-      type: "value",
-      inverse: true,
-      min: 1,
-      max: 18,
-      interval: 3,
-      axisLabel: { color: "#64748b", fontSize: 9, formatter: "#{value}" },
-      splitLine: { lineStyle: { color: "rgba(100,116,139,0.14)" } },
-    },
+    yAxis: [
+      {
+        type: "value",
+        inverse: true,
+        min: 1,
+        max: 18,
+        interval: 3,
+        axisLabel: { color: "#64748b", fontSize: 9, formatter: "#{value}" },
+        splitLine: { lineStyle: { color: "rgba(100,116,139,0.14)" } },
+      },
+      {
+        type: "value",
+        position: "right",
+        inverse: true,
+        min: 1,
+        max: 18,
+        interval: 1,
+        axisLine: { show: true, lineStyle: { color: "rgba(100,116,139,0.25)" } },
+        axisTick: { show: false },
+        splitLine: { show: false },
+        axisLabel: {
+          margin: 8,
+          formatter: (value: number) => {
+            const code = view.finalOrder[value - 1];
+            const name = code ? view.districtNames.get(code) : "";
+            if (!name) return "";
+            return code === selected ? `{active|${name}}` : `{normal|${name}}`;
+          },
+          rich: {
+            active: { color: "#0f172a", fontSize: 9, fontWeight: 600 },
+            normal: { color: "#64748b", fontSize: 9 },
+          },
+        },
+      },
+    ],
     series: view.orderedCodes.map((code) => {
       const active = selected === code;
       return {
         type: "line",
         name: view.districtNames.get(code),
-        data: [view.startRanks.get(code) ?? null, view.endRanks.get(code) ?? null],
-        showSymbol: true,
+        data: view.slopeQuarters.map((quarter) => view.ranksByQuarter.get(quarter)?.get(code) ?? null),
+        showSymbol: active,
         symbolSize: active ? 6 : 3,
+        z: active ? 3 : 2,
         lineStyle: {
           width: active ? 2.5 : 1,
-          opacity: active ? 1 : selected ? 0.18 : 0.45,
+          opacity: active ? 1 : selected ? 0.15 : 0.35,
           color: REGION_COLORS[view.districtRegions.get(code) ?? ""] ?? "#0f766e",
         },
         itemStyle: { color: REGION_COLORS[view.districtRegions.get(code) ?? ""] ?? "#0f766e" },
-        endLabel: active
-          ? { show: true, formatter: () => view.districtNames.get(code), color: "#0f172a", fontSize: 10 }
-          : { show: false },
+        emphasis: { focus: "series" },
       };
     }),
   };
@@ -374,12 +437,26 @@ export default function Districts() {
     .slice()
     .sort((a, b) => b.volume - a.volume)
     .slice(0, 6);
-  const classRows = selected
-    ? data.classes.filter((row) => row.district_code === selected && row.tenure === "sale")
-    : [];
+  const classRows = data.classes.filter(
+    (row) => row.district_code === (selected ?? "HK") && row.tenure === "sale",
+  );
   const affordability = selected
     ? data.affordability.filter((row) => row.district_code === selected).sort((a, b) => a.year - b.year)
     : [];
+  const latestIncomeYear = data.affordability.length
+    ? Math.max(...data.affordability.map((row) => row.year))
+    : null;
+  const hkAffordability =
+    latestIncomeYear === null
+      ? []
+      : data.affordability.filter((row) => row.year === latestIncomeYear);
+
+  const profileSale = selected ? view.selectedRow?.sale_psf : view.aggregate.sale_psf;
+  const profileRent = selected ? view.selectedRow?.rent_psf : view.aggregate.rent_psf;
+  const profileYield = selected ? view.selectedRow?.yield_pct : view.aggregate.yield_pct;
+  const profileYoy = selected ? view.selectedYoy : view.hkYoy;
+  const profileEstates = selected ? view.selectedRow?.n_estates ?? 0 : view.aggregate.n_estates;
+  const profileVolume = selected ? view.selectedRow?.volume ?? 0 : view.aggregate.volume;
 
   return (
     <div className="space-y-6">
@@ -416,15 +493,15 @@ export default function Districts() {
         </select>
       </PageHeader>
 
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-6">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7">
         <KpiCard
           label="Sale $/ft²"
-          value={fmtPsf(selected ? view.selectedRow?.sale_psf : view.aggregate.sale_psf)}
+          value={fmtKpiPsf(selected ? view.selectedRow?.sale_psf : view.aggregate.sale_psf)}
           note={selectedName ?? "median of districts"}
         />
         <KpiCard
           label="Rent $/ft²"
-          value={fmtPsf(selected ? view.selectedRow?.rent_psf : view.aggregate.rent_psf)}
+          value={fmtKpiPsf(selected ? view.selectedRow?.rent_psf : view.aggregate.rent_psf)}
           note={selected ? "modelled latest" : "median of districts"}
           accent="amber"
         />
@@ -436,8 +513,22 @@ export default function Districts() {
         />
         <KpiCard
           label="Price YoY"
-          value={selected ? fmtPct(view.selectedYoy) : "—"}
-          note={selected ? "same district" : "select a district"}
+          value={fmtPct(selected ? view.selectedYoy : view.hkYoy)}
+          note={selected ? "same district" : "median of districts"}
+          accent="neutral"
+        />
+        <KpiCard
+          label="Listings"
+          value={
+            selected
+              ? (view.selectedListings?.total.toLocaleString() ?? "—")
+              : data.coverage.listings.toLocaleString()
+          }
+          note={
+            selected && view.selectedListings
+              ? `${view.selectedListings.sale.toLocaleString()} sale · ${view.selectedListings.rent.toLocaleString()} rent`
+              : "current · sale + rent"
+          }
           accent="neutral"
         />
         <KpiCard
@@ -451,10 +542,11 @@ export default function Districts() {
           value={(selected ? view.selectedRow?.volume ?? 0 : view.aggregate.volume).toLocaleString()}
           note="latest quarter"
           accent="neutral"
+          className="col-span-2 sm:col-span-1"
         />
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-[1.05fr_0.95fr]">
+      <div className="grid gap-4 xl:grid-cols-2">
         <SectionCard
           title={selectedName ? `${selectedName} · ${selectedRegion}` : "18 districts"}
           description={`${metric === "sale_psf" ? "Sale price" : metric === "rent_psf" ? "Rent" : metric === "yield_pct" ? "Gross yield" : "Year-on-year price change"} in ${quarterLabel(view.activeQuarter)}. Click a district to cross-filter.`}
@@ -490,6 +582,100 @@ export default function Districts() {
         </SectionCard>
 
         <SectionCard
+          title={selectedName ? `Profile · ${selectedName}` : "Hong Kong profile"}
+          description={`Coverage: ${profileEstates.toLocaleString()} estates and ${profileVolume.toLocaleString()} transactions in the latest quarter.`}
+        >
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              {[
+                ["Sale $/ft²", fmtPsf(profileSale)],
+                ["Rent $/ft²", fmtPsf(profileRent)],
+                ["Yield", fmtPctPlain(profileYield)],
+                ["Price YoY", fmtPct(profileYoy)],
+              ].map(([label, value]) => (
+                <div key={label} className="rounded-lg bg-black/[0.03] p-2 dark:bg-white/[0.04]">
+                  <p className="text-[10px] uppercase tracking-wide text-[var(--text-muted)]">{label}</p>
+                  <p className="mt-1 text-sm font-semibold tabular-nums">{value}</p>
+                </div>
+              ))}
+            </div>
+
+            {!selected ? (
+              <p className="text-[10px] leading-relaxed text-[var(--text-muted)]">
+                Headline Hong Kong figures are medians of the 18 district estimates; yields are gross.
+              </p>
+            ) : null}
+
+            <div>
+              <h3 className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">
+                Top estates by volume
+              </h3>
+              <ul className="mt-2 divide-y divide-[var(--border)] text-sm">
+                {topEstates.map((estate) => (
+                  <li key={estate.estate_id} className="flex items-center justify-between gap-3 py-1.5">
+                    <span className="truncate">
+                      {estate.name}
+                      {!selected ? (
+                        <span className="text-[var(--text-muted)]">
+                          {" "}· {view.districtNames.get(estate.district_code)}
+                        </span>
+                      ) : null}
+                    </span>
+                    <span className="shrink-0 tabular-nums text-[var(--text-muted)]">
+                      {fmtPsf(estate.price_psf)} · {estate.volume}
+                    </span>
+                  </li>
+                ))}
+                {!topEstates.length ? (
+                  <li className="py-2 text-[var(--text-muted)]">No estate detail yet.</li>
+                ) : null}
+              </ul>
+            </div>
+
+            {classRows.length ? (
+              <div>
+                <h3 className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">
+                  Sale $/ft² by class
+                </h3>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {classRows.map((row) => (
+                    <span key={row.property_class} className="rounded-full border border-[var(--border)] px-2.5 py-1 text-xs">
+                      Class {row.property_class}: {fmtPsf(row.psf)}{" "}
+                      <span className="text-[var(--text-muted)]">(n={row.n})</span>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+
+            {selected && affordability.length ? (
+              <div>
+                <h3 className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">
+                  Affordability, latest income year
+                </h3>
+                <p className="mt-1 text-sm text-[var(--text-muted)]">
+                  Price-to-income {affordability[affordability.length - 1].pti.toFixed(1)}× · rent-to-income{" "}
+                  {affordability[affordability.length - 1].rti.toFixed(2)} · rank{" "}
+                  #{affordability[affordability.length - 1].rank} of 18
+                </p>
+              </div>
+            ) : !selected && hkAffordability.length ? (
+              <div>
+                <h3 className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">
+                  Affordability, latest income year
+                </h3>
+                <p className="mt-1 text-sm text-[var(--text-muted)]">
+                  Price-to-income {median(hkAffordability.map((row) => row.pti)).toFixed(1)}× · rent-to-income{" "}
+                  {median(hkAffordability.map((row) => row.rti)).toFixed(2)} · median of 18 districts
+                </p>
+              </div>
+            ) : null}
+          </div>
+        </SectionCard>
+      </div>
+
+      <div className="grid gap-4 xl:grid-cols-2">
+        <SectionCard
           title={isClassHeatmap ? "District × class heatmap" : "District × quarter heatmap"}
           description={
             isClassHeatmap
@@ -520,15 +706,6 @@ export default function Districts() {
             }}
           />
         </SectionCard>
-      </div>
-
-      <div className="grid gap-4 xl:grid-cols-[0.9fr_1.1fr]">
-        <SectionCard
-          title="Rank slope, 2018 → latest"
-          description="Rank by sale $/ft² (1 = most expensive). Lines are coloured by region; the selected district is highlighted."
-        >
-          <Chart option={slopeOption} height={380} />
-        </SectionCard>
 
         <SectionCard
           title={scatterMode === "age" ? "Building age and price" : "Accessibility and price"}
@@ -549,111 +726,40 @@ export default function Districts() {
           }
         >
           {scatterData.length ? (
-            <Chart option={scatterOption} height={380} />
+            <Chart option={scatterOption} height={420} />
           ) : (
-            <div className="grid h-80 place-items-center text-sm text-[var(--text-muted)]">
+            <div className="grid h-[420px] place-items-center text-sm text-[var(--text-muted)]">
               No estates with both a price and an MTR walk time yet.
             </div>
           )}
         </SectionCard>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
-        <SectionCard
-          title={selectedName ? `Profile · ${selectedName}` : "District profile"}
-          description={
-            selected
-              ? `Coverage: ${view.selectedRow?.n_estates ?? 0} estates and ${view.selectedRow?.volume ?? 0} transactions in the latest quarter.`
-              : "Select a district on the map or heatmap to open its profile."
-          }
-        >
-          {selected ? (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                {[
-                  ["Sale $/ft²", fmtPsf(view.selectedRow?.sale_psf)],
-                  ["Rent $/ft²", fmtPsf(view.selectedRow?.rent_psf)],
-                  ["Yield", fmtPctPlain(view.selectedRow?.yield_pct)],
-                  ["Price YoY", fmtPct(view.selectedYoy)],
-                ].map(([label, value]) => (
-                  <div key={label} className="rounded-lg bg-black/[0.03] p-2 dark:bg-white/[0.04]">
-                    <p className="text-[10px] uppercase tracking-wide text-[var(--text-muted)]">{label}</p>
-                    <p className="mt-1 text-sm font-semibold tabular-nums">{value}</p>
-                  </div>
-                ))}
-              </div>
+      <SectionCard
+        title="Rank slope, 2018 → latest"
+        description={`Rank by sale $/ft² (1 = most expensive) for every quarter from ${quarterLabel(view.slopeQuarters[0])} to ${quarterLabel(view.slopeQuarters[view.slopeQuarters.length - 1])}. The latest order is named on the right; the selected district is highlighted.`}
+      >
+        <Chart option={slopeOption} height={420} />
+      </SectionCard>
 
-              <div>
-                <h3 className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">
-                  Top estates by volume
-                </h3>
-                <ul className="mt-2 divide-y divide-[var(--border)] text-sm">
-                  {topEstates.map((estate) => (
-                    <li key={estate.estate_id} className="flex items-center justify-between gap-3 py-1.5">
-                      <span className="truncate">{estate.name}</span>
-                      <span className="shrink-0 tabular-nums text-[var(--text-muted)]">
-                        {fmtPsf(estate.price_psf)} · {estate.volume}
-                      </span>
-                    </li>
-                  ))}
-                  {!topEstates.length ? (
-                    <li className="py-2 text-[var(--text-muted)]">No estate detail for this district.</li>
-                  ) : null}
-                </ul>
-              </div>
-
-              {classRows.length ? (
-                <div>
-                  <h3 className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">
-                    Sale $/ft² by class
-                  </h3>
-                  <div className="mt-2 flex flex-wrap gap-2">
-                    {classRows.map((row) => (
-                      <span key={row.property_class} className="rounded-full border border-[var(--border)] px-2.5 py-1 text-xs">
-                        Class {row.property_class}: {fmtPsf(row.psf)}{" "}
-                        <span className="text-[var(--text-muted)]">(n={row.n})</span>
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              ) : null}
-
-              {affordability.length ? (
-                <div>
-                  <h3 className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">
-                    Affordability, latest income year
-                  </h3>
-                  <p className="mt-1 text-sm text-[var(--text-muted)]">
-                    Price-to-income {affordability[affordability.length - 1].pti.toFixed(1)}× · rent-to-income{" "}
-                    {affordability[affordability.length - 1].rti.toFixed(2)} · rank{" "}
-                    #{affordability[affordability.length - 1].rank} of 18
-                  </p>
-                </div>
-              ) : null}
-            </div>
-          ) : (
-            <div className="grid h-56 place-items-center rounded-xl border border-dashed border-[var(--border)] text-sm text-[var(--text-muted)]">
-              Click a district on the map or heatmap.
-            </div>
-          )}
-        </SectionCard>
-
-        <SectionCard
-          title="Coverage note"
-          description="District estimates are built bottom-up from estate transaction series. Sparse districts are suppressed rather than shown as zero."
-        >
-          <ul className="space-y-2 text-sm text-[var(--text-muted)]">
-            <li>Estates in panel: {data.coverage.estates.toLocaleString()}</li>
-            <li>Listings parsed: {data.coverage.listings.toLocaleString()}</li>
-            <li>Districts with panel data: {data.coverage.districts_with_panel}/18</li>
-            <li>Latest quarter: {quarterLabel(data.as_of ?? "—")}</li>
-          </ul>
-          <p className="mt-3 text-xs leading-relaxed text-[var(--text-muted)]">
-            Rent history is modelled from the RVD rental index; the latest quarter uses 90-day estate
-            rental statistics. Cells with fewer than three estates are provisional.
-          </p>
-        </SectionCard>
-      </div>
+      <SectionCard
+        title="Coverage note"
+        description="District estimates are built bottom-up from estate transaction series. Sparse districts are suppressed rather than shown as zero."
+      >
+        <ul className="flex flex-wrap gap-x-8 gap-y-2 text-sm text-[var(--text-muted)]">
+          <li>Estates in panel: {data.coverage.estates.toLocaleString()}</li>
+          <li>Listings parsed: {data.coverage.listings.toLocaleString()}</li>
+          {data.coverage.listings_with_district !== undefined ? (
+            <li>Listings with a district: {data.coverage.listings_with_district.toLocaleString()}</li>
+          ) : null}
+          <li>Districts with panel data: {data.coverage.districts_with_panel}/18</li>
+          <li>Latest quarter: {quarterLabel(data.as_of ?? "—")}</li>
+        </ul>
+        <p className="mt-3 max-w-3xl text-xs leading-relaxed text-[var(--text-muted)]">
+          Rent history is modelled from the RVD rental index; the latest quarter uses 90-day estate
+          rental statistics. Cells with fewer than three estates are provisional.
+        </p>
+      </SectionCard>
     </div>
   );
 }

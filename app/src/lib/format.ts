@@ -24,7 +24,7 @@ export function fmtCompact(value: number | null | undefined): string {
 
 export function fmtPct(value: number | null | undefined, digits = 1): string {
   if (value === null || value === undefined || Number.isNaN(value)) return "—";
-  return `${value >= 0 ? "+" : ""}${value.toFixed(digits)}%`;
+  return `${value > 0 ? "+" : ""}${value.toFixed(digits)}%`;
 }
 
 export function fmtPctPlain(value: number | null | undefined, digits = 1): string {

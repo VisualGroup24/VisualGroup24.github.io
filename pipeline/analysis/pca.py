@@ -19,6 +19,7 @@ from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
 from pipeline.common import path_for, utc_now, write_json
+from pipeline.sources.squarefoot_parse import estate_mtr_minutes
 
 
 def _load_jsonl(path: Path) -> list[dict[str, Any]]:
@@ -49,6 +50,7 @@ def run() -> dict[str, Any]:
 
     mtr_by_estate = {}
     if not estates.empty:
+        estates["mtr_walk_minutes"] = estates.apply(estate_mtr_minutes, axis=1)
         mtr_by_estate = dict(
             zip(estates.get("estate_id", []), estates.get("mtr_walk_minutes", []))
         )

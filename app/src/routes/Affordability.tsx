@@ -43,6 +43,7 @@ export default function Affordability() {
   const { data, error, loading } = useDistrictData();
   const selected = useFilters((state) => state.selectedDistrict);
   const selectDistrict = useFilters((state) => state.selectDistrict);
+  const setSelectedDistrict = useFilters((state) => state.setSelectedDistrict);
   const [rankingMetric, setRankingMetric] = useState<RankingMetric>("pti");
   const [ratioMetric, setRatioMetric] = useState<RatioMetric>("pti");
 
@@ -150,6 +151,7 @@ export default function Affordability() {
   const [rate, setRate] = useState(4.2);
   const [years, setYears] = useState(30);
   const [income, setIncome] = useState(40_000);
+  const [area, setArea] = useState(500);
 
   useEffect(() => {
     if (!view) return;
@@ -384,6 +386,134 @@ export default function Affordability() {
     }),
   };
 
+  const trendByYear = new Map<number, AffordabilityRow[]>();
+  data.affordability.forEach((row) => {
+    const rows = trendByYear.get(row.year) ?? [];
+    rows.push(row);
+    trendByYear.set(row.year, rows);
+  });
+  const trendValue = (year: number, key: "rent" | "median_income" | "rti") => {
+    const rows = (trendByYear.get(year) ?? []).filter(
+      (row) => !selected || row.district_code === selected,
+    );
+    if (!rows.length) return null;
+    if (selected) return rows[0][key];
+    const values = rows.map((row) => row[key]).filter((value) => Number.isFinite(value));
+    return values.length ? median(values) : null;
+  };
+  const trendYears = view.years;
+  const areaScale = area / 500;
+  const scaleArea = (value: number | null) => (value === null ? null : value * areaScale);
+  const trendRent = trendYears.map((year) => scaleArea(trendValue(year, "rent")));
+  const trendIncome = trendYears.map((year) => trendValue(year, "median_income"));
+  const trendRti = trendYears.map((year) => scaleArea(trendValue(year, "rti")));
+  const maxRti = Math.max(1, ...trendRti.filter((value): value is number => value !== null));
+  const rtiAxisMax = Math.ceil(maxRti * 10) / 10;
+  const trendOption = {
+    animationDuration: 300,
+    grid: { left: 64, right: 68, top: 48, bottom: 36 },
+    legend: {
+      top: 0,
+      left: "center",
+      icon: "roundRect",
+      itemWidth: 10,
+      itemHeight: 4,
+      textStyle: { color: "#64748b", fontSize: 10 },
+    },
+    tooltip: {
+      trigger: "axis",
+      backgroundColor: "rgba(15,23,42,0.92)",
+      borderWidth: 0,
+      textStyle: { color: "#f8fafc", fontSize: 11 },
+      formatter: (
+        params: Array<{ axisValue: string; seriesName: string; value: number | null; marker: string }>,
+      ) => {
+        if (!params.length) return "";
+        const lines = params.map((item) => {
+          const value =
+            item.value === null || item.value === undefined
+              ? "—"
+              : item.seriesName === "Rent-to-income"
+                ? item.value.toFixed(2)
+                : fmtMoney(item.value);
+          return `${item.marker}${item.seriesName}: ${value}`;
+        });
+        return `<strong>${params[0].axisValue}</strong><br/>${lines.join("<br/>")}`;
+      },
+    },
+    xAxis: {
+      type: "category",
+      data: trendYears,
+      boundaryGap: false,
+      axisLabel: { color: "#64748b", fontSize: 9, interval: 3 },
+      axisLine: { lineStyle: { color: "rgba(100,116,139,0.25)" } },
+      axisTick: { show: false },
+    },
+    yAxis: [
+      {
+        type: "value",
+        name: "HK$ / month",
+        nameTextStyle: { color: "#64748b", fontSize: 9 },
+        splitLine: { lineStyle: { color: "rgba(100,116,139,0.14)" } },
+        axisLabel: {
+          color: "#64748b",
+          fontSize: 9,
+          formatter: (value: number) => `${Math.round(value / 1000)}k`,
+        },
+      },
+      {
+        type: "value",
+        name: "Rent-to-income",
+        position: "right",
+        min: 0,
+        max: rtiAxisMax,
+        splitNumber: 5,
+        nameTextStyle: { color: "#64748b", fontSize: 9 },
+        splitLine: { show: false },
+        axisLabel: {
+          color: "#64748b",
+          fontSize: 9,
+          formatter: (value: number) => value.toFixed(2),
+        },
+      },
+    ],
+    series: [
+      {
+        name: "Rent",
+        type: "line",
+        yAxisIndex: 0,
+        data: trendRent,
+        showSymbol: false,
+        z: 2,
+        lineStyle: { width: 2, color: "#0f766e" },
+        itemStyle: { color: "#0f766e" },
+      },
+      {
+        name: "Monthly income",
+        type: "line",
+        yAxisIndex: 0,
+        data: trendIncome,
+        showSymbol: false,
+        z: 2,
+        lineStyle: { width: 2, color: "#b45309" },
+        itemStyle: { color: "#b45309" },
+      },
+      {
+        name: "Rent-to-income",
+        type: "bar",
+        yAxisIndex: 1,
+        data: trendRti,
+        barMaxWidth: 18,
+        z: 1,
+        itemStyle: {
+          color: "rgba(37,99,235,0.32)",
+          borderRadius: [3, 3, 0, 0],
+        },
+        emphasis: { itemStyle: { color: "rgba(37,99,235,0.55)" } },
+      },
+    ],
+  };
+
   const buyerRentOption = {
     animationDuration: 300,
     grid: { left: 52, right: 22, top: 24, bottom: 46 },
@@ -496,6 +626,60 @@ export default function Affordability() {
           accent="neutral"
         />
       </div>
+
+      <SectionCard
+        title="Rent, income and rent burden"
+        description={`Monthly rent and median household income (left axis) and rent-to-income as bars (right axis, normally 0–1) for a ${area} ft² flat, ${view.years[0]}–${view.latestYear}.`}
+        action={
+          <div className="flex flex-wrap items-center gap-3">
+            <label className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
+              <span>Flat size</span>
+              <input
+                type="range"
+                min={200}
+                max={800}
+                step={10}
+                value={area}
+                onChange={(event) => setArea(Number(event.target.value))}
+                className="w-32 accent-teal-700"
+                aria-label="Flat size in square feet"
+              />
+              <span className="w-14 text-right font-semibold tabular-nums text-[var(--text)]">
+                {area} ft²
+              </span>
+            </label>
+            <select
+              value={selected ?? ""}
+              onChange={(event) => setSelectedDistrict(event.target.value || null)}
+              className="rounded-full border border-[var(--border)] bg-[var(--bg-elevated)] px-3 py-1.5 text-xs"
+              aria-label="District"
+            >
+              <option value="">All Hong Kong</option>
+              {[...data.districts]
+                .sort((a, b) => a.name_en.localeCompare(b.name_en))
+                .map((district) => (
+                  <option key={district.district_code} value={district.district_code}>
+                    {district.name_en}
+                  </option>
+                ))}
+            </select>
+          </div>
+        }
+      >
+        <Chart option={trendOption} height={380} />
+        <p className="mt-2 text-xs leading-relaxed text-[var(--text-muted)]">
+          {area} ft² flat.{" "}
+          {selected
+            ? `${view.districtNames.get(selected)} selected.`
+            : "Hong Kong lines are medians of the 18 district estimates."}{" "}
+          Rent-to-income = monthly rent ÷ monthly household income.
+        </p>
+        {rtiAxisMax > 1 ? (
+          <p className="mt-1 text-[11px] leading-relaxed text-amber-700 dark:text-amber-400">
+            Axis extended to {rtiAxisMax.toFixed(1)} so values above 1.0 stay visible at this flat size.
+          </p>
+        ) : null}
+      </SectionCard>
 
       <div className="grid gap-4 xl:grid-cols-[1.05fr_0.95fr]">
         <SectionCard

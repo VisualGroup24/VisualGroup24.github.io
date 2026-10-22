@@ -35,10 +35,11 @@ Feature properties:
 |---|---|
 | `as_of` | Latest estate quarter (`YYYY-Qn`) |
 | `panel[]` | `district_code`, `quarter`, `basis` (`estates` / `listings` / `listings_rent`), `sale_psf`, `sale_psf_p25`, `sale_psf_p75`, `rent_psf`, `yield_pct`, `n_estates`, `volume`, `rent_modelled`, `region` |
-| `classes[]` | `district_code`, `tenure`, `property_class`, `psf`, `n` — current listing medians by RVD area class |
-| `estates[]` | `estate_id`, `name`, `district_code`, `price_psf`, `volume`, `rent_psf`, `yield_pct`, `mtr_walk_minutes`, `building_age_years`, `total_units`, `lat`, `lon` |
+| `classes[]` | `district_code`, `tenure`, `property_class`, `psf`, `n` — current listing medians by RVD area class; `district_code = "HK"` holds the territory-wide median |
+| `estates[]` | `estate_id`, `name`, `district_code`, `price_psf`, `volume`, `rent_psf`, `yield_pct`, `mtr_walk_minutes` (stated walk time in minutes; `null` when absent), `building_age_years`, `total_units`, `lat`, `lon` |
 | `affordability[]` | `district_code`, `year`, `median_area_sqft` (standard 500), `price`, `rent`, `median_income`, `pti`, `rti`, `mortgage_rate`, `monthly_payment`, `mortgage_burden`, `required_income`, `rank` |
-| `coverage` | `estates`, `listings`, `districts_with_panel` |
+| `listing_counts` | Map of `district_code` → `{ total, sale, rent }` current listing counts; listings without a district are excluded |
+| `coverage` | `estates`, `listings`, `listings_with_district`, `districts_with_panel` |
 
 ## `pca.json`
 

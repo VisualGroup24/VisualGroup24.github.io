@@ -39,12 +39,14 @@ export function KpiCard({
   delta,
   note,
   accent = "teal",
+  className = "",
 }: {
   label: string;
   value: string;
   delta?: string | null;
   note?: string;
   accent?: "teal" | "amber" | "blue" | "neutral";
+  className?: string;
 }) {
   const accents: Record<string, string> = {
     teal: "border-l-teal-700",
@@ -53,7 +55,7 @@ export function KpiCard({
     neutral: "border-l-slate-400",
   };
   return (
-    <div className={`card border-l-4 ${accents[accent]} p-4`}>
+    <div className={`card border-l-4 ${accents[accent]} p-4 ${className}`.trim()}>
       <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--text-muted)]">
         {label}
       </p>

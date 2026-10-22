@@ -24,6 +24,7 @@ from typing import Any, Iterable
 import pandas as pd
 
 from pipeline.common import load_config, path_for, read_json, utc_now, write_json
+from pipeline.sources.squarefoot_parse import estate_mtr_minutes
 
 CLASS_THRESHOLDS = [
     ("A", 0, 430.56),
@@ -372,9 +373,15 @@ def build_district_class(listings: pd.DataFrame) -> pd.DataFrame:
         return pd.DataFrame()
     frame = listings.copy()
     frame["property_class"] = frame["saleable_area_sqft"].map(property_class)
-    frame = frame.dropna(subset=["property_class", "price_psf", "district_code"])
+    frame = frame.dropna(subset=["property_class", "price_psf"])
+    # "HK" is a synthetic territory-wide row; it keeps unassigned listings that
+    # the district rows must drop.
+    scoped = pd.concat(
+        [frame.dropna(subset=["district_code"]), frame.assign(district_code="HK")],
+        ignore_index=True,
+    )
     records: list[dict[str, Any]] = []
-    for (district, tenure, cls), group in frame.groupby(
+    for (district, tenure, cls), group in scoped.groupby(
         ["district_code", "listing_type", "property_class"]
     ):
         if len(group) < 1:
@@ -389,6 +396,25 @@ def build_district_class(listings: pd.DataFrame) -> pd.DataFrame:
             }
         )
     return pd.DataFrame(records)
+
+
+def build_listing_counts(listings: pd.DataFrame) -> dict[str, dict[str, int]]:
+    """Current listing counts per district, split by tenure.
+
+    Listings without an assigned district are excluded here; the panel exports
+    the territory-wide total separately in ``coverage.listings``.
+    """
+    if listings.empty or "district_code" not in listings:
+        return {}
+    frame = listings.dropna(subset=["district_code"])
+    counts: dict[str, dict[str, int]] = {}
+    for district, group in frame.groupby("district_code"):
+        counts[str(district)] = {
+            "total": int(len(group)),
+            "sale": int((group["listing_type"] == "sale").sum()),
+            "rent": int((group["listing_type"] == "rent").sum()),
+        }
+    return counts
 
 
 def build_estates_latest(estates: list[dict[str, Any]], estate_quarters: pd.DataFrame, listings: pd.DataFrame) -> list[dict[str, Any]]:
@@ -424,7 +450,7 @@ def build_estates_latest(estates: list[dict[str, Any]], estate_quarters: pd.Data
                 "volume": row["volume"],
                 "rent_psf": stats.get("avg_rent_psf"),
                 "yield_pct": stats.get("yield_pct"),
-                "mtr_walk_minutes": estate.get("mtr_walk_minutes"),
+                "mtr_walk_minutes": estate_mtr_minutes(estate),
                 "building_age_years": age,
                 "total_units": estate.get("total_units"),
                 "lat": estate.get("lat"),
@@ -522,6 +548,7 @@ def run() -> dict[str, Any]:
         panel["region"] = panel["district_code"].map(REGION_BY_CODE)
 
     classes = build_district_class(listings)
+    listing_counts = build_listing_counts(listings)
     estate_latest = build_estates_latest(estates, estate_quarters, listings)
     affordability = build_affordability(panel, income, listings, rates) if not panel.empty else []
 
@@ -541,9 +568,11 @@ def run() -> dict[str, Any]:
         "classes": records(classes),
         "estates": records(pd.DataFrame(estate_latest)),
         "affordability": records(pd.DataFrame(affordability)),
+        "listing_counts": listing_counts,
         "coverage": {
             "estates": int(estate_quarters["estate_id"].nunique()) if not estate_quarters.empty else 0,
             "listings": int(len(listings)),
+            "listings_with_district": int(sum(item["total"] for item in listing_counts.values())),
             "districts_with_panel": int(panel["district_code"].nunique()) if not panel.empty else 0,
         },
     }

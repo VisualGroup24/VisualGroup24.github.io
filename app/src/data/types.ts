@@ -167,6 +167,12 @@ export type AffordabilityRow = {
   rank: number;
 };
 
+export type DistrictListingCount = {
+  total: number;
+  sale: number;
+  rent: number;
+};
+
 export type DistrictData = {
   as_of: string | null;
   generated_at: string;
@@ -175,9 +181,11 @@ export type DistrictData = {
   classes: DistrictClassRow[];
   estates: EstateLatest[];
   affordability: AffordabilityRow[];
+  listing_counts?: Record<string, DistrictListingCount>;
   coverage: {
     estates: number;
     listings: number;
+    listings_with_district?: number;
     districts_with_panel: number;
   };
 };

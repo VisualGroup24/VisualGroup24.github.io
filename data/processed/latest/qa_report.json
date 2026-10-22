@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-18T16:44:33+00:00",
+  "generated_at": "2026-10-18T18:18:33+00:00",
   "passed": 15,
   "failed": 0,
   "checks": [
@@ -11,7 +11,7 @@
     {
       "check": "file:districts.json",
       "ok": true,
-      "detail": "1036305 bytes"
+      "detail": "1037766 bytes"
     },
     {
       "check": "file:districts.geojson",
@@ -21,7 +21,7 @@
     {
       "check": "file:pca.json",
       "ok": true,
-      "detail": "1641512 bytes"
+      "detail": "1642046 bytes"
     },
     {
       "check": "file:manifest.json",

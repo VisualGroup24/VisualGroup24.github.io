@@ -13,9 +13,11 @@ from pathlib import Path
 import pytest
 
 from pipeline.sources.squarefoot_parse import (
+    estate_mtr_minutes,
     parse_estate,
     parse_index,
     parse_listing,
+    parse_mtr_minutes,
     parse_transactions,
 )
 
@@ -27,6 +29,24 @@ def load(name: str) -> str:
     if not path.exists():
         pytest.skip(f"missing spike cache: {path}")
     return gzip.decompress(path.read_bytes()).decode("utf-8", "replace")
+
+
+def test_mtr_walk_time_handles_singular_and_plural() -> None:
+    assert parse_mtr_minutes("about 1 min walking distance to MTR") == 1
+    assert parse_mtr_minutes("about 4 mins walking distance to MTR") == 4
+    assert parse_mtr_minutes("about 12 minutes walking distance to MTR") == 12
+    assert parse_mtr_minutes("no transport information") is None
+    assert parse_mtr_minutes(None) is None
+
+
+def test_estate_mtr_minutes_prefers_description() -> None:
+    estate = {
+        "mtr_walk_minutes": 1,
+        "description": "There is good public transport, about 7 mins walking distance to MTR.",
+    }
+    assert estate_mtr_minutes(estate) == 7
+    assert estate_mtr_minutes({"mtr_walk_minutes": 3}) == 3
+    assert estate_mtr_minutes({}) is None
 
 
 def test_sale_listing_fields() -> None:

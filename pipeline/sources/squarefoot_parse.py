@@ -33,6 +33,36 @@ FLOOR_ZONES = {
     "top floor": 4,
 }
 
+# Squarefoot writes either "about 7 mins walking distance to MTR" or the
+# singular "about 1 min ...". Match both (and "minutes") before parsing.
+MTR_WALK_RE = re.compile(r"about\s+(\d+)\s*min\w*\s+walking distance to MTR", re.I)
+
+
+def parse_mtr_minutes(text: str | None) -> int | None:
+    """Extract the stated walking time to MTR from an estate description."""
+    if not isinstance(text, str):
+        return None
+    match = MTR_WALK_RE.search(text)
+    return int(match.group(1)) if match else None
+
+
+def estate_mtr_minutes(estate: dict[str, Any]) -> int | None:
+    """MTR walk time, preferring the description so older caches are repaired.
+
+    Caches produced before the plural-aware regex only stored 1-minute values;
+    re-reading the description recovers the rest without a re-crawl.
+    """
+    minutes = parse_mtr_minutes(estate.get("description"))
+    if minutes is not None:
+        return minutes
+    stored = estate.get("mtr_walk_minutes")
+    if stored is None:
+        return None
+    try:
+        return int(stored)
+    except (TypeError, ValueError):
+        return None
+
 
 def _text(node: Any) -> str:
     if node is None:
@@ -302,11 +332,7 @@ def parse_listing(html: str, url: str) -> dict[str, Any]:
         "subdistrict_label": estate.get("subdistrict_label") or district_from_title,
         "estate_entry_year": estate.get("estate_entry_year"),
         "estate_intro": estate.get("estate_intro"),
-        "mtr_walk_minutes": (
-            int(match.group(1))
-            if (match := re.search(r"about\s+(\d+)\s*min\w*\s+walking distance to MTR", estate.get("estate_intro") or "", flags=re.I))
-            else None
-        ),
+        "mtr_walk_minutes": parse_mtr_minutes(estate.get("estate_intro")),
         "unit_desc": estate.get("unit_desc"),
         "block_desc": estate.get("block_desc"),
         "address": pairs.get("Address"),
@@ -390,7 +416,7 @@ def parse_estate(html: str, url: str) -> dict[str, Any]:
     occupation = re.search(r"Occupation date starts from\s+([A-Za-z]+ \d{4})", description, flags=re.I)
     total_units = re.search(r"total of\s+([\d,]+)\s+residential units", description, flags=re.I)
     school_net = re.search(r"POA School Net is\s+(\d+)", description, flags=re.I)
-    mtr_minutes = re.search(r"about\s+(\d+)\s*min walking distance to MTR", description, flags=re.I)
+    mtr_minutes = parse_mtr_minutes(description)
     developer = re.search(r"The developer is\s+([^,.]+)", description, flags=re.I)
 
     breadcrumb = [_text(node) for node in soup.select("ol.breadcrumb a span[itemprop='name']")]
@@ -464,7 +490,7 @@ def parse_estate(html: str, url: str) -> dict[str, Any]:
         "completion_label": occupation.group(1) if occupation else None,
         "total_units": (parse_int(total_units.group(1)) if total_units else None) or units,
         "school_net_pri": school_net.group(1) if school_net else None,
-        "mtr_walk_minutes": int(mtr_minutes.group(1)) if mtr_minutes else None,
+        "mtr_walk_minutes": mtr_minutes,
         "lat": lat,
         "lon": lon,
         "additional_property": additional,

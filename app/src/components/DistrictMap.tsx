@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import type { DistrictCollection } from "../data/types";
+import { divergingColor, divergingLegend } from "../lib/colorScale";
 
 type MetricFormat = (value: number | null) => string;
 
@@ -15,23 +16,39 @@ type Props = {
   metricLabel?: string;
 };
 
-function interpolateColor(value: number, min: number, max: number, colors: string[]): string {
-  if (max === min) return colors[Math.floor(colors.length / 2)];
-  const t = Math.max(0, Math.min(1, (value - min) / (max - min)));
-  const position = t * (colors.length - 1);
-  const index = Math.min(colors.length - 2, Math.floor(position));
-  return colors[Math.round(index + (position - index))] ?? colors[colors.length - 1];
-}
-
 function scale(values: Record<string, number | null>, diverging: boolean) {
   const numeric = Object.values(values).filter(
     (value): value is number => value !== null && Number.isFinite(value),
   );
+
+  if (diverging) {
+    if (!numeric.length) {
+      return {
+        min: 0,
+        max: 0,
+        colorFor: () => "#d6d3d1",
+        gradient: "#d6d3d1",
+        zeroPct: 50,
+      };
+    }
+    const min = Math.min(0, ...numeric);
+    const max = Math.max(0, ...numeric);
+    const { gradient, zeroPct } = divergingLegend(min, max);
+    return {
+      min,
+      max,
+      colorFor: (value: number | null | undefined) =>
+        value === null || value === undefined || Number.isNaN(value)
+          ? "#d6d3d1"
+          : divergingColor(value, min, max),
+      gradient,
+      zeroPct,
+    };
+  }
+
   const min = numeric.length ? Math.min(...numeric) : 0;
   const max = numeric.length ? Math.max(...numeric) : 1;
-  const palette = diverging
-    ? ["#b91c1c", "#fecaca", "#f8fafc", "#99f6e4", "#0f766e"]
-    : ["#f0fdfa", "#99f6e4", "#2dd4bf", "#0f766e", "#134e4a"];
+  const palette = ["#f0fdfa", "#99f6e4", "#2dd4bf", "#0f766e", "#134e4a"];
 
   // Quantile breaks spread the 18 districts across the palette instead of
   // letting one expensive outlier flatten the rest of the map.
@@ -41,11 +58,16 @@ function scale(values: Record<string, number | null>, diverging: boolean) {
   );
   const colorFor = (value: number | null | undefined) => {
     if (value === null || value === undefined || Number.isNaN(value)) return "#d6d3d1";
-    if (diverging) return interpolateColor(value, min, max, palette);
     const index = breaks.filter((edge) => value > edge).length;
     return palette[Math.min(index, palette.length - 1)];
   };
-  return { min, max, colorFor, palette };
+  return {
+    min,
+    max,
+    colorFor,
+    gradient: `linear-gradient(90deg, ${palette.join(",")})`,
+    zeroPct: 50,
+  };
 }
 
 export default function DistrictMap({
@@ -62,16 +84,18 @@ export default function DistrictMap({
   const layer = useRef<L.GeoJSON | null>(null);
   const valuesRef = useRef(values);
   const selectedRef = useRef(selected);
+  const divergingRef = useRef(diverging);
   const onSelectRef = useRef(onSelect);
   const formatRef = useRef(formatValue);
   const labelRef = useRef(metricLabel);
   valuesRef.current = values;
   selectedRef.current = selected;
+  divergingRef.current = diverging;
   onSelectRef.current = onSelect;
   formatRef.current = formatValue;
   labelRef.current = metricLabel;
 
-  const { min, max, colorFor, palette } = useMemo(
+  const { min, max, colorFor, gradient, zeroPct } = useMemo(
     () => scale(values, diverging),
     [values, diverging],
   );
@@ -99,7 +123,12 @@ export default function DistrictMap({
         return {
           fillColor: colorFor(value),
           fillOpacity: 0.8,
-          color: code === selectedRef.current ? "#0f172a" : "#ffffff",
+          color:
+            code === selectedRef.current
+              ? "#0f172a"
+              : divergingRef.current
+                ? "#cbd5e1"
+                : "#ffffff",
           weight: code === selectedRef.current ? 3 : 1,
         };
       },
@@ -115,7 +144,12 @@ export default function DistrictMap({
           mouseout: () => {
             path.setStyle({
               weight: code === selectedRef.current ? 3 : 1,
-              color: code === selectedRef.current ? "#0f172a" : "#ffffff",
+              color:
+                code === selectedRef.current
+                  ? "#0f172a"
+                  : divergingRef.current
+                    ? "#cbd5e1"
+                    : "#ffffff",
             });
           },
         });
@@ -144,7 +178,7 @@ export default function DistrictMap({
       return {
         fillColor: colorFor(value),
         fillOpacity: 0.8,
-        color: code === selected ? "#0f172a" : "#ffffff",
+        color: code === selected ? "#0f172a" : diverging ? "#cbd5e1" : "#ffffff",
         weight: code === selected ? 3 : 1,
       };
     });
@@ -159,7 +193,7 @@ export default function DistrictMap({
         { sticky: true, direction: "top", className: "hka-map-tooltip", opacity: 1 },
       );
     });
-  }, [values, selected, colorFor, formatValue, metricLabel]);
+  }, [values, selected, colorFor, diverging, formatValue, metricLabel]);
 
   return (
     <div className="relative">
@@ -171,12 +205,27 @@ export default function DistrictMap({
       />
       <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-[11px] text-[var(--text-muted)]">
         <div className="flex items-center gap-1.5">
-          <span>{formatValue(min)}</span>
-          <span
-            className="h-2 w-32 rounded-full"
-            style={{ background: `linear-gradient(90deg, ${palette.join(",")})` }}
-          />
-          <span>{formatValue(max)}</span>
+          <span className="tabular-nums">{formatValue(min)}</span>
+          <div className="relative w-32">
+            <span className="block h-2 w-full rounded-full" style={{ background: gradient }} />
+            {diverging && min < 0 && max > 0 ? (
+              <>
+                <span
+                  className="absolute -top-0.5 h-3 w-px -translate-x-1/2 bg-slate-500/70"
+                  style={{ left: `${zeroPct}%` }}
+                />
+                {zeroPct > 8 && zeroPct < 92 ? (
+                  <span
+                    className="absolute -bottom-3.5 -translate-x-1/2 text-[9px] leading-none tabular-nums text-[var(--text-muted)]"
+                    style={{ left: `${zeroPct}%` }}
+                  >
+                    {formatValue(0)}
+                  </span>
+                ) : null}
+              </>
+            ) : null}
+          </div>
+          <span className="tabular-nums">{formatValue(max)}</span>
         </div>
         <span>Click a district to filter · grey = insufficient data</span>
       </div>
