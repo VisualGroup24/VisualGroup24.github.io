@@ -205,6 +205,16 @@ export const CARD_INFO = {
     caveat:
       "The land mask uses a 2001 coastline, so post-2001 reclamation is not represented. Grey means insufficient data, never zero.",
   },
+  estateBox: {
+    title: "Top estates by volume",
+    what: "The six estates with the most latest-quarter transactions in the selected district or Hong Kong. The sidebar shows the distribution of each estate’s quarterly average sale $/ft² over its full recorded history.",
+    sources: [{ label: "Squarefoot estate pages and quarterly charts", url: SQUAREFOOT }],
+    processing: [
+      "Rank estates by latest-quarter transaction volume and keep the top six.",
+      "For each estate, take every positive AVG Price value from its quarterly chart.",
+      "Compute the minimum, Q1, median, Q3 and maximum; the box spans Q1–Q3 and the whiskers span min–max.",
+    ],
+  },
   districtProfile: {
     title: "Hong Kong profile",
     what: "Headline sale $/ft², rent $/ft², gross yield and price YoY for the selected district or Hong Kong overall, plus the six estates with the most transactions in the latest quarter.",

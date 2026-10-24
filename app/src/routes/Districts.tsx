@@ -1,6 +1,8 @@
 import { useMemo, useState } from "react";
 import Chart from "../components/Chart";
 import DistrictMap from "../components/DistrictMap";
+import EstateBoxPlot from "../components/EstateBoxPlot";
+import { useDataInfo } from "../components/DataInfo";
 import { CARD_INFO } from "../data/cardInfo";
 import {
   ErrorCard,
@@ -74,6 +76,7 @@ export default function Districts() {
   const [quarter, setQuarter] = useState<string | null>(null);
   const [scatterMode, setScatterMode] = useState<"age" | "mtr">("age");
   const [heatmapMode, setHeatmapMode] = useState<"quarter" | "class">("quarter");
+  const { open } = useDataInfo();
 
   const view = useMemo(() => {
     if (!data) return null;
@@ -739,7 +742,23 @@ export default function Districts() {
 
             <div>
               <h3 className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">
-                Top estates by volume
+                <button
+                  type="button"
+                  onClick={() => open(CARD_INFO.estateBox, <EstateBoxPlot estates={topEstates} />)}
+                  aria-label="Open data note: Top estates by volume"
+                  aria-haspopup="dialog"
+                  className="group inline-flex items-center gap-1 rounded-sm hover:text-teal-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700 dark:hover:text-teal-300"
+                >
+                  <span className="underline decoration-transparent underline-offset-2 transition group-hover:decoration-current">
+                    Top estates by volume
+                  </span>
+                  <span
+                    aria-hidden="true"
+                    className="grid h-3.5 w-3.5 place-items-center rounded-full border border-current text-[8px] font-semibold leading-none opacity-50 transition group-hover:opacity-100"
+                  >
+                    i
+                  </span>
+                </button>
               </h3>
               {topEstates.length ? (
                 <Chart option={estateBarOption} height="var(--estate-chart-h, 160px)" />

@@ -264,6 +264,10 @@ Every analysis card title is a button with a small `i` marker, and every KPI car
 
 The Composition PCA note additionally renders the **scree** and **loadings** charts inside the drawer. The Class-switch label explains the RVD A–E saleable-area boundaries and the ALL series.
 
+The **Top estates by volume** title opens a note with a box-and-whisker plot: one box per estate, showing the distribution of its quarterly average sale $/ft² across the estate’s full chart history. Box = Q1–Q3, centre line = median, whiskers = min–max.
+
+![Estate box-and-whisker data note](implemented/estate-box-note.png)
+
 The drawer closes with **Close**, **Escape**, or a click on the backdrop, and links to the full Methods & data page. The metadata lives in `app/src/data/cardInfo.ts`; the drawer and provider are in `app/src/components/DataInfo.tsx`.
 
 ![Card data-note drawer](implemented/data-note.png)
@@ -285,6 +289,9 @@ The three Overview dashboard tiles remain navigation links rather than data-note
 | `app/src/components/DataInfo.tsx` | Right-hand data-note drawer, context and provider |
 | `app/src/data/cardInfo.ts` | Per-card source and processing metadata; PCA flag for the extra charts |
 | `app/src/components/PcaScreeLoadings.tsx` | Scree/loadings charts rendered inside the PCA data note |
+| `app/src/components/EstateBoxPlot.tsx` | Box-and-whisker estate distribution in the Top estates data note |
+| `app/src/data/useEstateQuartiles.ts` | Loads `estate-quartiles.json` |
+| `pipeline/analysis/estate_quartiles.py` | Builds estate price distributions from the raw estate charts |
 | `app/src/components/Layout.tsx` | Added `app-main` and `app-footer` classes for desktop density |
 | `app/src/components/DistrictMap.tsx` | Added configurable `height` prop, default 420; Districts passes 220 |
 | `app/src/App.tsx` | Wraps routes in `DataInfoProvider` |

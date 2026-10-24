@@ -38,6 +38,10 @@ rent_psf(d,q) = rent_psf(d,latest) × RVD_rent_index(q) / RVD_rent_index(latest)
 
 This holds each district's rent relativity fixed and imposes the territory-wide RVD cycle. It is a transparent approximation, not observed district rent history. The latest quarter uses the actual 90-day estate statistics.
 
+### Estate price distributions
+
+The Top estates sidebar ranks estates by latest-quarter transaction volume and shows one box-and-whisker per estate. For each estate, every positive `AVG Price` value in its quarterly Squarefoot chart is used. The box spans Q1–Q3, the centre line is the median, and the whiskers span the minimum and maximum. The distribution uses the estate's full chart history, not only the latest quarter; `n` is the number of quarters with a usable average price.
+
 ### Yield
 
 ```

@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import * as echarts from "echarts/core";
 import {
   BarChart,
+  BoxplotChart,
   HeatmapChart,
   LineChart,
   ScatterChart,
@@ -20,6 +21,7 @@ import { CanvasRenderer } from "echarts/renderers";
 
 echarts.use([
   BarChart,
+  BoxplotChart,
   HeatmapChart,
   LineChart,
   ScatterChart,

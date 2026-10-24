@@ -4,7 +4,7 @@ import type { DataInfo } from "../data/cardInfo";
 import PcaScreeLoadings from "./PcaScreeLoadings";
 
 type DataInfoContextValue = {
-  open: (info: DataInfo) => void;
+  open: (info: DataInfo, extra?: ReactNode) => void;
   close: () => void;
 };
 
@@ -17,7 +17,15 @@ export function useDataInfo() {
   return useContext(DataInfoContext);
 }
 
-function DataNoteDrawer({ info, onClose }: { info: DataInfo; onClose: () => void }) {
+function DataNoteDrawer({
+  info,
+  extra,
+  onClose,
+}: {
+  info: DataInfo;
+  extra?: ReactNode;
+  onClose: () => void;
+}) {
   const closeButton = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
@@ -76,6 +84,7 @@ function DataNoteDrawer({ info, onClose }: { info: DataInfo; onClose: () => void
             <p className="mt-1.5 text-[12px] leading-relaxed text-[var(--text)]">{info.what}</p>
           </section>
 
+          {extra ? <div className="mt-5">{extra}</div> : null}
           {info.extra === "pca" ? <PcaScreeLoadings /> : null}
 
           <section className="mt-5">
@@ -131,13 +140,14 @@ function DataNoteDrawer({ info, onClose }: { info: DataInfo; onClose: () => void
 }
 
 export function DataInfoProvider({ children }: { children: ReactNode }) {
-  const [info, setInfo] = useState<DataInfo | null>(null);
-  const close = useCallback(() => setInfo(null), []);
+  const [panel, setPanel] = useState<{ info: DataInfo; extra?: ReactNode } | null>(null);
+  const close = useCallback(() => setPanel(null), []);
+  const open = useCallback((info: DataInfo, extra?: ReactNode) => setPanel({ info, extra }), []);
 
   return (
-    <DataInfoContext.Provider value={{ open: setInfo, close }}>
+    <DataInfoContext.Provider value={{ open, close }}>
       {children}
-      {info ? <DataNoteDrawer info={info} onClose={close} /> : null}
+      {panel ? <DataNoteDrawer info={panel.info} extra={panel.extra} onClose={close} /> : null}
     </DataInfoContext.Provider>
   );
 }

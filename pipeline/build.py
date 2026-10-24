@@ -60,12 +60,14 @@ def run_crawl() -> dict[str, object]:
 
 
 def run_analytics() -> dict[str, object]:
-    from pipeline.analysis import district_panel, pca
+    from pipeline.analysis import district_panel, estate_quartiles, pca
 
     print("\n== District panel ==")
     panel = district_panel.run()
     print("\n== PCA ==")
     pca_result = pca.run()
+    print("\n== Estate distributions ==")
+    estate_quartiles.main()
     return {"district_panel": panel, "pca": pca_result}
 
 

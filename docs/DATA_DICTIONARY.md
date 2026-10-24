@@ -41,6 +41,16 @@ Feature properties:
 | `listing_counts` | Map of `district_code` → `{ total, sale, rent }` current listing counts; listings without a district are excluded |
 | `coverage` | `estates`, `listings`, `listings_with_district`, `districts_with_panel` |
 
+## `estate-quartiles.json`
+
+Keyed by `estate_id`. Used by the Top estates sidebar box plot.
+
+| Field | Meaning |
+|---|---|
+| `n` | Number of quarters with a positive `AVG Price` |
+| `min`, `q1`, `median`, `q3`, `max` | Sale $/ft² distribution over the estate’s full chart history |
+| `period` | First and last quarter in the distribution |
+
 ## `pca.json`
 
 | Field | Meaning |
@@ -70,12 +80,19 @@ Feature properties:
 | `landreg_summary.csv` | month | residential / primary / secondary |
 | `districts.csv` | district | codes, names, region, centroid |
 
-## Raw caches (git-ignored)
+## Raw snapshot
 
-- `data/raw/http/` — cached official files and metadata (URL, status, ETag, SHA-256).
-- `data/raw/rvd/` — RVD workbooks.
-- `data/raw/squarefoot/html/` — gzipped Squarefoot pages with `*.meta.json`.
+Tracked pruned snapshot:
+
 - `data/raw/squarefoot/listings.jsonl` — parsed listing snapshots.
 - `data/raw/squarefoot/estates.jsonl` — parsed estate metadata, chart series and rental stats.
-- `data/raw/squarefoot/groups.json` — district-group → HAD district mapping.
+- `data/raw/squarefoot/sitemap.xml.gz`, `groups.json`, crawl summary, progress and errors.
+- `data/raw/rvd/` — RVD workbooks.
+- `data/raw/http/*.xls` / `*.xlsx` — official workbooks decoded from the HTTP cache.
+- `data/raw/snapshot_manifest.json` — hashes, sizes, line counts and source URLs.
+
+Ignored:
+
+- `data/raw/http/*.gz` and `*.json` — the disposable HTTP response cache.
 - `data/raw/spike/` — phase-0 feasibility captures and `report.json`.
+- `data/interim/` — intermediate tables.
