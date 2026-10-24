@@ -127,15 +127,22 @@ export default function Overview() {
   return (
     <div className="desktop-dashboard overview-screen space-y-6">
       <section className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-teal-800 dark:text-teal-300">
-            Hong Kong private housing
-          </p>
-          <h1 className="mt-1 max-w-4xl text-3xl font-semibold tracking-tight sm:text-5xl">
-            What drives sale and rental prices — and where are the disparities?
-          </h1>
+        <div className="flex items-center gap-3 sm:gap-4">
+          <img
+            src={`${import.meta.env.BASE_URL}qr-visualgroup24.png`}
+            alt="QR code for visualgroup24.github.io"
+            className="h-20 w-20 shrink-0 rounded-md border border-[var(--border)] bg-white object-contain p-1 sm:h-[100px] sm:w-[100px]"
+          />
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-teal-800 dark:text-teal-300">
+              Hong Kong private housing
+            </p>
+            <h1 className="mt-1 max-w-4xl text-3xl font-semibold tracking-tight sm:text-5xl">
+              A Practical Guide for Buyers and Tenants in HK
+            </h1>
+          </div>
         </div>
-        <div className="hidden flex-wrap gap-2 text-[11px] text-[var(--text-muted)] lg:flex">
+        <div className="overview-meta-chips hidden flex-wrap gap-2 text-[11px] text-[var(--text-muted)] lg:flex">
           {["1993–2026", "18 districts", "Estate-level history", "Sale & rent"].map((chip) => (
             <span key={chip} className="rounded-full border border-[var(--border)] px-2.5 py-1">
               {chip}

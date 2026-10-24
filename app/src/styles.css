@@ -250,6 +250,10 @@ a {
     --heatmap-h: 190px;
   }
 
+  .overview-screen .overview-meta-chips {
+    display: none;
+  }
+
   .desktop-dashboard.space-y-6 > * + *,
   .desktop-dashboard.space-y-10 > * + * {
     margin-top: 0.25rem;
