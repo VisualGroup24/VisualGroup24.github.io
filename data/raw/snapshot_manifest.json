@@ -1,0 +1,223 @@
+{
+  "snapshot": "pruned-raw",
+  "generated_at": "2026-10-24T06:22:03.952197+00:00",
+  "description": "Tracked raw snapshot: Squarefoot crawl outputs and metadata, RVD workbooks, and official workbooks decoded from the HTTP cache. The HTTP response cache, spike pages and interim files are excluded.",
+  "crawl_summary": {
+    "generated_at": "2026-10-18T15:59:57+00:00",
+    "sitemap_urls": 32427,
+    "listings_total": 13959,
+    "estates_total": 12012,
+    "listings_parsed": 13962,
+    "estates_parsed": 12013,
+    "errors": 1,
+    "elapsed_seconds": 36903.5
+  },
+  "included": [
+    {
+      "path": "data/raw/squarefoot/crawl_errors.jsonl",
+      "bytes": 314,
+      "sha256": "5c29d361a1c9f69edb403351f5f944dd67a2c8687c4091dfd77a348941e1f1a9",
+      "lines": 1
+    },
+    {
+      "path": "data/raw/squarefoot/estates.jsonl",
+      "bytes": 32252320,
+      "sha256": "c0565a53944280dae59e6a53c273149eca84b542f1ca702b2cb4d92141ae6670",
+      "lines": 12013
+    },
+    {
+      "path": "data/raw/squarefoot/full_crawl_progress.json",
+      "bytes": 176,
+      "sha256": "dad6f645b248c46eedb3caf0fb27fc650b161f6044ee304edb40b9c1f8e4d3da"
+    },
+    {
+      "path": "data/raw/squarefoot/full_crawl_summary.json",
+      "bytes": 236,
+      "sha256": "ca93291a508783b8f5f715e7be5fd42cafc099d02be1f8a5abac3827f0216062"
+    },
+    {
+      "path": "data/raw/squarefoot/groups.json",
+      "bytes": 37775,
+      "sha256": "b02cd83322793c6edbb34fe0d43f47d32e07443b2f9e824e531d563633fcea40"
+    },
+    {
+      "path": "data/raw/squarefoot/listings.jsonl",
+      "bytes": 46602808,
+      "sha256": "5a0fab43f1809c82fc1c10f534d1d92f6e645dfb0c5e88cef3a6ceec5e8d687c",
+      "lines": 13962
+    },
+    {
+      "path": "data/raw/squarefoot/sitemap.xml.gz",
+      "bytes": 911083,
+      "sha256": "14565835d82728d6cf19bfa9748aaf2e57d617198ad3c7323417fdf156c51492"
+    },
+    {
+      "path": "data/raw/rvd/completions.xls",
+      "bytes": 124416,
+      "sha256": "7a5dda12b3cb0c7fcbf1469bc9109bfbd00724f44ab91aa4c076f59b80a89033"
+    },
+    {
+      "path": "data/raw/rvd/his_data_1.xls",
+      "bytes": 482304,
+      "sha256": "1fd64562c3c87d2453a11c173ddcfc97432c1d4c6bdfbcc00f55dffa3787fafd"
+    },
+    {
+      "path": "data/raw/rvd/his_data_15.xls",
+      "bytes": 266752,
+      "sha256": "407d3026fc8c124c3e4b0db603b77719ff1df594274855d36400a71fb6b147a7"
+    },
+    {
+      "path": "data/raw/rvd/his_data_16.xls",
+      "bytes": 87552,
+      "sha256": "bbbcf1ad1ed54dfda5a5e078799c755c83e75b24ba14fe0dd60affe84f9e95a1"
+    },
+    {
+      "path": "data/raw/rvd/his_data_2.xls",
+      "bytes": 475648,
+      "sha256": "98adc1e722076e314a944aafebffbd2619230167917e8e456b06246399195fe9"
+    },
+    {
+      "path": "data/raw/rvd/his_data_3.xls",
+      "bytes": 283136,
+      "sha256": "f9060f1cec64f4c6c4f6f9d7b6ded5334a3c0bf725881273e270c7c15e966b0e"
+    },
+    {
+      "path": "data/raw/rvd/his_data_4.xls",
+      "bytes": 295936,
+      "sha256": "d3988cfb15215b8dead8b0899d123e6fdddd2a8e42b86c82caf16890541d37cd"
+    },
+    {
+      "path": "data/raw/rvd/his_data_5.xls",
+      "bytes": 252928,
+      "sha256": "a201d2d2fbc91e41fd6f5a43fc1b90cb9c3e80bf44d7dcf2643e32dcc7922c7f"
+    },
+    {
+      "path": "data/raw/rvd/price_indices.xls",
+      "bytes": 295936,
+      "sha256": "d3988cfb15215b8dead8b0899d123e6fdddd2a8e42b86c82caf16890541d37cd"
+    },
+    {
+      "path": "data/raw/rvd/prices_by_class.xls",
+      "bytes": 475648,
+      "sha256": "98adc1e722076e314a944aafebffbd2619230167917e8e456b06246399195fe9"
+    },
+    {
+      "path": "data/raw/rvd/private_domestic.xls",
+      "bytes": 124416,
+      "sha256": "7a5dda12b3cb0c7fcbf1469bc9109bfbd00724f44ab91aa4c076f59b80a89033"
+    },
+    {
+      "path": "data/raw/rvd/rental_indices.xls",
+      "bytes": 283136,
+      "sha256": "f9060f1cec64f4c6c4f6f9d7b6ded5334a3c0bf725881273e270c7c15e966b0e"
+    },
+    {
+      "path": "data/raw/rvd/rents_by_class.xls",
+      "bytes": 482304,
+      "sha256": "1fd64562c3c87d2453a11c173ddcfc97432c1d4c6bdfbcc00f55dffa3787fafd"
+    },
+    {
+      "path": "data/raw/rvd/sales.xls",
+      "bytes": 87552,
+      "sha256": "bbbcf1ad1ed54dfda5a5e078799c755c83e75b24ba14fe0dd60affe84f9e95a1"
+    },
+    {
+      "path": "data/raw/rvd/selected_developments.xls",
+      "bytes": 252928,
+      "sha256": "a201d2d2fbc91e41fd6f5a43fc1b90cb9c3e80bf44d7dcf2643e32dcc7922c7f"
+    },
+    {
+      "path": "data/raw/rvd/yields.xls",
+      "bytes": 266752,
+      "sha256": "407d3026fc8c124c3e4b0db603b77719ff1df594274855d36400a71fb6b147a7"
+    },
+    {
+      "path": "data/raw/http/216f5148190856c8de0d00a9467e5b33c64196e2.xls",
+      "bytes": 482304,
+      "sha256": "1fd64562c3c87d2453a11c173ddcfc97432c1d4c6bdfbcc00f55dffa3787fafd",
+      "source_url": "https://www.rvd.gov.hk/doc/en/statistics/his_data_1.xls"
+    },
+    {
+      "path": "data/raw/http/4e22e10847cbec2e32057874c2a19ea1ce18dfb9.xls",
+      "bytes": 295936,
+      "sha256": "d3988cfb15215b8dead8b0899d123e6fdddd2a8e42b86c82caf16890541d37cd",
+      "source_url": "https://www.rvd.gov.hk/doc/en/statistics/his_data_4.xls"
+    },
+    {
+      "path": "data/raw/http/5565f3c1f55bc7eb5b940d78c3092e2f04f0e075.xls",
+      "bytes": 252928,
+      "sha256": "a201d2d2fbc91e41fd6f5a43fc1b90cb9c3e80bf44d7dcf2643e32dcc7922c7f",
+      "source_url": "https://www.rvd.gov.hk/doc/en/statistics/his_data_5.xls"
+    },
+    {
+      "path": "data/raw/http/58db114d80fa159ec8657f65112438425d6daa27.xls",
+      "bytes": 475648,
+      "sha256": "98adc1e722076e314a944aafebffbd2619230167917e8e456b06246399195fe9",
+      "source_url": "https://www.rvd.gov.hk/doc/en/statistics/his_data_2.xls"
+    },
+    {
+      "path": "data/raw/http/601cdbbdad2f6ea685b135008b95d5522b3d4bd5.xls",
+      "bytes": 268288,
+      "sha256": "c248d609fad11876dc8dbf763532adc530489a76bcc26f45779b2481864bcf4a",
+      "source_url": "https://www.hkma.gov.hk/media/eng/doc/market-data-and-statistics/monthly-statistical-bulletin/T060302.xls"
+    },
+    {
+      "path": "data/raw/http/9b818869224c267e344e974b93203a341dab5aa7.xls",
+      "bytes": 87552,
+      "sha256": "bbbcf1ad1ed54dfda5a5e078799c755c83e75b24ba14fe0dd60affe84f9e95a1",
+      "source_url": "https://www.rvd.gov.hk/doc/en/statistics/his_data_16.xls"
+    },
+    {
+      "path": "data/raw/http/cca65c016f7c05aa746128bbb991d0982da0eb1c.xls",
+      "bytes": 124416,
+      "sha256": "7a5dda12b3cb0c7fcbf1469bc9109bfbd00724f44ab91aa4c076f59b80a89033",
+      "source_url": "https://www.rvd.gov.hk/doc/en/statistics/private_domestic.xls"
+    },
+    {
+      "path": "data/raw/http/d74e506c343e47f19a703c6fff100883558b9cf5.xls",
+      "bytes": 266752,
+      "sha256": "407d3026fc8c124c3e4b0db603b77719ff1df594274855d36400a71fb6b147a7",
+      "source_url": "https://www.rvd.gov.hk/doc/en/statistics/his_data_15.xls"
+    },
+    {
+      "path": "data/raw/http/f6ea5e4aa7b25d34f1faddc6f762328979731674.xls",
+      "bytes": 61952,
+      "sha256": "dc8a8875abb237e49a94709429ae0abe6dcdf378e1067e552e14fa30d4f31d2f",
+      "source_url": "https://www.hkma.gov.hk/media/eng/doc/market-data-and-statistics/monthly-statistical-bulletin/T060401.xls"
+    },
+    {
+      "path": "data/raw/http/f90464a71216d533f032c73e5874fc98da88d13d.xls",
+      "bytes": 283136,
+      "sha256": "f9060f1cec64f4c6c4f6f9d7b6ded5334a3c0bf725881273e270c7c15e966b0e",
+      "source_url": "https://www.rvd.gov.hk/doc/en/statistics/his_data_3.xls"
+    },
+    {
+      "path": "data/raw/http/75db9c01dbb4881b4bc9b5cb1a957eac97d239db.xlsx",
+      "bytes": 398291,
+      "sha256": "4ed81bd8f3d9dd6231337cb88547f28ba1ce259e8bebd3826f403266667378d5",
+      "source_url": "https://www.hkma.gov.hk/media/eng/doc/market-data-and-statistics/monthly-statistical-bulletin/T0307.xlsx"
+    }
+  ],
+  "excluded": {
+    "http_gzip_cache": {
+      "files": 0,
+      "bytes": 0
+    },
+    "http_json_cache": {
+      "files": 167,
+      "bytes": 17677912
+    },
+    "http_metadata": {
+      "files": 89,
+      "bytes": 27679
+    },
+    "spike": {
+      "files": 19,
+      "bytes": 732273
+    },
+    "interim": {
+      "files": 11,
+      "bytes": 379003
+    }
+  }
+}

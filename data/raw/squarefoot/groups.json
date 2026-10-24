@@ -1,0 +1,1305 @@
+{
+  "generated_at": "2026-10-17T14:35:51+00:00",
+  "groups": [
+    {
+      "tenure": "buy",
+      "region_code": "a1",
+      "region_name": "HK Island",
+      "dg": "dg14",
+      "label": "Island South",
+      "url": "https://www.squarefoot.com.hk/en/buy/a1/dg14",
+      "district_code": "D",
+      "district_name": "Southern"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a1",
+      "region_name": "HK Island",
+      "dg": "dg13",
+      "label": "Aberdeen, Ap Lei Chau, Wong Chuk Hang",
+      "url": "https://www.squarefoot.com.hk/en/buy/a1/dg13",
+      "district_code": "D",
+      "district_name": "Southern"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a1",
+      "region_name": "HK Island",
+      "dg": "dg12",
+      "label": "Chai Wan, Siu Sai Wan, Shek O",
+      "url": "https://www.squarefoot.com.hk/en/buy/a1/dg12",
+      "district_code": "C",
+      "district_name": "Eastern"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a1",
+      "region_name": "HK Island",
+      "dg": "dg11",
+      "label": "Shau Kei Wan, Heng Fa Chuen",
+      "url": "https://www.squarefoot.com.hk/en/buy/a1/dg11",
+      "district_code": "C",
+      "district_name": "Eastern"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a1",
+      "region_name": "HK Island",
+      "dg": "dg10",
+      "label": "Sai Wan Ho",
+      "url": "https://www.squarefoot.com.hk/en/buy/a1/dg10",
+      "district_code": "C",
+      "district_name": "Eastern"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a1",
+      "region_name": "HK Island",
+      "dg": "dg9",
+      "label": "TaiKoo",
+      "url": "https://www.squarefoot.com.hk/en/buy/a1/dg9",
+      "district_code": "C",
+      "district_name": "Eastern"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a1",
+      "region_name": "HK Island",
+      "dg": "dg8",
+      "label": "Quarry Bay",
+      "url": "https://www.squarefoot.com.hk/en/buy/a1/dg8",
+      "district_code": "C",
+      "district_name": "Eastern"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a1",
+      "region_name": "HK Island",
+      "dg": "dg124",
+      "label": "North Point Mid",
+      "url": "https://www.squarefoot.com.hk/en/buy/a1/dg124",
+      "district_code": "C",
+      "district_name": "Eastern"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a1",
+      "region_name": "HK Island",
+      "dg": "dg7",
+      "label": "North Point, Fortress Hill",
+      "url": "https://www.squarefoot.com.hk/en/buy/a1/dg7",
+      "district_code": "C",
+      "district_name": "Eastern"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a1",
+      "region_name": "HK Island",
+      "dg": "dg6",
+      "label": "Tin Hau, Tai Hang",
+      "url": "https://www.squarefoot.com.hk/en/buy/a1/dg6",
+      "district_code": "B",
+      "district_name": "Wan Chai"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a1",
+      "region_name": "HK Island",
+      "dg": "dg5",
+      "label": "Causeway Bay, Happy Valley",
+      "url": "https://www.squarefoot.com.hk/en/buy/a1/dg5",
+      "district_code": "B",
+      "district_name": "Wan Chai"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a1",
+      "region_name": "HK Island",
+      "dg": "dg4",
+      "label": "Wan Chai, Admiralty",
+      "url": "https://www.squarefoot.com.hk/en/buy/a1/dg4",
+      "district_code": "B",
+      "district_name": "Wan Chai"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a1",
+      "region_name": "HK Island",
+      "dg": "dg3",
+      "label": "Mid-Level, West-Level",
+      "url": "https://www.squarefoot.com.hk/en/buy/a1/dg3",
+      "district_code": "A",
+      "district_name": "Central and Western"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a1",
+      "region_name": "HK Island",
+      "dg": "dg2",
+      "label": "Central, Sheung Wan",
+      "url": "https://www.squarefoot.com.hk/en/buy/a1/dg2",
+      "district_code": "A",
+      "district_name": "Central and Western"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a1",
+      "region_name": "HK Island",
+      "dg": "dg1",
+      "label": "Sai Ying Pun, Shek Tong Tsui",
+      "url": "https://www.squarefoot.com.hk/en/buy/a1/dg1",
+      "district_code": "A",
+      "district_name": "Central and Western"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a1",
+      "region_name": "HK Island",
+      "dg": "dg121",
+      "label": "Kennedy Town",
+      "url": "https://www.squarefoot.com.hk/en/buy/a1/dg121",
+      "district_code": "A",
+      "district_name": "Central and Western"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a2",
+      "region_name": "Kowloon",
+      "dg": "dg115",
+      "label": "Whampoa",
+      "url": "https://www.squarefoot.com.hk/en/buy/a2/dg115",
+      "district_code": "G",
+      "district_name": "Kowloon City"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a2",
+      "region_name": "Kowloon",
+      "dg": "dg31",
+      "label": "Hung Hom",
+      "url": "https://www.squarefoot.com.hk/en/buy/a2/dg31",
+      "district_code": "G",
+      "district_name": "Kowloon City"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a2",
+      "region_name": "Kowloon",
+      "dg": "dg30",
+      "label": "Tsim Sha Tsui",
+      "url": "https://www.squarefoot.com.hk/en/buy/a2/dg30",
+      "district_code": "E",
+      "district_name": "Yau Tsim Mong"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a2",
+      "region_name": "Kowloon",
+      "dg": "dg120",
+      "label": "Jordan",
+      "url": "https://www.squarefoot.com.hk/en/buy/a2/dg120",
+      "district_code": "E",
+      "district_name": "Yau Tsim Mong"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a2",
+      "region_name": "Kowloon",
+      "dg": "dg111",
+      "label": "Yau Ma Tei",
+      "url": "https://www.squarefoot.com.hk/en/buy/a2/dg111",
+      "district_code": "E",
+      "district_name": "Yau Tsim Mong"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a2",
+      "region_name": "Kowloon",
+      "dg": "dg110",
+      "label": "Mong Kok",
+      "url": "https://www.squarefoot.com.hk/en/buy/a2/dg110",
+      "district_code": "E",
+      "district_name": "Yau Tsim Mong"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a2",
+      "region_name": "Kowloon",
+      "dg": "dg29",
+      "label": "Prince Edward",
+      "url": "https://www.squarefoot.com.hk/en/buy/a2/dg29",
+      "district_code": "E",
+      "district_name": "Yau Tsim Mong"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a2",
+      "region_name": "Kowloon",
+      "dg": "dg28",
+      "label": "Tai Kok Tsui, Olympic, Kowloon Station",
+      "url": "https://www.squarefoot.com.hk/en/buy/a2/dg28",
+      "district_code": "E",
+      "district_name": "Yau Tsim Mong"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a2",
+      "region_name": "Kowloon",
+      "dg": "dg109",
+      "label": "Lai King",
+      "url": "https://www.squarefoot.com.hk/en/buy/a2/dg109",
+      "district_code": "S",
+      "district_name": "Kwai Tsing"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a2",
+      "region_name": "Kowloon",
+      "dg": "dg107",
+      "label": "Mei Foo",
+      "url": "https://www.squarefoot.com.hk/en/buy/a2/dg107",
+      "district_code": "F",
+      "district_name": "Sham Shui Po"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a2",
+      "region_name": "Kowloon",
+      "dg": "dg106",
+      "label": "Cheung Sha Wan",
+      "url": "https://www.squarefoot.com.hk/en/buy/a2/dg106",
+      "district_code": "F",
+      "district_name": "Sham Shui Po"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a2",
+      "region_name": "Kowloon",
+      "dg": "dg27",
+      "label": "Lai Chi Kok",
+      "url": "https://www.squarefoot.com.hk/en/buy/a2/dg27",
+      "district_code": "F",
+      "district_name": "Sham Shui Po"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a2",
+      "region_name": "Kowloon",
+      "dg": "dg26",
+      "label": "Sham Shui Po, Shek Kip Mei, Nam Cheong",
+      "url": "https://www.squarefoot.com.hk/en/buy/a2/dg26",
+      "district_code": "F",
+      "district_name": "Sham Shui Po"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a2",
+      "region_name": "Kowloon",
+      "dg": "dg119",
+      "label": "Yau Yat Tsuen",
+      "url": "https://www.squarefoot.com.hk/en/buy/a2/dg119",
+      "district_code": "F",
+      "district_name": "Sham Shui Po"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a2",
+      "region_name": "Kowloon",
+      "dg": "dg118",
+      "label": "Ho Man Tin",
+      "url": "https://www.squarefoot.com.hk/en/buy/a2/dg118",
+      "district_code": "G",
+      "district_name": "Kowloon City"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a2",
+      "region_name": "Kowloon",
+      "dg": "dg25",
+      "label": "Kowloon Tong",
+      "url": "https://www.squarefoot.com.hk/en/buy/a2/dg25",
+      "district_code": "G",
+      "district_name": "Kowloon City"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a2",
+      "region_name": "Kowloon",
+      "dg": "dg32",
+      "label": "San Po Kong, Wong Tai Sin",
+      "url": "https://www.squarefoot.com.hk/en/buy/a2/dg32",
+      "district_code": "H",
+      "district_name": "Wong Tai Sin"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a2",
+      "region_name": "Kowloon",
+      "dg": "dg108",
+      "label": "Kai Tak",
+      "url": "https://www.squarefoot.com.hk/en/buy/a2/dg108",
+      "district_code": "G",
+      "district_name": "Kowloon City"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a2",
+      "region_name": "Kowloon",
+      "dg": "dg116",
+      "label": "Kowloon City",
+      "url": "https://www.squarefoot.com.hk/en/buy/a2/dg116",
+      "district_code": "G",
+      "district_name": "Kowloon City"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a2",
+      "region_name": "Kowloon",
+      "dg": "dg24",
+      "label": "To Kwa Wan",
+      "url": "https://www.squarefoot.com.hk/en/buy/a2/dg24",
+      "district_code": "G",
+      "district_name": "Kowloon City"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a2",
+      "region_name": "Kowloon",
+      "dg": "dg23",
+      "label": "Diamond Hill, Lok Fu",
+      "url": "https://www.squarefoot.com.hk/en/buy/a2/dg23",
+      "district_code": "H",
+      "district_name": "Wong Tai Sin"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a2",
+      "region_name": "Kowloon",
+      "dg": "dg122",
+      "label": "Ngau Chi Wan",
+      "url": "https://www.squarefoot.com.hk/en/buy/a2/dg122",
+      "district_code": "H",
+      "district_name": "Wong Tai Sin"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a2",
+      "region_name": "Kowloon",
+      "dg": "dg22",
+      "label": "Kowloon Bay",
+      "url": "https://www.squarefoot.com.hk/en/buy/a2/dg22",
+      "district_code": "J",
+      "district_name": "Kwun Tong"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a2",
+      "region_name": "Kowloon",
+      "dg": "dg21",
+      "label": "Kwun Tong, Ngau Tau Kok",
+      "url": "https://www.squarefoot.com.hk/en/buy/a2/dg21",
+      "district_code": "J",
+      "district_name": "Kwun Tong"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a2",
+      "region_name": "Kowloon",
+      "dg": "dg123",
+      "label": "Yau Tong",
+      "url": "https://www.squarefoot.com.hk/en/buy/a2/dg123",
+      "district_code": "J",
+      "district_name": "Kwun Tong"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a2",
+      "region_name": "Kowloon",
+      "dg": "dg20",
+      "label": "Lam Tin",
+      "url": "https://www.squarefoot.com.hk/en/buy/a2/dg20",
+      "district_code": "J",
+      "district_name": "Kwun Tong"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a3",
+      "region_name": "New Territories",
+      "dg": "dg127",
+      "label": "Sha Tau Kok",
+      "url": "https://www.squarefoot.com.hk/en/buy/a3/dg127",
+      "district_code": "N",
+      "district_name": "North"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a3",
+      "region_name": "New Territories",
+      "dg": "dg51",
+      "label": "Tsing Yi",
+      "url": "https://www.squarefoot.com.hk/en/buy/a3/dg51",
+      "district_code": "S",
+      "district_name": "Kwai Tsing"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a3",
+      "region_name": "New Territories",
+      "dg": "dg50",
+      "label": "Kwai Chung, Kwai Fong",
+      "url": "https://www.squarefoot.com.hk/en/buy/a3/dg50",
+      "district_code": "S",
+      "district_name": "Kwai Tsing"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a3",
+      "region_name": "New Territories",
+      "dg": "dg49",
+      "label": "Tsuen Wan, Tai Wo Hau",
+      "url": "https://www.squarefoot.com.hk/en/buy/a3/dg49",
+      "district_code": "K",
+      "district_name": "Tsuen Wan"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a3",
+      "region_name": "New Territories",
+      "dg": "dg114",
+      "label": "Tsuen Wan Sham Tseng",
+      "url": "https://www.squarefoot.com.hk/en/buy/a3/dg114",
+      "district_code": "K",
+      "district_name": "Tsuen Wan"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a3",
+      "region_name": "New Territories",
+      "dg": "dg52",
+      "label": "Tuen Mun Castle Peak Road",
+      "url": "https://www.squarefoot.com.hk/en/buy/a3/dg52",
+      "district_code": "L",
+      "district_name": "Tuen Mun"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a3",
+      "region_name": "New Territories",
+      "dg": "dg48",
+      "label": "Tuen Mun",
+      "url": "https://www.squarefoot.com.hk/en/buy/a3/dg48",
+      "district_code": "L",
+      "district_name": "Tuen Mun"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a3",
+      "region_name": "New Territories",
+      "dg": "dg113",
+      "label": "Tin Shui Wai",
+      "url": "https://www.squarefoot.com.hk/en/buy/a3/dg113",
+      "district_code": "M",
+      "district_name": "Yuen Long"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a3",
+      "region_name": "New Territories",
+      "dg": "dg47",
+      "label": "Yuen Long, Hung Shui Kiu",
+      "url": "https://www.squarefoot.com.hk/en/buy/a3/dg47",
+      "district_code": "M",
+      "district_name": "Yuen Long"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a3",
+      "region_name": "New Territories",
+      "dg": "dg112",
+      "label": "Sheung Shui",
+      "url": "https://www.squarefoot.com.hk/en/buy/a3/dg112",
+      "district_code": "N",
+      "district_name": "North"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a3",
+      "region_name": "New Territories",
+      "dg": "dg46",
+      "label": "Fan Ling",
+      "url": "https://www.squarefoot.com.hk/en/buy/a3/dg46",
+      "district_code": "N",
+      "district_name": "North"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a3",
+      "region_name": "New Territories",
+      "dg": "dg45",
+      "label": "Tai Po, Tai Wo, Pak Shek Kok",
+      "url": "https://www.squarefoot.com.hk/en/buy/a3/dg45",
+      "district_code": "P",
+      "district_name": "Tai Po"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a3",
+      "region_name": "New Territories",
+      "dg": "dg44",
+      "label": "ShaTin, Tai Wai, Fotan",
+      "url": "https://www.squarefoot.com.hk/en/buy/a3/dg44",
+      "district_code": "R",
+      "district_name": "Sha Tin"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a3",
+      "region_name": "New Territories",
+      "dg": "dg43",
+      "label": "Ma On Shan",
+      "url": "https://www.squarefoot.com.hk/en/buy/a3/dg43",
+      "district_code": "R",
+      "district_name": "Sha Tin"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a3",
+      "region_name": "New Territories",
+      "dg": "dg41",
+      "label": "Tseung Kwan O",
+      "url": "https://www.squarefoot.com.hk/en/buy/a3/dg41",
+      "district_code": "Q",
+      "district_name": "Sai Kung"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a3",
+      "region_name": "New Territories",
+      "dg": "dg40",
+      "label": "Sai Kung, Clear Water Bay",
+      "url": "https://www.squarefoot.com.hk/en/buy/a3/dg40",
+      "district_code": "Q",
+      "district_name": "Sai Kung"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a170",
+      "region_name": "Outlying Islands",
+      "dg": "dg64",
+      "label": "Cheung Chau, Other Islands",
+      "url": "https://www.squarefoot.com.hk/en/buy/a170/dg64",
+      "district_code": "T",
+      "district_name": "Islands"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a170",
+      "region_name": "Outlying Islands",
+      "dg": "dg63",
+      "label": "Lamma Island",
+      "url": "https://www.squarefoot.com.hk/en/buy/a170/dg63",
+      "district_code": "T",
+      "district_name": "Islands"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a170",
+      "region_name": "Outlying Islands",
+      "dg": "dg117",
+      "label": "Peng Chau",
+      "url": "https://www.squarefoot.com.hk/en/buy/a170/dg117",
+      "district_code": "T",
+      "district_name": "Islands"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a170",
+      "region_name": "Outlying Islands",
+      "dg": "dg62",
+      "label": "South Lantau Island, Tai O",
+      "url": "https://www.squarefoot.com.hk/en/buy/a170/dg62",
+      "district_code": "T",
+      "district_name": "Islands"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a170",
+      "region_name": "Outlying Islands",
+      "dg": "dg61",
+      "label": "Tung Chung",
+      "url": "https://www.squarefoot.com.hk/en/buy/a170/dg61",
+      "district_code": "T",
+      "district_name": "Islands"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a170",
+      "region_name": "Outlying Islands",
+      "dg": "dg125",
+      "label": "Discovery Bay",
+      "url": "https://www.squarefoot.com.hk/en/buy/a170/dg125",
+      "district_code": "T",
+      "district_name": "Islands"
+    },
+    {
+      "tenure": "buy",
+      "region_code": "a170",
+      "region_name": "Outlying Islands",
+      "dg": "dg60",
+      "label": "Ma Wan",
+      "url": "https://www.squarefoot.com.hk/en/buy/a170/dg60",
+      "district_code": "K",
+      "district_name": "Tsuen Wan"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a1",
+      "region_name": "HK Island",
+      "dg": "dg14",
+      "label": "Island South",
+      "url": "https://www.squarefoot.com.hk/en/rent/a1/dg14",
+      "district_code": "D",
+      "district_name": "Southern"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a1",
+      "region_name": "HK Island",
+      "dg": "dg13",
+      "label": "Aberdeen, Ap Lei Chau, Wong Chuk Hang",
+      "url": "https://www.squarefoot.com.hk/en/rent/a1/dg13",
+      "district_code": "D",
+      "district_name": "Southern"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a1",
+      "region_name": "HK Island",
+      "dg": "dg12",
+      "label": "Chai Wan, Siu Sai Wan, Shek O",
+      "url": "https://www.squarefoot.com.hk/en/rent/a1/dg12",
+      "district_code": "C",
+      "district_name": "Eastern"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a1",
+      "region_name": "HK Island",
+      "dg": "dg11",
+      "label": "Shau Kei Wan, Heng Fa Chuen",
+      "url": "https://www.squarefoot.com.hk/en/rent/a1/dg11",
+      "district_code": "C",
+      "district_name": "Eastern"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a1",
+      "region_name": "HK Island",
+      "dg": "dg10",
+      "label": "Sai Wan Ho",
+      "url": "https://www.squarefoot.com.hk/en/rent/a1/dg10",
+      "district_code": "C",
+      "district_name": "Eastern"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a1",
+      "region_name": "HK Island",
+      "dg": "dg9",
+      "label": "TaiKoo",
+      "url": "https://www.squarefoot.com.hk/en/rent/a1/dg9",
+      "district_code": "C",
+      "district_name": "Eastern"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a1",
+      "region_name": "HK Island",
+      "dg": "dg8",
+      "label": "Quarry Bay",
+      "url": "https://www.squarefoot.com.hk/en/rent/a1/dg8",
+      "district_code": "C",
+      "district_name": "Eastern"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a1",
+      "region_name": "HK Island",
+      "dg": "dg124",
+      "label": "North Point Mid",
+      "url": "https://www.squarefoot.com.hk/en/rent/a1/dg124",
+      "district_code": "C",
+      "district_name": "Eastern"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a1",
+      "region_name": "HK Island",
+      "dg": "dg7",
+      "label": "North Point, Fortress Hill",
+      "url": "https://www.squarefoot.com.hk/en/rent/a1/dg7",
+      "district_code": "C",
+      "district_name": "Eastern"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a1",
+      "region_name": "HK Island",
+      "dg": "dg6",
+      "label": "Tin Hau, Tai Hang",
+      "url": "https://www.squarefoot.com.hk/en/rent/a1/dg6",
+      "district_code": "B",
+      "district_name": "Wan Chai"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a1",
+      "region_name": "HK Island",
+      "dg": "dg5",
+      "label": "Causeway Bay, Happy Valley",
+      "url": "https://www.squarefoot.com.hk/en/rent/a1/dg5",
+      "district_code": "B",
+      "district_name": "Wan Chai"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a1",
+      "region_name": "HK Island",
+      "dg": "dg4",
+      "label": "Wan Chai, Admiralty",
+      "url": "https://www.squarefoot.com.hk/en/rent/a1/dg4",
+      "district_code": "B",
+      "district_name": "Wan Chai"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a1",
+      "region_name": "HK Island",
+      "dg": "dg3",
+      "label": "Mid-Level, West-Level",
+      "url": "https://www.squarefoot.com.hk/en/rent/a1/dg3",
+      "district_code": "A",
+      "district_name": "Central and Western"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a1",
+      "region_name": "HK Island",
+      "dg": "dg2",
+      "label": "Central, Sheung Wan",
+      "url": "https://www.squarefoot.com.hk/en/rent/a1/dg2",
+      "district_code": "A",
+      "district_name": "Central and Western"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a1",
+      "region_name": "HK Island",
+      "dg": "dg1",
+      "label": "Sai Ying Pun, Shek Tong Tsui",
+      "url": "https://www.squarefoot.com.hk/en/rent/a1/dg1",
+      "district_code": "A",
+      "district_name": "Central and Western"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a1",
+      "region_name": "HK Island",
+      "dg": "dg121",
+      "label": "Kennedy Town",
+      "url": "https://www.squarefoot.com.hk/en/rent/a1/dg121",
+      "district_code": "A",
+      "district_name": "Central and Western"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a2",
+      "region_name": "Kowloon",
+      "dg": "dg115",
+      "label": "Whampoa",
+      "url": "https://www.squarefoot.com.hk/en/rent/a2/dg115",
+      "district_code": "G",
+      "district_name": "Kowloon City"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a2",
+      "region_name": "Kowloon",
+      "dg": "dg31",
+      "label": "Hung Hom",
+      "url": "https://www.squarefoot.com.hk/en/rent/a2/dg31",
+      "district_code": "G",
+      "district_name": "Kowloon City"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a2",
+      "region_name": "Kowloon",
+      "dg": "dg30",
+      "label": "Tsim Sha Tsui",
+      "url": "https://www.squarefoot.com.hk/en/rent/a2/dg30",
+      "district_code": "E",
+      "district_name": "Yau Tsim Mong"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a2",
+      "region_name": "Kowloon",
+      "dg": "dg120",
+      "label": "Jordan",
+      "url": "https://www.squarefoot.com.hk/en/rent/a2/dg120",
+      "district_code": "E",
+      "district_name": "Yau Tsim Mong"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a2",
+      "region_name": "Kowloon",
+      "dg": "dg111",
+      "label": "Yau Ma Tei",
+      "url": "https://www.squarefoot.com.hk/en/rent/a2/dg111",
+      "district_code": "E",
+      "district_name": "Yau Tsim Mong"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a2",
+      "region_name": "Kowloon",
+      "dg": "dg110",
+      "label": "Mong Kok",
+      "url": "https://www.squarefoot.com.hk/en/rent/a2/dg110",
+      "district_code": "E",
+      "district_name": "Yau Tsim Mong"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a2",
+      "region_name": "Kowloon",
+      "dg": "dg29",
+      "label": "Prince Edward",
+      "url": "https://www.squarefoot.com.hk/en/rent/a2/dg29",
+      "district_code": "E",
+      "district_name": "Yau Tsim Mong"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a2",
+      "region_name": "Kowloon",
+      "dg": "dg28",
+      "label": "Tai Kok Tsui, Olympic, Kowloon Station",
+      "url": "https://www.squarefoot.com.hk/en/rent/a2/dg28",
+      "district_code": "E",
+      "district_name": "Yau Tsim Mong"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a2",
+      "region_name": "Kowloon",
+      "dg": "dg109",
+      "label": "Lai King",
+      "url": "https://www.squarefoot.com.hk/en/rent/a2/dg109",
+      "district_code": "S",
+      "district_name": "Kwai Tsing"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a2",
+      "region_name": "Kowloon",
+      "dg": "dg107",
+      "label": "Mei Foo",
+      "url": "https://www.squarefoot.com.hk/en/rent/a2/dg107",
+      "district_code": "F",
+      "district_name": "Sham Shui Po"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a2",
+      "region_name": "Kowloon",
+      "dg": "dg106",
+      "label": "Cheung Sha Wan",
+      "url": "https://www.squarefoot.com.hk/en/rent/a2/dg106",
+      "district_code": "F",
+      "district_name": "Sham Shui Po"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a2",
+      "region_name": "Kowloon",
+      "dg": "dg27",
+      "label": "Lai Chi Kok",
+      "url": "https://www.squarefoot.com.hk/en/rent/a2/dg27",
+      "district_code": "F",
+      "district_name": "Sham Shui Po"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a2",
+      "region_name": "Kowloon",
+      "dg": "dg26",
+      "label": "Sham Shui Po, Shek Kip Mei, Nam Cheong",
+      "url": "https://www.squarefoot.com.hk/en/rent/a2/dg26",
+      "district_code": "F",
+      "district_name": "Sham Shui Po"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a2",
+      "region_name": "Kowloon",
+      "dg": "dg119",
+      "label": "Yau Yat Tsuen",
+      "url": "https://www.squarefoot.com.hk/en/rent/a2/dg119",
+      "district_code": "F",
+      "district_name": "Sham Shui Po"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a2",
+      "region_name": "Kowloon",
+      "dg": "dg118",
+      "label": "Ho Man Tin",
+      "url": "https://www.squarefoot.com.hk/en/rent/a2/dg118",
+      "district_code": "G",
+      "district_name": "Kowloon City"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a2",
+      "region_name": "Kowloon",
+      "dg": "dg25",
+      "label": "Kowloon Tong",
+      "url": "https://www.squarefoot.com.hk/en/rent/a2/dg25",
+      "district_code": "G",
+      "district_name": "Kowloon City"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a2",
+      "region_name": "Kowloon",
+      "dg": "dg32",
+      "label": "San Po Kong, Wong Tai Sin",
+      "url": "https://www.squarefoot.com.hk/en/rent/a2/dg32",
+      "district_code": "H",
+      "district_name": "Wong Tai Sin"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a2",
+      "region_name": "Kowloon",
+      "dg": "dg108",
+      "label": "Kai Tak",
+      "url": "https://www.squarefoot.com.hk/en/rent/a2/dg108",
+      "district_code": "G",
+      "district_name": "Kowloon City"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a2",
+      "region_name": "Kowloon",
+      "dg": "dg116",
+      "label": "Kowloon City",
+      "url": "https://www.squarefoot.com.hk/en/rent/a2/dg116",
+      "district_code": "G",
+      "district_name": "Kowloon City"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a2",
+      "region_name": "Kowloon",
+      "dg": "dg24",
+      "label": "To Kwa Wan",
+      "url": "https://www.squarefoot.com.hk/en/rent/a2/dg24",
+      "district_code": "G",
+      "district_name": "Kowloon City"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a2",
+      "region_name": "Kowloon",
+      "dg": "dg23",
+      "label": "Diamond Hill, Lok Fu",
+      "url": "https://www.squarefoot.com.hk/en/rent/a2/dg23",
+      "district_code": "H",
+      "district_name": "Wong Tai Sin"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a2",
+      "region_name": "Kowloon",
+      "dg": "dg122",
+      "label": "Ngau Chi Wan",
+      "url": "https://www.squarefoot.com.hk/en/rent/a2/dg122",
+      "district_code": "H",
+      "district_name": "Wong Tai Sin"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a2",
+      "region_name": "Kowloon",
+      "dg": "dg22",
+      "label": "Kowloon Bay",
+      "url": "https://www.squarefoot.com.hk/en/rent/a2/dg22",
+      "district_code": "J",
+      "district_name": "Kwun Tong"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a2",
+      "region_name": "Kowloon",
+      "dg": "dg21",
+      "label": "Kwun Tong, Ngau Tau Kok",
+      "url": "https://www.squarefoot.com.hk/en/rent/a2/dg21",
+      "district_code": "J",
+      "district_name": "Kwun Tong"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a2",
+      "region_name": "Kowloon",
+      "dg": "dg123",
+      "label": "Yau Tong",
+      "url": "https://www.squarefoot.com.hk/en/rent/a2/dg123",
+      "district_code": "J",
+      "district_name": "Kwun Tong"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a2",
+      "region_name": "Kowloon",
+      "dg": "dg20",
+      "label": "Lam Tin",
+      "url": "https://www.squarefoot.com.hk/en/rent/a2/dg20",
+      "district_code": "J",
+      "district_name": "Kwun Tong"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a3",
+      "region_name": "New Territories",
+      "dg": "dg127",
+      "label": "Sha Tau Kok",
+      "url": "https://www.squarefoot.com.hk/en/rent/a3/dg127",
+      "district_code": "N",
+      "district_name": "North"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a3",
+      "region_name": "New Territories",
+      "dg": "dg51",
+      "label": "Tsing Yi",
+      "url": "https://www.squarefoot.com.hk/en/rent/a3/dg51",
+      "district_code": "S",
+      "district_name": "Kwai Tsing"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a3",
+      "region_name": "New Territories",
+      "dg": "dg50",
+      "label": "Kwai Chung, Kwai Fong",
+      "url": "https://www.squarefoot.com.hk/en/rent/a3/dg50",
+      "district_code": "S",
+      "district_name": "Kwai Tsing"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a3",
+      "region_name": "New Territories",
+      "dg": "dg49",
+      "label": "Tsuen Wan, Tai Wo Hau",
+      "url": "https://www.squarefoot.com.hk/en/rent/a3/dg49",
+      "district_code": "K",
+      "district_name": "Tsuen Wan"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a3",
+      "region_name": "New Territories",
+      "dg": "dg114",
+      "label": "Tsuen Wan Sham Tseng",
+      "url": "https://www.squarefoot.com.hk/en/rent/a3/dg114",
+      "district_code": "K",
+      "district_name": "Tsuen Wan"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a3",
+      "region_name": "New Territories",
+      "dg": "dg52",
+      "label": "Tuen Mun Castle Peak Road",
+      "url": "https://www.squarefoot.com.hk/en/rent/a3/dg52",
+      "district_code": "L",
+      "district_name": "Tuen Mun"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a3",
+      "region_name": "New Territories",
+      "dg": "dg48",
+      "label": "Tuen Mun",
+      "url": "https://www.squarefoot.com.hk/en/rent/a3/dg48",
+      "district_code": "L",
+      "district_name": "Tuen Mun"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a3",
+      "region_name": "New Territories",
+      "dg": "dg113",
+      "label": "Tin Shui Wai",
+      "url": "https://www.squarefoot.com.hk/en/rent/a3/dg113",
+      "district_code": "M",
+      "district_name": "Yuen Long"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a3",
+      "region_name": "New Territories",
+      "dg": "dg47",
+      "label": "Yuen Long, Hung Shui Kiu",
+      "url": "https://www.squarefoot.com.hk/en/rent/a3/dg47",
+      "district_code": "M",
+      "district_name": "Yuen Long"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a3",
+      "region_name": "New Territories",
+      "dg": "dg112",
+      "label": "Sheung Shui",
+      "url": "https://www.squarefoot.com.hk/en/rent/a3/dg112",
+      "district_code": "N",
+      "district_name": "North"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a3",
+      "region_name": "New Territories",
+      "dg": "dg46",
+      "label": "Fan Ling",
+      "url": "https://www.squarefoot.com.hk/en/rent/a3/dg46",
+      "district_code": "N",
+      "district_name": "North"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a3",
+      "region_name": "New Territories",
+      "dg": "dg45",
+      "label": "Tai Po, Tai Wo, Pak Shek Kok",
+      "url": "https://www.squarefoot.com.hk/en/rent/a3/dg45",
+      "district_code": "P",
+      "district_name": "Tai Po"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a3",
+      "region_name": "New Territories",
+      "dg": "dg44",
+      "label": "ShaTin, Tai Wai, Fotan",
+      "url": "https://www.squarefoot.com.hk/en/rent/a3/dg44",
+      "district_code": "R",
+      "district_name": "Sha Tin"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a3",
+      "region_name": "New Territories",
+      "dg": "dg43",
+      "label": "Ma On Shan",
+      "url": "https://www.squarefoot.com.hk/en/rent/a3/dg43",
+      "district_code": "R",
+      "district_name": "Sha Tin"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a3",
+      "region_name": "New Territories",
+      "dg": "dg41",
+      "label": "Tseung Kwan O",
+      "url": "https://www.squarefoot.com.hk/en/rent/a3/dg41",
+      "district_code": "Q",
+      "district_name": "Sai Kung"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a3",
+      "region_name": "New Territories",
+      "dg": "dg40",
+      "label": "Sai Kung, Clear Water Bay",
+      "url": "https://www.squarefoot.com.hk/en/rent/a3/dg40",
+      "district_code": "Q",
+      "district_name": "Sai Kung"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a170",
+      "region_name": "Outlying Islands",
+      "dg": "dg64",
+      "label": "Cheung Chau, Other Islands",
+      "url": "https://www.squarefoot.com.hk/en/rent/a170/dg64",
+      "district_code": "T",
+      "district_name": "Islands"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a170",
+      "region_name": "Outlying Islands",
+      "dg": "dg63",
+      "label": "Lamma Island",
+      "url": "https://www.squarefoot.com.hk/en/rent/a170/dg63",
+      "district_code": "T",
+      "district_name": "Islands"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a170",
+      "region_name": "Outlying Islands",
+      "dg": "dg117",
+      "label": "Peng Chau",
+      "url": "https://www.squarefoot.com.hk/en/rent/a170/dg117",
+      "district_code": "T",
+      "district_name": "Islands"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a170",
+      "region_name": "Outlying Islands",
+      "dg": "dg62",
+      "label": "South Lantau Island, Tai O",
+      "url": "https://www.squarefoot.com.hk/en/rent/a170/dg62",
+      "district_code": "T",
+      "district_name": "Islands"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a170",
+      "region_name": "Outlying Islands",
+      "dg": "dg61",
+      "label": "Tung Chung",
+      "url": "https://www.squarefoot.com.hk/en/rent/a170/dg61",
+      "district_code": "T",
+      "district_name": "Islands"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a170",
+      "region_name": "Outlying Islands",
+      "dg": "dg125",
+      "label": "Discovery Bay",
+      "url": "https://www.squarefoot.com.hk/en/rent/a170/dg125",
+      "district_code": "T",
+      "district_name": "Islands"
+    },
+    {
+      "tenure": "rent",
+      "region_code": "a170",
+      "region_name": "Outlying Islands",
+      "dg": "dg60",
+      "label": "Ma Wan",
+      "url": "https://www.squarefoot.com.hk/en/rent/a170/dg60",
+      "district_code": "K",
+      "district_name": "Tsuen Wan"
+    }
+  ]
+}

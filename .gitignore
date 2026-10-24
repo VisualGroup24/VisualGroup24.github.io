@@ -12,7 +12,25 @@ app/dist/
 *.tsbuildinfo
 
 # Generated data
-data/raw/
+# Raw crawl cache is disposable and not tracked. Keep only the pruned snapshot:
+# Squarefoot crawl outputs/metadata, RVD workbooks and official workbooks from
+# the HTTP cache.
+data/raw/*
+!data/raw/snapshot_manifest.json
+!data/raw/rvd/
+!data/raw/rvd/*.xls
+!data/raw/rvd/*.xlsx
+!data/raw/squarefoot/
+data/raw/squarefoot/*
+!data/raw/squarefoot/listings.jsonl
+!data/raw/squarefoot/estates.jsonl
+!data/raw/squarefoot/crawl_errors.jsonl
+!data/raw/squarefoot/sitemap.xml.gz
+!data/raw/squarefoot/*.json
+!data/raw/http/
+data/raw/http/*
+!data/raw/http/*.xls
+!data/raw/http/*.xlsx
 data/interim/
 data/processed/*.parquet
 app/public/data/latest/

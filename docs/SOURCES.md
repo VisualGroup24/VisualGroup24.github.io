@@ -20,6 +20,22 @@ All sources were accessed in October 2026. Coverage is measured on the files act
 | Land-only district geometry | geohk (census2001) | `https://raw.githubusercontent.com/hupili/geohk/master/census2001/dc_land.lowres.geo.json` | GeoJSON | 18 features, low-resolution | Static |
 | Estate prices / rent / listings | Squarefoot | `https://www.squarefoot.com.hk/sitemap.xml.gz`; estate and property detail pages | HTML | Current snapshot; estate series from 1996 for older estates | Weekly/monthly |
 
+## Tracked raw snapshot
+
+The full HTTP response cache under `data/raw/http/` is disposable and **not tracked** (about 791 MB of gzip cache). Git tracks a pruned raw snapshot instead:
+
+- `data/raw/squarefoot/` — crawl outputs, summary, groups, sitemap and crawl errors;
+- `data/raw/rvd/` — RVD workbooks;
+- `data/raw/http/*.xls` / `*.xlsx` — official workbooks decoded from the HTTP cache.
+
+`data/raw/snapshot_manifest.json` records the SHA-256, byte size, line count and, for HTTP-cache workbooks, the source URL. Regenerate it after a crawl with:
+
+```powershell
+python pipeline/snapshot_manifest.py
+```
+
+The snapshot is about 83 MB across 34 files. Raw HTTP responses, spike pages and intermediate files remain ignored.
+
 ## Squarefoot crawl
 
 - `robots.txt` at `https://www.squarefoot.com.hk/robots.txt` allows path pages and disallows `search_words_thing` and `sortBy_by_text` query submissions. The crawler uses only path pages, the sitemap and detail pages.
