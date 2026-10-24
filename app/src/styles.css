@@ -110,3 +110,243 @@ a {
     height: 280px;
   }
 }
+
+/* Desktop dashboard density. Mobile and narrow screens keep the existing flow. */
+@media (min-width: 1280px) {
+  .desktop-dashboard.space-y-6 > * + * {
+    margin-top: 0.75rem;
+  }
+
+  .desktop-dashboard {
+    --estate-chart-h: 150px;
+    --heatmap-h: 180px;
+  }
+
+  .desktop-dashboard.space-y-10 > * + * {
+    margin-top: 0.75rem;
+  }
+
+  .desktop-dashboard header.mb-6 {
+    margin-bottom: 0.75rem;
+  }
+
+  .desktop-dashboard section.card {
+    padding: 0.75rem;
+    border-radius: 0.8rem;
+  }
+
+  .desktop-dashboard section.card > div:first-child {
+    margin-bottom: 0.5rem;
+  }
+
+  .desktop-dashboard section.card > div:first-child p {
+    display: none;
+  }
+
+  .app-footer {
+    display: none;
+  }
+
+  .app-main {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .desktop-dashboard .coverage-card,
+  .desktop-dashboard .profile-classes {
+    display: none;
+  }
+
+  .desktop-dashboard section.card h2 {
+    font-size: 0.85rem;
+  }
+
+  .desktop-dashboard div.card {
+    padding: 0.65rem 0.75rem;
+  }
+
+  .desktop-dashboard .kpi-grid {
+    gap: 7px;
+    grid-auto-rows: 58px;
+  }
+
+  .desktop-dashboard .kpi-card {
+    height: 100%;
+    padding: 7px 9px;
+    border-left-width: 3px;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .desktop-dashboard .kpi-card > p:first-child {
+    font-size: 7.5px;
+    line-height: 1.2;
+    letter-spacing: 0.11em;
+    white-space: nowrap;
+  }
+
+  .desktop-dashboard .kpi-card > p:nth-child(2) {
+    margin-top: 2px;
+    font-size: 15px;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+  }
+
+  .desktop-dashboard .kpi-card > div {
+    margin-top: 1px;
+    font-size: 7.5px;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .overview-screen.space-y-10 > * + * {
+    margin-top: 0.35rem;
+  }
+
+  .overview-screen h1 {
+    font-size: 2.5rem;
+    line-height: 1;
+  }
+
+  .overview-screen .overview-chips {
+    display: none;
+  }
+
+  .overview-screen section.max-w-3xl p.text-lg {
+    font-size: 0.95rem;
+    line-height: 1.45;
+  }
+}
+
+@media (min-width: 1280px) and (max-height: 940px) {
+  .desktop-dashboard header.mb-6 p.mt-2 {
+    display: none;
+  }
+}
+
+@media (min-width: 1280px) and (min-height: 821px) {
+  .desktop-dashboard.space-y-6 > * + * {
+    margin-top: 0.4rem;
+  }
+
+  .desktop-dashboard section.card {
+    padding: 0.5rem;
+  }
+}
+
+/* Short laptop viewports: tighten spacing and drop secondary annotations
+   so the primary charts still fit without shrinking the charts themselves. */
+@media (min-width: 1280px) and (max-height: 820px) {
+  .app-main {
+    padding-top: 0.125rem;
+    padding-bottom: 0.125rem;
+  }
+
+  .desktop-dashboard {
+    --estate-chart-h: 150px;
+    --heatmap-h: 190px;
+  }
+
+  .desktop-dashboard.space-y-6 > * + *,
+  .desktop-dashboard.space-y-10 > * + * {
+    margin-top: 0.25rem;
+  }
+
+  .desktop-dashboard header.mb-6 {
+    margin-bottom: 0.25rem;
+  }
+
+  .desktop-dashboard section.card {
+    padding: 0.45rem 0.6rem;
+  }
+
+  .desktop-dashboard section.card > div:first-child {
+    margin-bottom: 0.25rem;
+  }
+
+  .desktop-dashboard .kpi-grid {
+    grid-auto-rows: 52px;
+  }
+
+  .desktop-dashboard .kpi-card {
+    padding: 5px 8px;
+  }
+
+  .desktop-dashboard .kpi-card > p:first-child {
+    font-size: 7px;
+  }
+
+  .desktop-dashboard .kpi-card > p:nth-child(2) {
+    font-size: 14px;
+  }
+
+  .desktop-dashboard .kpi-card > div {
+    font-size: 7px;
+  }
+
+  .short-hide {
+    display: none;
+  }
+}
+
+/* Very short laptop viewports (e.g. 1359×735): trim the remaining chrome. */
+@media (min-width: 1280px) and (max-height: 760px) {
+  .app-main {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .desktop-dashboard {
+    --estate-chart-h: 150px;
+    --heatmap-h: 190px;
+  }
+
+  .desktop-dashboard.space-y-6 > * + *,
+  .desktop-dashboard.space-y-10 > * + * {
+    margin-top: 1px;
+  }
+
+  .desktop-dashboard header.mb-6 {
+    margin-bottom: 1px;
+  }
+
+  .desktop-dashboard > header > div > p:first-child {
+    display: none;
+  }
+
+  .desktop-dashboard > header > div > h1 {
+    margin-top: 0;
+  }
+
+  .desktop-dashboard section.card {
+    padding: 4px 8px;
+  }
+
+  .desktop-dashboard section.card > div:first-child {
+    margin-bottom: 1px;
+  }
+
+  .desktop-dashboard .kpi-grid {
+    grid-auto-rows: 44px;
+  }
+
+  .desktop-dashboard .kpi-card {
+    padding: 4px 7px;
+  }
+
+  .desktop-dashboard .kpi-card > p:first-child {
+    font-size: 7px;
+  }
+
+  .desktop-dashboard .kpi-card > p:nth-child(2) {
+    font-size: 13px;
+  }
+
+  .desktop-dashboard .kpi-card > div {
+    font-size: 7px;
+  }
+}
+

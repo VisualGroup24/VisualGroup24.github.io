@@ -10,6 +10,7 @@ import {
 import PageHeader from "../components/PageHeader";
 import { useMarket } from "../data/useMarket";
 import { usePca } from "../data/usePca";
+import { CARD_INFO } from "../data/cardInfo";
 import type { MarketData, MarketEvent } from "../data/types";
 import { fmtMonth, fmtPct, fmtPctPlain } from "../lib/format";
 import {
@@ -164,6 +165,7 @@ export default function Market() {
   const propertyClass = useFilters((state) => state.propertyClass);
   const setPropertyClass = useFilters((state) => state.setPropertyClass);
   const [factor, setFactor] = useState<Factor>("hibor");
+  const [rentPriceView, setRentPriceView] = useState<"scatter" | "lag">("scatter");
 
   const view = useMemo(() => {
     if (!data) return null;
@@ -765,8 +767,67 @@ export default function Market() {
       }
     : null;
 
+  const classRows = seriesFor(data, propertyClass);
+  const classPrice = yoySeries(
+    classRows.map((row) => ({ month: row.month, value: row.price_index as number })),
+  );
+  const classRent = yoySeries(
+    classRows.map((row) => ({ month: row.month, value: row.rent_index as number })),
+  );
+  const classOption = classRows.length
+    ? (() => {
+        const months = classPrice
+          .map((point) => point.month)
+          .filter((month) => month >= "2018-01");
+        const priceMap = new Map(classPrice.map((point) => [point.month, point.value]));
+        const rentMap = new Map(classRent.map((point) => [point.month, point.value]));
+        return {
+          animationDuration: 300,
+          grid: { left: 40, right: 12, top: 16, bottom: 28 },
+          tooltip: {
+            trigger: "axis",
+            backgroundColor: "rgba(15,23,42,0.92)",
+            borderWidth: 0,
+            textStyle: { color: "#f8fafc", fontSize: 11 },
+            valueFormatter: (value: number) => `${value.toFixed(1)}%`,
+          },
+          xAxis: {
+            type: "category",
+            data: months,
+            boundaryGap: false,
+            axisLabel: { color: COLORS.muted, fontSize: 9, formatter: (value: string) => value.slice(0, 4) },
+            axisLine: { lineStyle: { color: COLORS.grid } },
+            axisTick: { show: false },
+          },
+          yAxis: {
+            type: "value",
+            splitLine: { lineStyle: { color: COLORS.grid } },
+            axisLabel: { color: COLORS.muted, fontSize: 9, formatter: "{value}%" },
+          },
+          series: [
+            {
+              type: "line",
+              name: "Price YoY",
+              data: months.map((month) => priceMap.get(month) ?? null),
+              showSymbol: false,
+              lineStyle: { width: 1.8, color: COLORS.price },
+              itemStyle: { color: COLORS.price },
+            },
+            {
+              type: "line",
+              name: "Rent YoY",
+              data: months.map((month) => rentMap.get(month) ?? null),
+              showSymbol: false,
+              lineStyle: { width: 1.8, color: COLORS.rent },
+              itemStyle: { color: COLORS.rent },
+            },
+          ],
+        };
+      })()
+    : null;
+
   return (
-    <div className="space-y-6">
+    <div className="desktop-dashboard space-y-6">
       <PageHeader
         eyebrow="Prices"
         title="Market Trends"
@@ -774,6 +835,7 @@ export default function Market() {
       >
         <SegmentedControl
           label="Class"
+          info={CARD_INFO.houseClasses}
           value={propertyClass}
           options={CLASSES.map((value) => ({ value, label: value === "ALL" ? "All" : value }))}
           onChange={setPropertyClass}
@@ -783,29 +845,33 @@ export default function Market() {
         </span>
       </PageHeader>
 
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-6">
-        <KpiCard label="Price index" value={view.latestPrice.toFixed(1)} delta={fmtPct(view.yoyPrice)} note="YoY" />
-        <KpiCard label="Rent index" value={view.latestRent.toFixed(1)} delta={fmtPct(view.yoyRent)} note="YoY" />
+      <div className="kpi-grid grid grid-cols-2 gap-3 lg:grid-cols-6">
+        <KpiCard label="Price index" info={CARD_INFO.marketPriceIndex} value={view.latestPrice.toFixed(1)} delta={fmtPct(view.yoyPrice)} note="YoY" />
+        <KpiCard label="Rent index" info={CARD_INFO.marketRentIndex} value={view.latestRent.toFixed(1)} delta={fmtPct(view.yoyRent)} note="YoY" />
         <KpiCard
           label="Price / rent"
+          info={CARD_INFO.marketPriceRent}
           value={(view.latestPrice / view.latestRent).toFixed(2)}
           note="index ratio"
           accent="amber"
         />
         <KpiCard
           label="Gross yield"
+          info={CARD_INFO.marketYield}
           value={fmtPctPlain(view.yieldLatest)}
           note={view.cls === "ALL" ? "mean A–E" : `RVD class ${view.cls}`}
           accent="blue"
         />
         <KpiCard
           label="Monthly ASPs"
+          info={CARD_INFO.marketSales}
           value={latestSales?.total_count ? latestSales.total_count.toLocaleString() : "—"}
           note={latestSales ? `RVD · ${fmtMonth(latestSales.month)}` : "residential"}
           accent="neutral"
         />
         <KpiCard
           label="HIBOR 1M"
+          info={CARD_INFO.marketHibor}
           value={
             data.rates.length
               ? `${(data.rates[data.rates.length - 1].hibor_1m ?? 0).toFixed(2)}%`
@@ -816,188 +882,128 @@ export default function Market() {
         />
       </div>
 
-      <SectionCard
-        title="Price and rental indices"
-        description={`RVD private domestic indices for class ${view.cls === "ALL" ? "all classes" : view.cls}, rebased to 2019 = 100. Dashed verticals mark policy and market events.`}
-        action={
-          <span className="text-[11px] text-[var(--text-muted)]">
-            {view.months[0]} – {view.months[view.months.length - 1]}
-          </span>
-        }
-      >
-        <Chart option={heroOption} height={420} />
-        <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-[var(--text-muted)]">
-          {data.events.map((event) => (
-            <span key={`${event.date}-${event.label}`}>
-              <span className="mr-1 inline-block h-2 w-[2px] bg-slate-400 align-middle" />
-              {event.date.slice(0, 4)} · {event.label}
-            </span>
-          ))}
-        </div>
-      </SectionCard>
-
-      <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
+      <div className="grid gap-4 xl:grid-cols-[2fr_1fr]">
         <SectionCard
-          title="Rent–price co-movement"
-          description="Monthly log changes of the price and rental indices. Points are coloured by year; the line is an OLS fit."
+          title="Price and rental indices"
+          info={CARD_INFO.marketIndices}
+          description={`RVD private domestic indices for class ${view.cls === "ALL" ? "all classes" : view.cls}, rebased to 2019 = 100.`}
+          action={
+            <span className="text-[11px] text-[var(--text-muted)]">
+              {view.months[0]} – {view.months[view.months.length - 1]}
+            </span>
+          }
         >
-          <Chart option={scatterOption} height={320} />
-          <div className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-xs text-[var(--text-muted)]">
-            <span>R² = {view.scatterFit.r2.toFixed(2)}</span>
-            <span>slope = {view.scatterFit.slope.toFixed(2)}</span>
-            <span>n = {view.scatter.length}</span>
+          <Chart option={heroOption} height={240} />
+          <div className="short-hide mt-2 line-clamp-2 flex flex-wrap gap-x-3 gap-y-0.5 text-[10px] text-[var(--text-muted)]">
+            {data.events.map((event) => (
+              <span key={`${event.date}-${event.label}`}>
+                <span className="mr-1 inline-block h-2 w-[2px] bg-slate-400 align-middle" />
+                {event.date.slice(0, 4)} · {event.label}
+              </span>
+            ))}
           </div>
         </SectionCard>
 
         <SectionCard
-          title="Lead or lag?"
-          description="Correlation between price change at t and rent change at t + lag. Positive lags mean rents follow prices."
+          title="Rent–price dynamics"
+          info={CARD_INFO.marketDynamics}
+          description={
+            rentPriceView === "scatter"
+              ? "Monthly log changes of price and rent; the line is an OLS fit."
+              : "Correlation between price change at t and rent change at t + lag."
+          }
+          action={
+            <SegmentedControl
+              value={rentPriceView}
+              options={[
+                { value: "scatter", label: "Co-movement" },
+                { value: "lag", label: "Lead / lag" },
+              ]}
+              onChange={setRentPriceView}
+            />
+          }
         >
-          <Chart option={lagOption} height={320} />
-          <p className="mt-2 text-xs text-[var(--text-muted)]">
-            Strongest correlation at lag{" "}
-            <strong className="text-[var(--text)]">
-              {view.lag.reduce((best, point) => (Math.abs(point.correlation) > Math.abs(best.correlation) ? point : best)).lag}
-            </strong>{" "}
-            months.
-          </p>
+          <Chart option={rentPriceView === "scatter" ? scatterOption : lagOption} height={240} />
+          {rentPriceView === "scatter" ? (
+            <div className="short-hide mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-[var(--text-muted)]">
+              <span>R² = {view.scatterFit.r2.toFixed(2)}</span>
+              <span>slope = {view.scatterFit.slope.toFixed(2)}</span>
+              <span>n = {view.scatter.length}</span>
+            </div>
+          ) : (
+            <p className="short-hide mt-2 text-[11px] text-[var(--text-muted)]">
+              Strongest correlation at lag{" "}
+              <strong className="text-[var(--text)]">
+                {view.lag.reduce((best, point) => (Math.abs(point.correlation) > Math.abs(best.correlation) ? point : best)).lag}
+              </strong>{" "}
+              months.
+            </p>
+          )}
         </SectionCard>
       </div>
 
-      <SectionCard
-        title="Year-on-year change by class"
-        description="Price and rent growth for classes A–E. Small multiples make class-specific cycles comparable."
-      >
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {view.smallMultiples.map((panel) => {
-            const months = panel.price.map((point) => point.month);
-            const priceMap = new Map(panel.price.map((point) => [point.month, point.value]));
-            const rentMap = new Map(panel.rent.map((point) => [point.month, point.value]));
-            const option = {
-              animationDuration: 300,
-              grid: { left: 40, right: 12, top: 22, bottom: 28 },
-              tooltip: {
-                trigger: "axis",
-                backgroundColor: "rgba(15,23,42,0.92)",
-                borderWidth: 0,
-                textStyle: { color: "#f8fafc", fontSize: 11 },
-                valueFormatter: (value: number) => `${value.toFixed(1)}%`,
-              },
-              title: {
-                text: `Class ${panel.code}`,
-                left: 0,
-                top: 0,
-                textStyle: { fontSize: 11, fontWeight: 600, color: "#64748b" },
-              },
-              xAxis: {
-                type: "category",
-                data: months,
-                boundaryGap: false,
-                axisLabel: { color: COLORS.muted, fontSize: 9, formatter: (value: string) => value.slice(0, 4) },
-                axisLine: { lineStyle: { color: COLORS.grid } },
-                axisTick: { show: false },
-              },
-              yAxis: {
-                type: "value",
-                splitLine: { lineStyle: { color: COLORS.grid } },
-                axisLabel: { color: COLORS.muted, fontSize: 9, formatter: "{value}%" },
-              },
-              series: [
-                {
-                  type: "line",
-                  name: "Price YoY",
-                  data: months.map((month) => priceMap.get(month) ?? null),
-                  showSymbol: false,
-                  lineStyle: { width: 1.5, color: COLORS.price },
-                  itemStyle: { color: COLORS.price },
-                },
-                {
-                  type: "line",
-                  name: "Rent YoY",
-                  data: months.map((month) => rentMap.get(month) ?? null),
-                  showSymbol: false,
-                  lineStyle: { width: 1.5, color: COLORS.rent },
-                  itemStyle: { color: COLORS.rent },
-                },
-              ],
-            };
-            return <Chart key={panel.code} option={option} height={170} />;
-          })}
-        </div>
-      </SectionCard>
-
-      <SectionCard
-        title="What moves with prices?"
-        description="Bivariate association between the class-ALL price index and one macro factor at a time. Association, not causation."
-        action={
-          <SegmentedControl
-            value={factor}
-            options={[
-              { value: "hibor", label: "Rate" },
-              { value: "volume", label: "Volume" },
-              { value: "income", label: "Income" },
-              { value: "completions", label: "Completions" },
-            ]}
-            onChange={setFactor}
-          />
-        }
-      >
-        {driverOption && driver ? (
-          <>
-            <Chart option={driverOption} height={340} />
-            <FactorStats
-              factor={factor}
-              stats={{ n: driver.n, r2: driver.r2, slope: driver.fit.slope, xLabel: driver.xLabel, period: driver.period }}
-            />
-          </>
-        ) : (
-          <div className="grid h-60 place-items-center text-sm text-[var(--text-muted)]">No overlapping data.</div>
-        )}
-      </SectionCard>
-
-      <SectionCard
-        title="Composition: what differentiates listings?"
-        description={
-          pca
-            ? `PCA of ${pca.n} current listings on area, bedrooms, bathrooms, floor, age, MTR walk time and tenure. Price per ft² is shown as a supplementary colour, not a PCA input.`
-            : "PCA of listing attributes (area, bedrooms, floor, age, MTR walk time). Available once the listing crawl has run."
-        }
-      >
-        {pcaView && pca ? (
-          <>
-            <div className="grid gap-4 xl:grid-cols-3">
-              <div>
-                <h3 className="mb-1 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">
-                  Scree
-                </h3>
-                <Chart option={pcaView.screeOption} height={260} />
-              </div>
-              <div>
-                <h3 className="mb-1 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">
-                  Loadings
-                </h3>
-                <Chart option={pcaView.loadingOption} height={260} />
-              </div>
-              <div>
-                <h3 className="mb-1 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">
-                  Biplot
-                </h3>
-                <Chart option={pcaView.biplotOption} height={260} />
-              </div>
-            </div>
-            <p className="mt-3 text-xs leading-relaxed text-[var(--text-muted)]">
-              PC1 and PC2 together explain{" "}
-              {((pca.explained[0] + pca.explained[1]) * 100).toFixed(0)}% of the variation. Arrows
-              point in the direction of each attribute; attributes pointing the same way are
-              largely redundant. This is a description of the current sample, not a causal model.
-            </p>
-          </>
-        ) : (
-          <div className="grid h-36 place-items-center rounded-xl border border-dashed border-[var(--border)] text-xs text-[var(--text-muted)]">
-            PCA — awaiting crawl
+      <div className="grid gap-3 xl:grid-cols-3">
+        <SectionCard
+          title="Year-on-year change"
+          info={CARD_INFO.marketClass}
+          description="Price and rent growth for the class selected in the top switch, 2018 onwards."
+        >
+          {classOption ? <Chart option={classOption} height={190} /> : null}
+          <div className="short-hide mt-1 flex gap-4 text-[10px] text-[var(--text-muted)]">
+            <span><i className="mr-1 inline-block h-1 w-3 rounded-full bg-teal-700 align-middle" />Price YoY</span>
+            <span><i className="mr-1 inline-block h-1 w-3 rounded-full bg-amber-700 align-middle" />Rent YoY</span>
           </div>
-        )}
-      </SectionCard>
+        </SectionCard>
+
+        <SectionCard
+          title="What moves with prices?"
+          info={CARD_INFO.marketDrivers}
+          description="Bivariate association with the price index. Association, not causation."
+          action={
+            <select
+              value={factor}
+              onChange={(event) => setFactor(event.target.value as Factor)}
+              className="rounded-full border border-[var(--border)] bg-[var(--bg-elevated)] px-3 py-1.5 text-xs"
+              aria-label="Factor"
+            >
+              <option value="hibor">Mortgage rate</option>
+              <option value="volume">Transaction volume</option>
+              <option value="income">Household income</option>
+              <option value="completions">Completions</option>
+            </select>
+          }
+        >
+          {driverOption && driver ? (
+            <>
+              <Chart option={driverOption} height={190} />
+              <p className="short-hide mt-1 text-[10px] text-[var(--text-muted)]">
+                R² {driver.r2.toFixed(2)} · n {driver.n} · {driver.period}
+              </p>
+            </>
+          ) : (
+            <div className="grid h-48 place-items-center text-sm text-[var(--text-muted)]">No overlapping data.</div>
+          )}
+        </SectionCard>
+
+        <SectionCard
+          title="Composition: what differentiates listings?"
+          info={CARD_INFO.marketPca}
+          description={pca ? `PCA of ${pca.n} current listings. Price per ft² is supplementary, not an input.` : "PCA of listing attributes; available after the listing crawl."}
+        >
+          {pcaView && pca ? (
+            <>
+              <Chart option={pcaView.biplotOption} height={190} />
+              <p className="short-hide mt-1 text-[10px] text-[var(--text-muted)]">
+                PC1 {((pca.explained[0] ?? 0) * 100).toFixed(0)}% · PC2 {((pca.explained[1] ?? 0) * 100).toFixed(0)}% · description of the current sample
+              </p>
+            </>
+          ) : (
+            <div className="grid h-36 place-items-center rounded-xl border border-dashed border-[var(--border)] text-xs text-[var(--text-muted)]">
+              PCA — awaiting crawl
+            </div>
+          )}
+        </SectionCard>
+      </div>
     </div>
   );
 }

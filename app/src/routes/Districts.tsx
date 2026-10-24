@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import Chart from "../components/Chart";
 import DistrictMap from "../components/DistrictMap";
+import { CARD_INFO } from "../data/cardInfo";
 import {
   ErrorCard,
   KpiCard,
@@ -239,7 +240,7 @@ export default function Districts() {
 
   const heatmapOption = {
     animation: false,
-    grid: { left: 92, right: 12, top: 12, bottom: 58 },
+    grid: { left: 92, right: 60, top: 2, bottom: 22 },
     tooltip: {
       position: "top",
       backgroundColor: "rgba(15,23,42,0.92)",
@@ -278,7 +279,7 @@ export default function Districts() {
       type: "category",
       inverse: true,
       data: view.orderedCodes.map((code) => view.districtNames.get(code)),
-      axisLabel: { color: "#64748b", fontSize: 9 },
+      axisLabel: { color: "#64748b", fontSize: 7, interval: 0 },
       axisTick: { show: false },
       axisLine: { show: false },
     },
@@ -286,12 +287,14 @@ export default function Districts() {
       min: Math.floor(heatMin / 1000) * 1000,
       max: Math.ceil(heatMax / 1000) * 1000,
       calculable: false,
-      orient: "horizontal",
-      left: "center",
-      bottom: 0,
-      itemWidth: 10,
-      itemHeight: 80,
-      textStyle: { color: "#64748b", fontSize: 9 },
+      orient: "vertical",
+      right: 6,
+      top: "middle",
+      itemWidth: 8,
+      itemHeight: 88,
+      text: [`${Math.ceil(heatMax / 1000)}k`, `${Math.floor(heatMin / 1000)}k`],
+      textGap: 4,
+      textStyle: { color: "#64748b", fontSize: 8 },
       inRange: { color: ["#f0fdfa", "#99f6e4", "#2dd4bf", "#0f766e", "#134e4a"] },
       formatter: (value: number) => `${Math.round(value / 1000)}k`,
     },
@@ -437,6 +440,124 @@ export default function Districts() {
     .slice()
     .sort((a, b) => b.volume - a.volume)
     .slice(0, 6);
+  const psfValues = topEstates
+    .map((estate) => estate.price_psf)
+    .filter((value): value is number => value !== null);
+  const psfMin = psfValues.length ? Math.min(...psfValues) : 0;
+  const psfMax = psfValues.length ? Math.max(...psfValues) : 1;
+  const estateColor = (psf: number | null) => {
+    const t = psf === null || psfMax === psfMin ? 0.5 : (psf - psfMin) / (psfMax - psfMin);
+    return `hsl(174 55% ${82 - t * 47}%)`;
+  };
+  const estateBarOption = {
+    animationDuration: 300,
+    grid: { left: 38, right: 8, top: 16, bottom: 48 },
+    tooltip: {
+      trigger: "item",
+      confine: true,
+      backgroundColor: "rgba(15,23,42,0.92)",
+      borderWidth: 0,
+      textStyle: { color: "#f8fafc", fontSize: 11 },
+      formatter: (params: { dataIndex: number }) => {
+        const estate = topEstates[params.dataIndex];
+        if (!estate) return "";
+        return `<strong>${estate.name}</strong><br/>${view.districtNames.get(estate.district_code) ?? ""}<br/>Volume: ${estate.volume}<br/>Sale $/ft²: ${fmtPsf(estate.price_psf)}`;
+      },
+    },
+    xAxis: {
+      type: "category",
+      data: topEstates.map((estate) => estate.name),
+      axisLabel: {
+        color: "#64748b",
+        fontSize: 8,
+        interval: 0,
+        rotate: 24,
+        formatter: (value: string) => (value.length > 16 ? `${value.slice(0, 15)}…` : value),
+      },
+      axisLine: { lineStyle: { color: "rgba(100,116,139,0.25)" } },
+      axisTick: { show: false },
+    },
+    yAxis: {
+      type: "value",
+      name: "Transactions",
+      nameTextStyle: { color: "#64748b", fontSize: 8 },
+      splitLine: { lineStyle: { color: "rgba(100,116,139,0.14)" } },
+      axisLabel: { color: "#64748b", fontSize: 8 },
+    },
+    series: [
+      {
+        type: "bar",
+        barMaxWidth: 28,
+        data: topEstates.map((estate) => ({
+          value: estate.volume,
+          itemStyle: { color: estateColor(estate.price_psf), borderRadius: [3, 3, 0, 0] },
+        })),
+        emphasis: { disabled: true },
+      },
+    ],
+  };
+
+  const regionByCode = new Map(data.districts.map((district) => [district.district_code, district.region]));
+  const regionNames = ["HK Island", "Kowloon", "New Territories"];
+  const regionQuarters = [...new Set(data.panel.filter((row) => row.quarter >= "2018-Q1").map((row) => row.quarter))].sort();
+  const regionSeries = regionNames.map((region) =>
+    regionQuarters.map((quarter) => {
+      const rows = data.panel.filter(
+        (row) =>
+          row.quarter === quarter &&
+          row.sale_psf !== null &&
+          regionByCode.get(row.district_code) === region,
+      );
+      const volume = rows.reduce((sum, row) => sum + row.volume, 0);
+      return volume
+        ? rows.reduce((sum, row) => sum + (row.sale_psf ?? 0) * row.volume, 0) / volume
+        : null;
+    }),
+  );
+  const regionTrendOption = {
+    animationDuration: 300,
+    grid: { left: 42, right: 10, top: 24, bottom: 28 },
+    tooltip: {
+      trigger: "axis",
+      backgroundColor: "rgba(15,23,42,0.92)",
+      borderWidth: 0,
+      textStyle: { color: "#f8fafc", fontSize: 11 },
+      valueFormatter: (value: number) => fmtPsf(value),
+    },
+    legend: {
+      top: 0,
+      right: 0,
+      icon: "roundRect",
+      itemWidth: 9,
+      itemHeight: 3,
+      textStyle: { color: "#64748b", fontSize: 8 },
+    },
+    xAxis: {
+      type: "category",
+      data: regionQuarters.map(quarterLabel),
+      boundaryGap: false,
+      axisLabel: { color: "#64748b", fontSize: 8, interval: 7 },
+      axisLine: { lineStyle: { color: "rgba(100,116,139,0.25)" } },
+      axisTick: { show: false },
+    },
+    yAxis: {
+      type: "value",
+      splitLine: { lineStyle: { color: "rgba(100,116,139,0.14)" } },
+      axisLabel: {
+        color: "#64748b",
+        fontSize: 8,
+        formatter: (value: number) => `${Math.round(value / 1000)}k`,
+      },
+    },
+    series: regionNames.map((region, index) => ({
+      name: region,
+      type: "line",
+      data: regionSeries[index],
+      showSymbol: false,
+      lineStyle: { width: 2, color: REGION_COLORS[region] ?? "#0f766e" },
+      itemStyle: { color: REGION_COLORS[region] ?? "#0f766e" },
+    })),
+  };
   const classRows = data.classes.filter(
     (row) => row.district_code === (selected ?? "HK") && row.tenure === "sale",
   );
@@ -459,7 +580,7 @@ export default function Districts() {
   const profileVolume = selected ? view.selectedRow?.volume ?? 0 : view.aggregate.volume;
 
   return (
-    <div className="space-y-6">
+    <div className="desktop-dashboard space-y-6">
       <PageHeader
         eyebrow="Space"
         title="District Explorer"
@@ -493,32 +614,37 @@ export default function Districts() {
         </select>
       </PageHeader>
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7">
+      <div className="kpi-grid grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7">
         <KpiCard
           label="Sale $/ft²"
+          info={CARD_INFO.districtPriceKpis}
           value={fmtKpiPsf(selected ? view.selectedRow?.sale_psf : view.aggregate.sale_psf)}
           note={selectedName ?? "median of districts"}
         />
         <KpiCard
           label="Rent $/ft²"
+          info={CARD_INFO.districtPriceKpis}
           value={fmtKpiPsf(selected ? view.selectedRow?.rent_psf : view.aggregate.rent_psf)}
           note={selected ? "modelled latest" : "median of districts"}
           accent="amber"
         />
         <KpiCard
           label="Gross yield"
+          info={CARD_INFO.districtPriceKpis}
           value={fmtPctPlain(selected ? view.selectedRow?.yield_pct : view.aggregate.yield_pct)}
           note="12 × rent / price"
           accent="blue"
         />
         <KpiCard
           label="Price YoY"
+          info={CARD_INFO.districtPriceKpis}
           value={fmtPct(selected ? view.selectedYoy : view.hkYoy)}
           note={selected ? "same district" : "median of districts"}
           accent="neutral"
         />
         <KpiCard
           label="Listings"
+          info={CARD_INFO.districtCountKpis}
           value={
             selected
               ? (view.selectedListings?.total.toLocaleString() ?? "—")
@@ -533,12 +659,14 @@ export default function Districts() {
         />
         <KpiCard
           label="Estates"
+          info={CARD_INFO.districtCountKpis}
           value={String(selected ? view.selectedRow?.n_estates ?? 0 : view.aggregate.n_estates)}
           note="in latest quarter"
           accent="neutral"
         />
         <KpiCard
           label="Transactions"
+          info={CARD_INFO.districtCountKpis}
           value={(selected ? view.selectedRow?.volume ?? 0 : view.aggregate.volume).toLocaleString()}
           note="latest quarter"
           accent="neutral"
@@ -549,6 +677,7 @@ export default function Districts() {
       <div className="grid gap-4 xl:grid-cols-2">
         <SectionCard
           title={selectedName ? `${selectedName} · ${selectedRegion}` : "18 districts"}
+          info={CARD_INFO.districtMap}
           description={`${metric === "sale_psf" ? "Sale price" : metric === "rent_psf" ? "Rent" : metric === "yield_pct" ? "Gross yield" : "Year-on-year price change"} in ${quarterLabel(view.activeQuarter)}. Click a district to cross-filter.`}
           action={
             selected ? (
@@ -569,6 +698,7 @@ export default function Districts() {
             onSelect={selectDistrict}
             diverging={metric === "sale_yoy"}
             formatValue={metricFormat(metric)}
+            height={220}
             metricLabel={
               metric === "sale_psf"
                 ? "Sale $/ft²"
@@ -583,6 +713,7 @@ export default function Districts() {
 
         <SectionCard
           title={selectedName ? `Profile · ${selectedName}` : "Hong Kong profile"}
+          info={CARD_INFO.districtProfile}
           description={`Coverage: ${profileEstates.toLocaleString()} estates and ${profileVolume.toLocaleString()} transactions in the latest quarter.`}
         >
           <div className="space-y-4">
@@ -601,39 +732,27 @@ export default function Districts() {
             </div>
 
             {!selected ? (
-              <p className="text-[10px] leading-relaxed text-[var(--text-muted)]">
+              <p className="short-hide text-[10px] leading-relaxed text-[var(--text-muted)]">
                 Headline Hong Kong figures are medians of the 18 district estimates; yields are gross.
               </p>
             ) : null}
 
             <div>
-              <h3 className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">
+              <h3 className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">
                 Top estates by volume
               </h3>
-              <ul className="mt-2 divide-y divide-[var(--border)] text-sm">
-                {topEstates.map((estate) => (
-                  <li key={estate.estate_id} className="flex items-center justify-between gap-3 py-1.5">
-                    <span className="truncate">
-                      {estate.name}
-                      {!selected ? (
-                        <span className="text-[var(--text-muted)]">
-                          {" "}· {view.districtNames.get(estate.district_code)}
-                        </span>
-                      ) : null}
-                    </span>
-                    <span className="shrink-0 tabular-nums text-[var(--text-muted)]">
-                      {fmtPsf(estate.price_psf)} · {estate.volume}
-                    </span>
-                  </li>
-                ))}
-                {!topEstates.length ? (
-                  <li className="py-2 text-[var(--text-muted)]">No estate detail yet.</li>
-                ) : null}
-              </ul>
+              {topEstates.length ? (
+                <Chart option={estateBarOption} height="var(--estate-chart-h, 160px)" />
+              ) : (
+                <div className="py-2 text-xs text-[var(--text-muted)]">No estate detail yet.</div>
+              )}
+              <p className="short-hide text-[9px] text-[var(--text-muted)]">
+                Bar height = transactions · colour = Sale $/ft² · hover for details
+              </p>
             </div>
 
             {classRows.length ? (
-              <div>
+              <div className="profile-classes">
                 <h3 className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">
                   Sale $/ft² by class
                 </h3>
@@ -649,7 +768,7 @@ export default function Districts() {
             ) : null}
 
             {selected && affordability.length ? (
-              <div>
+              <div className="short-hide">
                 <h3 className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">
                   Affordability, latest income year
                 </h3>
@@ -660,7 +779,7 @@ export default function Districts() {
                 </p>
               </div>
             ) : !selected && hkAffordability.length ? (
-              <div>
+              <div className="short-hide">
                 <h3 className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">
                   Affordability, latest income year
                 </h3>
@@ -674,9 +793,10 @@ export default function Districts() {
         </SectionCard>
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-2">
+      <div className="grid gap-4 xl:grid-cols-[5fr_4fr_3fr]">
         <SectionCard
           title={isClassHeatmap ? "District × class heatmap" : "District × quarter heatmap"}
+          info={CARD_INFO.districtHeatmap}
           description={
             isClassHeatmap
               ? "Median sale $/ft² of current listings by RVD class (A–E). Click a cell to select the district."
@@ -695,7 +815,7 @@ export default function Districts() {
         >
           <Chart
             option={heatmapOption}
-            height={420}
+            height="var(--heatmap-h, 180px)"
             onEvents={{
               click: (params) => {
                 const value = (params as { value?: [number, number, number] }).value;
@@ -709,6 +829,7 @@ export default function Districts() {
 
         <SectionCard
           title={scatterMode === "age" ? "Building age and price" : "Accessibility and price"}
+          info={CARD_INFO.districtScatter}
           description={
             scatterMode === "age"
               ? "Estate-level sale $/ft² against building age; bubble size is transaction volume. MTR walk time is shown in the tooltip."
@@ -726,23 +847,25 @@ export default function Districts() {
           }
         >
           {scatterData.length ? (
-            <Chart option={scatterOption} height={420} />
+            <Chart option={scatterOption} height={180} />
           ) : (
-            <div className="grid h-[420px] place-items-center text-sm text-[var(--text-muted)]">
+            <div className="grid h-[190px] place-items-center text-sm text-[var(--text-muted)]">
               No estates with both a price and an MTR walk time yet.
             </div>
           )}
         </SectionCard>
+
+        <SectionCard
+          title="Sale $/ft² by region"
+          info={CARD_INFO.districtRegion}
+          description="Volume-weighted district average, 2018 Q1–2026 Q4."
+        >
+          <Chart option={regionTrendOption} height={180} />
+        </SectionCard>
       </div>
 
       <SectionCard
-        title="Rank slope, 2018 → latest"
-        description={`Rank by sale $/ft² (1 = most expensive) for every quarter from ${quarterLabel(view.slopeQuarters[0])} to ${quarterLabel(view.slopeQuarters[view.slopeQuarters.length - 1])}. The latest order is named on the right; the selected district is highlighted.`}
-      >
-        <Chart option={slopeOption} height={420} />
-      </SectionCard>
-
-      <SectionCard
+        className="coverage-card"
         title="Coverage note"
         description="District estimates are built bottom-up from estate transaction series. Sparse districts are suppressed rather than shown as zero."
       >

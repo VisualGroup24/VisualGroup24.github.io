@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>HK Housing Atlas — one-screen layout mockups</title>
+<style>
+  @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #d8d6cf; font-family: Inter, "Segoe UI", sans-serif; color: #0f172a; }
+  .screen {
+    position: relative; width: 1440px; height: 900px; margin: 26px auto; padding: 0 20px 14px;
+    background: #f7f6f2; overflow: hidden; display: flex; flex-direction: column; gap: 8px;
+    box-shadow: 0 12px 40px rgba(15,23,42,.16);
+  }
+  .topbar { height: 42px; flex: none; display: flex; align-items: center; gap: 18px; border-bottom: 1px solid #e2e0d8; }
+  .logo { width: 28px; height: 28px; border-radius: 7px; background: #0f766e; color: #fff; display: grid; place-items: center; font-size: 10px; font-weight: 700; }
+  .brand { font-size: 12px; font-weight: 650; line-height: 1.1; }
+  .brand small { display: block; font-size: 8px; color: #64748b; font-weight: 500; margin-top: 2px; }
+  .nav { display: flex; gap: 2px; margin-left: 10px; }
+  .nav span { font-size: 10px; color: #64748b; padding: 5px 10px; border-radius: 999px; }
+  .nav .on { background: #0f766e; color: #fff; }
+  .top-right { margin-left: auto; display: flex; gap: 6px; align-items: center; }
+  .pill { border: 1px solid #e2e0d8; border-radius: 999px; padding: 4px 9px; font-size: 9px; color: #64748b; background: #fff; white-space: nowrap; }
+  .pill.on { background: #0f766e; color: #fff; border-color: #0f766e; }
+  .pagehead { height: 54px; flex: none; display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; }
+  .eyebrow { font-size: 8px; letter-spacing: .16em; text-transform: uppercase; color: #0f766e; font-weight: 700; }
+  .pagehead h1 { margin: 3px 0 0; font-size: 21px; letter-spacing: -.02em; line-height: 1; }
+  .pagehead .q { margin-left: 10px; font-size: 10px; color: #64748b; font-weight: 400; letter-spacing: 0; }
+  .filters { display: flex; align-items: center; gap: 5px; padding-bottom: 2px; }
+  .kpis { height: 58px; flex: none; display: grid; gap: 7px; }
+  .kpi { background: #fff; border: 1px solid #e2e0d8; border-radius: 8px; padding: 7px 9px; border-left: 3px solid #0f766e; overflow: hidden; }
+  .kpi .l { font-size: 7.5px; letter-spacing: .11em; text-transform: uppercase; color: #64748b; font-weight: 700; white-space: nowrap; }
+  .kpi .v { font-size: 15px; font-weight: 650; letter-spacing: -.01em; margin-top: 2px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .kpi .n { font-size: 7.5px; color: #64748b; margin-top: 1px; white-space: nowrap; }
+  .kpi.amber { border-left-color: #b45309; }
+  .kpi.blue { border-left-color: #2563eb; }
+  .kpi.slate { border-left-color: #94a3b8; }
+  .grid { flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(12, 1fr); gap: 10px; }
+  .market-grid { grid-template-rows: 420px 278px; }
+  .districts-grid { grid-template-rows: 432px 266px; }
+  .afford-grid { grid-template-rows: 402px 296px; }
+  .card { min-height: 0; background: #fff; border: 1px solid #e2e0d8; border-radius: 11px; padding: 10px 11px; display: flex; flex-direction: column; overflow: hidden; }
+  .card-h { flex: none; display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+  .card-h h2 { margin: 0; font-size: 11px; line-height: 1.25; }
+  .card-h .sub { margin-top: 2px; font-size: 8px; color: #64748b; line-height: 1.3; }
+  .card-h .tools { display: flex; gap: 3px; align-items: center; flex: none; }
+  .seg { display: inline-flex; border: 1px solid #e2e0d8; border-radius: 999px; padding: 1px; background: #fbfaf7; }
+  .seg span { font-size: 7.5px; padding: 2px 6px; border-radius: 999px; color: #64748b; }
+  .seg .on { background: #0f766e; color: #fff; }
+  .chart { flex: 1; min-height: 0; margin-top: 7px; position: relative; }
+  .plot { width: 100%; height: 100%; display: block; }
+  .axis { stroke: rgba(100,116,139,.24); stroke-width: 1; }
+  .gl { stroke: rgba(100,116,139,.13); stroke-width: 1; }
+  .lbl { font-size: 7px; fill: #64748b; }
+  .teal { stroke: #0f766e; fill: none; stroke-width: 2; }
+  .amberline { stroke: #b45309; fill: none; stroke-width: 2; }
+  .blueline { stroke: #2563eb; fill: none; stroke-width: 1.8; }
+  .legend { display: flex; gap: 10px; align-items: center; font-size: 8px; color: #64748b; padding-top: 4px; flex: none; }
+  .dot { width: 7px; height: 3px; border-radius: 2px; display: inline-block; margin-right: 3px; }
+  .map { flex: 1; min-height: 0; margin-top: 7px; border-radius: 8px; overflow: hidden; background: #e9ece8; position: relative; }
+  .map svg { width: 100%; height: 100%; display: block; }
+  .map .maplabel { position: absolute; left: 10px; bottom: 8px; background: rgba(255,255,255,.9); border-radius: 4px; padding: 2px 5px; font-size: 7px; color: #64748b; }
+  .heat { display: grid; gap: 1px; margin-top: 7px; flex: 1; min-height: 0; }
+  .heat i { border-radius: 1px; display: block; }
+  .heatlabels { display: grid; grid-template-columns: 72px 1fr; gap: 4px; font-size: 7px; color: #64748b; }
+  .heatlabels .names { display: grid; align-content: space-between; }
+  .legendbar { height: 6px; border-radius: 3px; background: linear-gradient(90deg,#f0fdfa,#99f6e4,#2dd4bf,#0f766e,#134e4a); margin-top: 5px; }
+  .profile-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 7px; }
+  .stat { background: #f4f3ee; border-radius: 6px; padding: 5px 6px; }
+  .stat b { display: block; font-size: 11px; font-weight: 650; font-variant-numeric: tabular-nums; margin-top: 1px; }
+  .stat span { font-size: 7px; color: #64748b; text-transform: uppercase; letter-spacing: .08em; }
+  .list { margin-top: 6px; font-size: 8px; }
+  .list .row { display: flex; justify-content: space-between; gap: 6px; padding: 3px 0; border-bottom: 1px solid #f0eee8; }
+  .list .row:last-child { border-bottom: 0; }
+  .list .muted { color: #64748b; font-variant-numeric: tabular-nums; }
+  .chips { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 5px; }
+  .chip { border: 1px solid #e2e0d8; border-radius: 999px; padding: 2px 5px; font-size: 7px; color: #475569; white-space: nowrap; }
+  .affordline { margin-top: 6px; font-size: 7.5px; color: #64748b; line-height: 1.4; }
+  .estate-bars { display: flex; align-items: flex-end; gap: 7px; height: 190px; margin-top: 6px; padding: 0 2px 16px; border-bottom: 1px solid #e2e0d8; position: relative; }
+  .ebar { flex: 1; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; position: relative; }
+  .ebar .v { font-size: 8px; color: #475569; margin-bottom: 2px; }
+  .ebar .b { width: 70%; border-radius: 3px 3px 0 0; }
+  .ebar .x { position: absolute; top: calc(100% + 2px); left: 50%; transform: translateX(-50%); font-size: 7px; color: #64748b; white-space: nowrap; }
+  .callout { position: absolute; right: 0; top: 0; background: rgba(15,23,42,.92); color: #f8fafc; border-radius: 5px; padding: 5px 6px; font-size: 7px; line-height: 1.45; width: 118px; z-index: 2; }
+  .pricelegend { display: flex; align-items: center; gap: 4px; font-size: 6.5px; color: #64748b; margin-top: 4px; }
+  .pricelegend .bar { width: 70px; height: 5px; border-radius: 3px; background: linear-gradient(90deg,#ccfbf1,#5eead4,#2dd4bf,#0f766e); }
+  .slider { display: flex; align-items: center; gap: 6px; font-size: 8px; color: #64748b; }
+  .track { width: 90px; height: 3px; border-radius: 2px; background: #e2e0d8; position: relative; }
+  .track:after { content: ""; position: absolute; left: 0; top: 0; height: 3px; width: 55%; background: #0f766e; border-radius: 2px; }
+  .track i { position: absolute; left: 55%; top: -3px; width: 9px; height: 9px; border-radius: 50%; background: #0f766e; border: 2px solid #fff; box-shadow: 0 0 0 1px #0f766e; }
+  .sparkrow { display: grid; grid-template-columns: repeat(5,1fr); gap: 4px; margin-top: 5px; flex: 1; }
+  .spark { border: 1px solid #f0eee8; border-radius: 5px; padding: 3px; min-height: 0; }
+  .spark .cl { font-size: 7px; color: #64748b; }
+  .spark svg { width: 100%; height: 38px; display: block; }
+  .bars { display: flex; align-items: flex-end; gap: 3px; height: 100%; }
+  .bars i { flex: 1; background: #0f766e; border-radius: 2px 2px 0 0; opacity: .82; }
+  .mini-table { font-size: 8px; margin-top: 4px; }
+  .mini-table .tr { display: grid; grid-template-columns: 1fr 44px 34px; gap: 4px; padding: 3px 0; border-bottom: 1px solid #f0eee8; }
+  .mini-table .tr:last-child { border-bottom: 0; }
+  .mini-table .tr.sel { background: #f0fdfa; border-radius: 3px; }
+  .mini-table .tr.sel span:first-child { color: #0f766e; font-weight: 600; }
+  .mini-table .th { color: #64748b; font-size: 7px; text-transform: uppercase; letter-spacing: .08em; }
+  .mini-table .num { text-align: right; font-variant-numeric: tabular-nums; color: #475569; }
+  .ranknames { font-size: 7px; color: #64748b; display: grid; align-content: space-between; height: 100%; }
+  .ranknames b { color: #0f172a; font-weight: 650; }
+  .badge { position: absolute; right: 12px; top: 8px; font-size: 7px; letter-spacing: .12em; text-transform: uppercase; color: #94a3b8; }
+  .note { font-size: 7px; color: #94a3b8; padding-top: 4px; flex: none; }
+  .rowspan { display: flex; flex-direction: column; gap: 10px; min-height: 0; }
+  .rowspan .card { flex: 1; }
+  .split { display: grid; gap: 10px; min-height: 0; }
+  .overview-grid { grid-template-rows: 640px; }
+  .tile { border: 1px solid #e2e0d8; border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 4px; }
+  .tile h3 { margin: 0; font-size: 12px; }
+  .tile p { margin: 0; font-size: 8.5px; color: #64748b; line-height: 1.45; }
+  .tile .go { margin-top: auto; font-size: 8px; color: #0f766e; font-weight: 600; }
+  .tile .preview { flex: 1; min-height: 0; margin-top: 6px; padding-top: 6px; border-top: 1px solid #f0eee8; }
+  .tile .preview svg { width: 100%; height: 100%; display: block; }
+  .tiles { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; flex: 1; }
+  .glance { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
+  .glance .stat b { font-size: 17px; }
+  .footerline { font-size: 7px; color: #94a3b8; margin-top: 6px; }
+</style>
+</head>
+<body>
+
+<!-- ============================ MARKET ============================ -->
+<section class="screen" id="market">
+  <div class="badge">MOCKUP · 1440×900</div>
+  <div class="topbar">
+    <div class="logo">HK</div>
+    <div class="brand">Housing Atlas<small>Private housing · 18 districts</small></div>
+    <div class="nav"><span>Overview</span><span class="on">Market Trends</span><span>District Explorer</span><span>Affordability</span></div>
+    <div class="top-right"><span class="pill">Data as of Oct 2026</span><span class="pill">Dark</span></div>
+  </div>
+  <div class="pagehead">
+    <div>
+      <div class="eyebrow">Time</div>
+      <h1>Market Trends <span class="q">How have sale prices and rents moved, and what macro forces coincide with the turns?</span></h1>
+    </div>
+    <div class="filters">
+      <span class="pill">Class: ALL</span><span class="pill">1993–2026</span><span class="pill on">Sale</span>
+    </div>
+  </div>
+  <div class="kpis" style="grid-template-columns:repeat(6,1fr)">
+    <div class="kpi"><div class="l">Price index</div><div class="v">88.8</div><div class="n">+5.3% YoY</div></div>
+    <div class="kpi amber"><div class="l">Rent index</div><div class="v">109.2</div><div class="n">+8.3% YoY</div></div>
+    <div class="kpi blue"><div class="l">Gross yield</div><div class="v">2.9%</div><div class="n">RVD private domestic</div></div>
+    <div class="kpi"><div class="l">Mortgage rate</div><div class="v">2.90%</div><div class="n">1M HIBOR + 1.3pp</div></div>
+    <div class="kpi slate"><div class="l">Monthly sales</div><div class="v">4,019</div><div class="n">Aug 2026</div></div>
+    <div class="kpi slate"><div class="l">Completions</div><div class="v">2,900</div><div class="n">2026 YTD</div></div>
+  </div>
+
+  <div class="grid market-grid">
+    <div class="card" style="grid-column:span 8">
+      <div class="card-h">
+        <div><h2>Price and rental indices</h2><div class="sub">RVD private domestic indices, rebased to 2019 = 100 · classes A–E</div></div>
+        <div class="tools"><span class="seg"><span class="on">Index</span><span>YoY</span></span></div>
+      </div>
+      <div class="chart">
+        <svg class="plot" viewBox="0 0 800 300" preserveAspectRatio="none">
+          <g class="gl"><line x1="36" y1="30" x2="780" y2="30"/><line x1="36" y1="90" x2="780" y2="90"/><line x1="36" y1="150" x2="780" y2="150"/><line x1="36" y1="210" x2="780" y2="210"/><line x1="36" y1="270" x2="780" y2="270"/></g>
+          <line class="axis" x1="36" y1="270" x2="780" y2="270"/>
+          <polyline class="teal" points="36,240 80,238 124,230 168,232 212,215 256,222 300,200 344,180 388,150 432,132 476,120 520,110 564,122 608,140 652,138 696,150 740,142 780,130"/>
+          <polyline class="amberline" points="36,250 80,248 124,246 168,245 212,240 256,238 300,232 344,225 388,210 432,196 476,188 520,180 564,176 608,170 652,168 696,162 740,158 780,150"/>
+          <g class="lbl"><text x="780" y="126" text-anchor="end" fill="#0f766e">Price</text><text x="780" y="146" text-anchor="end" fill="#b45309">Rent</text></g>
+          <g class="lbl"><text x="36" y="292">1993</text><text x="210" y="292">2001</text><text x="390" y="292">2009</text><text x="570" y="292">2017</text><text x="780" y="292" text-anchor="end">2026</text></g>
+          <g fill="rgba(180,83,9,.08)"><rect x="476" y="30" width="18" height="240"/><rect x="608" y="30" width="14" height="240"/></g>
+        </svg>
+      </div>
+      <div class="legend"><span><i class="dot" style="background:#0f766e"></i>Price index</span><span><i class="dot" style="background:#b45309"></i>Rental index</span><span style="margin-left:auto">Shaded bands: policy / market events</span></div>
+    </div>
+
+    <div class="card" style="grid-column:span 4">
+      <div class="card-h">
+        <div><h2>Rent–price dynamics</h2><div class="sub">Monthly log changes · OLS fit</div></div>
+        <span class="seg"><span class="on">Co-movement</span><span>Lead / lag</span></span>
+      </div>
+      <div class="chart">
+        <svg class="plot" viewBox="0 0 330 300" preserveAspectRatio="none">
+          <g class="gl"><line x1="22" y1="30" x2="320" y2="30"/><line x1="22" y1="100" x2="320" y2="100"/><line x1="22" y1="170" x2="320" y2="170"/><line x1="22" y1="240" x2="320" y2="240"/></g>
+          <line class="axis" x1="22" y1="240" x2="320" y2="240"/><line class="axis" x1="22" y1="20" x2="22" y2="240"/>
+          <g fill="#0f766e" opacity=".55">
+            <circle cx="58" cy="170" r="3"/><circle cx="76" cy="158" r="3"/><circle cx="94" cy="146" r="3"/><circle cx="112" cy="190" r="3"/><circle cx="130" cy="132" r="3"/><circle cx="148" cy="152" r="3"/><circle cx="166" cy="120" r="3"/><circle cx="184" cy="164" r="3"/><circle cx="202" cy="136" r="3"/><circle cx="220" cy="104" r="3"/><circle cx="238" cy="150" r="3"/><circle cx="256" cy="122" r="3"/><circle cx="274" cy="92" r="3"/><circle cx="292" cy="116" r="3"/><circle cx="110" cy="110" r="3"/><circle cx="210" cy="180" r="3"/><circle cx="160" cy="200" r="3"/><circle cx="250" cy="80" r="3"/>
+          </g>
+          <line x1="34" y1="236" x2="312" y2="58" stroke="#b45309" stroke-width="1.6"/>
+          <g class="lbl"><text x="22" y="264">−5%</text><text x="320" y="264" text-anchor="end">+5%</text><text x="22" y="282">Rent change at t + lag</text><text x="320" y="282" text-anchor="end">Price change at t</text></g>
+        </svg>
+      </div>
+      <div class="legend"><span><i class="dot" style="background:#0f766e"></i>Monthly observation</span><span><i class="dot" style="background:#b45309"></i>OLS fit</span></div>
+      <div class="note">R² 0.38 · strongest co-movement at lag +9 months · switch to “Lead / lag” for the full correlation profile.</div>
+    </div>
+
+    <div class="card" style="grid-column:span 4; grid-row:2">
+      <div class="card-h">
+        <div><h2>Year-on-year change</h2><div class="sub">Price and rent growth · 2018–2026</div></div>
+        <span class="pill">Class B ▾</span>
+      </div>
+      <div class="chart">
+        <svg class="plot" viewBox="0 0 330 190" preserveAspectRatio="none">
+          <g class="gl"><line x1="30" y1="24" x2="320" y2="24"/><line x1="30" y1="66" x2="320" y2="66"/><line x1="30" y1="108" x2="320" y2="108"/><line x1="30" y1="150" x2="320" y2="150"/></g>
+          <line class="axis" x1="30" y1="108" x2="320" y2="108"/>
+          <polyline class="teal" points="30,92 58,84 86,96 114,78 142,58 170,66 198,48 226,40 254,52 282,44 320,36"/>
+          <polyline class="amberline" points="30,102 58,98 86,92 114,88 142,76 170,80 198,70 226,64 254,60 282,54 320,48"/>
+          <g class="lbl"><text x="2" y="28">+15%</text><text x="2" y="112">0</text><text x="2" y="154">−15%</text><text x="30" y="178">2018</text><text x="320" y="178" text-anchor="end">2026</text></g>
+        </svg>
+      </div>
+      <div class="legend"><span><i class="dot" style="background:#0f766e"></i>Price YoY</span><span><i class="dot" style="background:#b45309"></i>Rent YoY</span><span style="margin-left:auto">Class A–E selector</span></div>
+    </div>
+
+    <div class="card" style="grid-column:span 4; grid-row:2">
+      <div class="card-h"><div><h2>What moves with prices?</h2><div class="sub">Bivariate association with the price index</div></div><span class="pill">Mortgage rate ▾</span></div>
+      <div class="chart" style="margin-top:6px">
+        <svg class="plot" viewBox="0 0 330 215" preserveAspectRatio="none">
+          <g class="gl"><line x1="28" y1="26" x2="320" y2="26"/><line x1="28" y1="86" x2="320" y2="86"/><line x1="28" y1="146" x2="320" y2="146"/><line x1="28" y1="196" x2="320" y2="196"/></g>
+          <line class="axis" x1="28" y1="196" x2="320" y2="196"/><line class="axis" x1="28" y1="18" x2="28" y2="196"/>
+          <g fill="#0f766e" opacity=".55"><circle cx="52" cy="170" r="3"/><circle cx="66" cy="160" r="3"/><circle cx="82" cy="150" r="3"/><circle cx="96" cy="158" r="3"/><circle cx="112" cy="138" r="3"/><circle cx="128" cy="144" r="3"/><circle cx="144" cy="126" r="3"/><circle cx="160" cy="134" r="3"/><circle cx="176" cy="112" r="3"/><circle cx="192" cy="120" r="3"/><circle cx="208" cy="98" r="3"/><circle cx="224" cy="106" r="3"/><circle cx="240" cy="84" r="3"/><circle cx="256" cy="92" r="3"/><circle cx="272" cy="70" r="3"/><circle cx="288" cy="78" r="3"/><circle cx="304" cy="56" r="3"/></g>
+          <line x1="38" y1="184" x2="312" y2="48" stroke="#b45309" stroke-width="1.6"/>
+          <g class="lbl"><text x="28" y="12">Price index</text><text x="2" y="30">5%</text><text x="2" y="198">2%</text><text x="174" y="212" text-anchor="middle">Mortgage rate (%)</text></g>
+        </svg>
+      </div>
+      <div class="note">R² 0.51 · n = 362 · association, not causal · expand full panel →</div>
+    </div>
+
+    <div class="card" style="grid-column:span 4; grid-row:2">
+      <div class="card-h"><div><h2>Composition: what differentiates listings?</h2><div class="sub">PCA of 13,431 current listings · price/ft² is supplementary</div></div></div>
+      <div class="chart">
+        <svg class="plot" viewBox="0 0 330 130" preserveAspectRatio="none">
+          <line class="axis" x1="22" y1="110" x2="320" y2="110"/><line class="axis" x1="22" y1="14" x2="22" y2="110"/>
+          <g fill="#0f766e" opacity=".45"><circle cx="70" cy="82" r="2"/><circle cx="88" cy="70" r="2"/><circle cx="105" cy="88" r="2"/><circle cx="125" cy="60" r="2"/><circle cx="145" cy="74" r="2"/><circle cx="165" cy="55" r="2"/><circle cx="185" cy="68" r="2"/><circle cx="205" cy="48" r="2"/><circle cx="225" cy="62" r="2"/><circle cx="245" cy="42" r="2"/><circle cx="265" cy="58" r="2"/><circle cx="285" cy="38" r="2"/></g>
+          <line x1="22" y1="110" x2="90" y2="20" stroke="#b45309" stroke-width="1.4"/><line x1="22" y1="110" x2="170" y2="50" stroke="#2563eb" stroke-width="1.4"/>
+          <g class="lbl"><text x="22" y="126">PC1 (34%)</text><text x="320" y="126" text-anchor="end">PC2 (17%)</text></g>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ DISTRICTS ============================ -->
+<section class="screen" id="districts">
+  <div class="badge">MOCKUP · 1440×900</div>
+  <div class="topbar">
+    <div class="logo">HK</div>
+    <div class="brand">Housing Atlas<small>Private housing · 18 districts</small></div>
+    <div class="nav"><span>Overview</span><span>Market Trends</span><span class="on">District Explorer</span><span>Affordability</span></div>
+    <div class="top-right"><span class="pill">Data as of Oct 2026</span><span class="pill">Dark</span></div>
+  </div>
+  <div class="pagehead">
+    <div>
+      <div class="eyebrow">Space</div>
+      <h1>District Explorer <span class="q">Where is housing most expensive, and are the gaps between districts widening?</span></h1>
+    </div>
+    <div class="filters">
+      <span class="seg"><span class="on">Sale $/ft²</span><span>Rent</span><span>Yield</span><span>YoY</span></span><span class="pill">2026 Q4</span>
+    </div>
+  </div>
+  <div class="kpis" style="grid-template-columns:repeat(7,1fr)">
+    <div class="kpi"><div class="l">Sale $/ft²</div><div class="v">HK$13,778</div><div class="n">median of districts</div></div>
+    <div class="kpi amber"><div class="l">Rent $/ft²</div><div class="v">HK$46</div><div class="n">median of districts</div></div>
+    <div class="kpi blue"><div class="l">Gross yield</div><div class="v">3.8%</div><div class="n">12 × rent / price</div></div>
+    <div class="kpi"><div class="l">Price YoY</div><div class="v">+11.4%</div><div class="n">median of districts</div></div>
+    <div class="kpi slate"><div class="l">Listings</div><div class="v">13,962</div><div class="n">current snapshot</div></div>
+    <div class="kpi slate"><div class="l">Estates</div><div class="v">1,337</div><div class="n">latest quarter</div></div>
+    <div class="kpi slate"><div class="l">Transactions</div><div class="v">7,442</div><div class="n">latest quarter</div></div>
+  </div>
+
+  <div class="grid districts-grid">
+    <div class="card" style="grid-column:span 7">
+      <div class="card-h"><div><h2>18 districts</h2><div class="sub">Sale price in 2026 Q4 · click a district to cross-filter</div></div><div class="tools"><span class="pill">Map</span><span class="pill">Heatmap</span></div></div>
+      <div class="map">
+        <svg viewBox="0 0 700 340" preserveAspectRatio="none">
+          <rect width="700" height="340" fill="#e7eae6"/>
+          <path d="M60 250 L110 190 L170 170 L220 120 L300 100 L360 120 L420 90 L500 120 L560 170 L620 190 L600 270 L500 300 L400 290 L300 310 L200 290 Z" fill="#f4f7f3" stroke="#cbd5e1"/>
+          <path d="M80 240 L150 200 L210 210 L250 180 L310 190 L330 240 L280 280 L180 290 L120 270 Z" fill="#99f6e4"/>
+          <path d="M340 200 L390 170 L450 180 L480 230 L440 270 L370 280 L330 250 Z" fill="#2dd4bf"/>
+          <path d="M470 160 L530 140 L590 170 L620 210 L580 250 L520 250 L490 210 Z" fill="#0f766e" opacity=".85"/>
+          <path d="M250 120 L310 100 L360 120 L340 160 L280 160 Z" fill="#ccfbf1"/>
+          <path d="M170 170 L220 130 L260 150 L240 190 L190 200 Z" fill="#5eead4"/>
+          <text x="120" y="330" font-size="7" fill="#64748b">N</text>
+          <text x="250" y="255" font-size="7" fill="#0f766e">NT</text>
+          <text x="400" y="220" font-size="7" fill="#fff">KLN</text>
+          <text x="535" y="205" font-size="7" fill="#fff">HKI</text>
+        </svg>
+        <div class="maplabel">HK$9,659–HK$22,350 / ft² · grey = insufficient data</div>
+      </div>
+    </div>
+
+    <div class="card" style="grid-column:span 5">
+      <div class="card-h"><div><h2>Hong Kong profile</h2><div class="sub">1,337 estates · 7,442 transactions in 2026 Q4</div></div><span class="pill">All districts</span></div>
+      <div class="profile-stats" style="grid-template-columns:repeat(4,1fr)">
+        <div class="stat"><span>Sale $/ft²</span><b>HK$13,778</b></div>
+        <div class="stat"><span>Rent $/ft²</span><b>HK$46</b></div>
+        <div class="stat"><span>Gross yield</span><b>3.8%</b></div>
+        <div class="stat"><span>Price YoY</span><b>+11.4%</b></div>
+      </div>
+      <div class="note" style="padding-top:5px">Top estates by volume</div>
+      <div class="estate-bars">
+        <div class="ebar"><span class="v">75</span><i class="b" style="height:100%;background:#99f6e4"></i><span class="x">Kingswood Villas</span></div>
+        <div class="ebar"><span class="v">66</span><i class="b" style="height:88%;background:#5eead4"></i><span class="x">Mei Foo Sun Chuen</span></div>
+        <div class="ebar"><span class="v">57</span><i class="b" style="height:76%;background:#0f766e"></i><span class="x">TaiKoo Shing</span></div>
+        <div class="ebar"><span class="v">57</span><i class="b" style="height:76%;background:#2dd4bf"></i><span class="x">Centra Horizon</span></div>
+        <div class="ebar"><span class="v">55</span><i class="b" style="height:73%;background:#2dd4bf"></i><span class="x">Whampoa Garden</span></div>
+        <div class="ebar"><span class="v">55</span><i class="b" style="height:73%;background:#5eead4"></i><span class="x">City One Shatin</span></div>
+      </div>
+      <div class="pricelegend"><span>8.5k</span><div class="bar"></div><span>17.3k</span><span style="margin-left:auto">colour = Sale $/ft²</span></div>
+      <div class="note" style="padding-top:2px">Hover a bar for estate, transactions and Sale $/ft².</div>
+      <div class="note" style="padding-top:4px">Sale $/ft² by class</div>
+      <div class="chips" style="margin-top:2px"><span class="chip">A 18,883</span><span class="chip">B 17,885</span><span class="chip">C 24,195</span><span class="chip">D 23,646</span><span class="chip">E 28,249</span></div>
+      <div class="affordline">Affordability: PTI 12.0× · RTI 0.51 · median of 18 districts</div>
+      <div class="affordline">Coverage: 4,709 estates · 13,962 listings · 18/18 districts</div>
+      <div style="margin-top:auto" class="note">Select a district on the map or heatmap to replace this with its profile.</div>
+    </div>
+
+    <div class="card" style="grid-column:1 / span 5; grid-row:2">
+      <div class="card-h"><div><h2>District × quarter heatmap</h2><div class="sub">Sale $/ft² · 2018 Q1–2026 Q4</div></div><span class="seg"><span class="on">Time</span><span>Class</span></span></div>
+      <div class="heatlabels" style="margin-top:6px">
+        <div class="names"><span>Central &amp; Western</span><span>Eastern</span><span>Southern</span><span>Wan Chai</span><span>Kowloon City</span><span>Kwun Tong</span><span>Sham Shui Po</span><span>Wong Tai Sin</span><span>Yau Tsim Mong</span><span>Islands</span><span>Kwai Tsing</span><span>North</span><span>Sai Kung</span><span>Sha Tin</span><span>Tai Po</span><span>Tsuen Wan</span><span>Tuen Mun</span><span>Yuen Long</span></div>
+        <div>
+          <div class="heat" id="heat1"></div>
+          <div class="legendbar"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="grid-column:10 / span 3; grid-row:2">
+      <div class="card-h"><div><h2>Sale $/ft² by region</h2><div class="sub">Actual transacted price · 2018 Q1–2026 Q4</div></div><span class="pill">Volume-weighted</span></div>
+      <div class="chart" style="margin-top:5px">
+        <svg class="plot" viewBox="0 0 330 175" preserveAspectRatio="none">
+          <g class="gl"><line x1="30" y1="26" x2="320" y2="26"/><line x1="30" y1="74" x2="320" y2="74"/><line x1="30" y1="122" x2="320" y2="122"/></g>
+          <line class="axis" x1="30" y1="146" x2="320" y2="146"/>
+          <polyline points="30,84 75,73 120,62 165,52 210,74 255,93 300,62" fill="none" stroke="#2563eb" stroke-width="2"/>
+          <polyline points="30,89 75,67 120,47 165,66 210,84 255,94 300,82" fill="none" stroke="#d97706" stroke-width="2"/>
+          <polyline points="30,118 75,111 120,103 165,127 210,125 255,122 300,130" fill="none" stroke="#15803d" stroke-width="2"/>
+          <g class="lbl"><text x="2" y="30">20k</text><text x="2" y="78">15k</text><text x="2" y="126">10k</text><text x="30" y="164">2018</text><text x="120" y="164">2021</text><text x="210" y="164">2024</text><text x="320" y="164" text-anchor="end">2026</text></g>
+        </svg>
+      </div>
+      <div class="legend" style="font-size:6.5px; gap:6px"><span><i class="dot" style="background:#2563eb"></i>HK Island 18.8k</span><span><i class="dot" style="background:#d97706"></i>Kowloon 16.8k</span><span><i class="dot" style="background:#15803d"></i>N.T. 12.0k</span></div>
+      <div class="note">Latest values shown · hover for quarter</div>
+    </div>
+
+    <div class="card" style="grid-column:6 / span 4; grid-row:2">
+      <div class="card-h"><div><h2>Age &amp; price</h2><div class="sub">Estates · bubble = volume</div></div><span class="seg"><span class="on">Age</span><span>MTR</span></span></div>
+      <div class="chart">
+        <svg class="plot" viewBox="0 0 220 150" preserveAspectRatio="none">
+          <g class="gl"><line x1="22" y1="20" x2="212" y2="20"/><line x1="22" y1="70" x2="212" y2="70"/><line x1="22" y1="120" x2="212" y2="120"/></g>
+          <line class="axis" x1="22" y1="120" x2="212" y2="120"/><line class="axis" x1="22" y1="15" x2="22" y2="120"/>
+          <g fill="#0f766e" opacity=".55"><circle cx="45" cy="65" r="3"/><circle cx="62" cy="80" r="4"/><circle cx="80" cy="55" r="3"/><circle cx="98" cy="90" r="5"/><circle cx="116" cy="70" r="3"/><circle cx="134" cy="95" r="4"/><circle cx="152" cy="78" r="3"/><circle cx="170" cy="100" r="4"/><circle cx="188" cy="85" r="3"/></g>
+          <g fill="#b45309" opacity=".5"><circle cx="55" cy="40" r="3"/><circle cx="90" cy="48" r="4"/><circle cx="125" cy="35" r="3"/><circle cx="160" cy="55" r="4"/></g>
+          <g class="lbl"><text x="22" y="145">0 yrs</text><text x="212" y="145" text-anchor="end">60</text></g>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ AFFORDABILITY ============================ -->
+<section class="screen" id="affordability">
+  <div class="badge">MOCKUP · 1440×900</div>
+  <div class="topbar">
+    <div class="logo">HK</div>
+    <div class="brand">Housing Atlas<small>Private housing · 18 districts</small></div>
+    <div class="nav"><span>Overview</span><span>Market Trends</span><span>District Explorer</span><span class="on">Affordability</span></div>
+    <div class="top-right"><span class="pill">Data as of Oct 2026</span><span class="pill">Dark</span></div>
+  </div>
+  <div class="pagehead">
+    <div>
+      <div class="eyebrow">Households &amp; investors</div>
+      <h1>Financing &amp; Affordability <span class="q">What return does housing offer, and who can afford to live where?</span></h1>
+    </div>
+    <div class="filters"><span class="pill">Income year 2025</span></div>
+  </div>
+  <div class="kpis" style="grid-template-columns:repeat(6,1fr)">
+    <div class="kpi"><div class="l">Price-to-income</div><div class="v">12.0×</div><div class="n">median of districts</div></div>
+    <div class="kpi"><div class="l">Rent-to-income</div><div class="v">0.51</div><div class="n">median of districts</div></div>
+    <div class="kpi amber"><div class="l">Gross yield</div><div class="v">3.8%</div><div class="n">latest quarter</div></div>
+    <div class="kpi blue"><div class="l">Mortgage burden</div><div class="v">49%</div><div class="n">70% LTV · 30 yrs</div></div>
+    <div class="kpi slate"><div class="l">Required income</div><div class="v">HK$42,537</div><div class="n">at 50% DSR</div></div>
+    <div class="kpi slate"><div class="l">Median price</div><div class="v">HK$6.21M</div><div class="n">median district</div></div>
+  </div>
+
+  <div class="grid afford-grid">
+    <div class="card" style="grid-column:span 8">
+      <div class="card-h">
+        <div><h2>Rent, income and rent burden</h2><div class="sub">Monthly rent and income (left) · RTI bars (right, 0–1) · 2001–2025</div></div>
+        <div class="tools"><div class="slider">Flat <div class="track"><i></i></div> 500 ft²</div><span class="pill">All Hong Kong ▾</span></div>
+      </div>
+      <div class="chart">
+        <svg class="plot" viewBox="0 0 780 280" preserveAspectRatio="none">
+          <g class="gl"><line x1="34" y1="30" x2="740" y2="30"/><line x1="34" y1="110" x2="740" y2="110"/><line x1="34" y1="190" x2="740" y2="190"/><line x1="34" y1="245" x2="740" y2="245"/></g>
+          <line class="axis" x1="34" y1="245" x2="740" y2="245"/>
+          <g fill="rgba(37,99,235,.30)"><rect x="46" y="160" width="14" height="85"/><rect x="74" y="170" width="14" height="75"/><rect x="102" y="162" width="14" height="83"/><rect x="130" y="155" width="14" height="90"/><rect x="158" y="150" width="14" height="95"/><rect x="186" y="142" width="14" height="103"/><rect x="214" y="136" width="14" height="109"/><rect x="242" y="130" width="14" height="115"/><rect x="270" y="134" width="14" height="111"/><rect x="298" y="126" width="14" height="119"/><rect x="326" y="120" width="14" height="125"/><rect x="354" y="122" width="14" height="123"/><rect x="382" y="128" width="14" height="117"/><rect x="410" y="124" width="14" height="121"/><rect x="438" y="130" width="14" height="115"/><rect x="466" y="127" width="14" height="118"/><rect x="494" y="131" width="14" height="114"/><rect x="522" y="126" width="14" height="119"/><rect x="550" y="132" width="14" height="113"/><rect x="578" y="135" width="14" height="110"/><rect x="606" y="131" width="14" height="114"/><rect x="634" y="127" width="14" height="118"/><rect x="662" y="130" width="14" height="115"/><rect x="690" y="126" width="14" height="119"/><rect x="718" y="124" width="14" height="121"/></g>
+          <polyline class="amberline" points="46,204 102,215 158,199 214,190 270,188 326,170 382,155 438,143 494,138 550,127 606,140 662,132 718,108"/>
+          <polyline class="teal" points="46,216 102,226 158,212 214,204 270,198 326,184 382,172 438,160 494,162 550,150 606,156 662,150 718,140"/>
+          <g class="lbl"><text x="34" y="20">HK$50k</text><text x="740" y="20" text-anchor="end">1.00</text><text x="34" y="268">2001</text><text x="740" y="268" text-anchor="end">2025</text></g>
+        </svg>
+      </div>
+      <div class="legend"><span><i class="dot" style="background:#0f766e"></i>Rent</span><span><i class="dot" style="background:#b45309"></i>Monthly income</span><span><i class="dot" style="background:#2563eb"></i>Rent-to-income</span><span style="margin-left:auto">500 ft² flat · district selector in header</span></div>
+    </div>
+
+    <div class="card" style="grid-column:span 4">
+      <div class="card-h"><div><h2>Affordability ranking</h2><div class="sub">Price-to-income by district · 2025</div></div><span class="seg"><span class="on">PTI</span><span>RTI</span></span></div>
+      <div class="chart">
+        <svg class="plot" viewBox="0 0 330 300" preserveAspectRatio="none">
+          <g class="gl"><line x1="88" y1="16" x2="88" y2="286"/><line x1="160" y1="16" x2="160" y2="286"/><line x1="232" y1="16" x2="232" y2="286"/><line x1="304" y1="16" x2="304" y2="286"/></g>
+          <g font-size="7" fill="#64748b"><text x="6" y="34">Sham Shui Po</text><text x="6" y="52">Yuen Long</text><text x="6" y="70">Kwun Tong</text><text x="6" y="88">Central &amp; W.</text><text x="6" y="106">Wan Chai</text><text x="6" y="124">Eastern</text><text x="6" y="142">Southern</text><text x="6" y="160">Kowloon City</text><text x="6" y="178">Sha Tin</text><text x="6" y="196">Tsuen Wan</text><text x="6" y="214">Tai Po</text><text x="6" y="232">Sai Kung</text><text x="6" y="250">Islands</text><text x="6" y="268">Tuen Mun</text></g>
+          <g fill="#0f766e" opacity=".85"><rect x="88" y="26" width="190" height="8" rx="2"/><rect x="88" y="44" width="176" height="8" rx="2"/><rect x="88" y="62" width="164" height="8" rx="2"/><rect x="88" y="80" width="150" height="8" rx="2"/><rect x="88" y="98" width="142" height="8" rx="2"/><rect x="88" y="116" width="134" height="8" rx="2"/><rect x="88" y="134" width="126" height="8" rx="2"/><rect x="88" y="152" width="118" height="8" rx="2"/><rect x="88" y="170" width="108" height="8" rx="2"/><rect x="88" y="188" width="98" height="8" rx="2"/><rect x="88" y="206" width="88" height="8" rx="2"/><rect x="88" y="224" width="78" height="8" rx="2"/><rect x="88" y="242" width="66" height="8" rx="2"/><rect x="88" y="260" width="54" height="8" rx="2"/></g>
+          <g class="lbl"><text x="88" y="296">0</text><text x="304" y="296" text-anchor="end">18×</text></g>
+        </svg>
+      </div>
+    </div>
+
+    <div class="card" style="grid-column:span 4; grid-row:2">
+      <div class="card-h"><div><h2>Yield over time</h2><div class="sub">Gross yield · selected vs 18-district median</div></div></div>
+      <div class="chart">
+        <svg class="plot" viewBox="0 0 330 170" preserveAspectRatio="none">
+          <g class="gl"><line x1="22" y1="28" x2="320" y2="28"/><line x1="22" y1="80" x2="320" y2="80"/><line x1="22" y1="132" x2="320" y2="132"/></g>
+          <line class="axis" x1="22" y1="132" x2="320" y2="132"/>
+          <polyline class="teal" points="22,92 55,88 88,96 121,90 154,84 187,86 220,72 253,70 286,64 320,66"/>
+          <polyline points="22,98 55,94 88,100 121,96 154,90 187,92 220,80 253,78 286,72 320,74" fill="none" stroke="#b45309" stroke-width="1.2" stroke-dasharray="3 2"/>
+          <g class="lbl"><text x="22" y="152">2018</text><text x="320" y="152" text-anchor="end">2026</text></g>
+        </svg>
+      </div>
+      <div class="legend"><span><i class="dot" style="background:#0f766e"></i>Selected</span><span><i class="dot" style="background:#b45309"></i>HK median</span></div>
+    </div>
+
+    <div class="card" style="grid-column:span 4; grid-row:2">
+      <div class="card-h"><div><h2>Yield vs price growth</h2><div class="sub">3-year price CAGR · bubble = volume</div></div></div>
+      <div class="chart">
+        <svg class="plot" viewBox="0 0 330 170" preserveAspectRatio="none">
+          <g class="gl"><line x1="28" y1="30" x2="320" y2="30"/><line x1="28" y1="85" x2="320" y2="85"/><line x1="28" y1="140" x2="320" y2="140"/></g>
+          <line class="axis" x1="28" y1="140" x2="320" y2="140"/><line class="axis" x1="28" y1="20" x2="28" y2="140"/>
+          <g fill="#0f766e" opacity=".55"><circle cx="70" cy="70" r="4"/><circle cx="110" cy="58" r="5"/><circle cx="150" cy="82" r="4"/><circle cx="190" cy="48" r="5"/><circle cx="230" cy="65" r="4"/><circle cx="270" cy="38" r="5"/></g>
+          <line x1="28" y1="120" x2="320" y2="35" stroke="#b45309" stroke-width="1.3"/>
+          <g class="lbl"><text x="28" y="160">−20%</text><text x="320" y="160" text-anchor="end">+20%</text></g>
+        </svg>
+      </div>
+    </div>
+
+    <div class="card" style="grid-column:span 4; grid-row:2">
+      <div class="card-h"><div><h2>Tenant vs buyer</h2><div class="sub">RTI vs mortgage burden · median flat</div></div><button class="pill" style="font-size:8px">Mortgage calculator →</button></div>
+      <div class="chart">
+        <svg class="plot" viewBox="0 0 330 170" preserveAspectRatio="none">
+          <g class="gl"><line x1="28" y1="30" x2="320" y2="30"/><line x1="28" y1="85" x2="320" y2="85"/><line x1="28" y1="140" x2="320" y2="140"/></g>
+          <line class="axis" x1="28" y1="140" x2="320" y2="140"/><line class="axis" x1="28" y1="20" x2="28" y2="140"/>
+          <g fill="#0f766e" opacity=".55"><circle cx="100" cy="70" r="4"/><circle cx="135" cy="60" r="5"/><circle cx="170" cy="78" r="4"/><circle cx="205" cy="52" r="5"/><circle cx="240" cy="66" r="4"/><circle cx="275" cy="46" r="5"/></g>
+          <g class="lbl"><text x="28" y="160">0.2</text><text x="320" y="160" text-anchor="end">0.7</text><text x="4" y="24">60%</text><text x="4" y="142">0%</text></g>
+        </svg>
+      </div>
+      <div class="note">Calculator opens as a side panel · KPI compact</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ OVERVIEW ============================ -->
+<section class="screen" id="overview">
+  <div class="badge">MOCKUP · 1440×900</div>
+  <div class="topbar">
+    <div class="logo">HK</div>
+    <div class="brand">Housing Atlas<small>Private housing · 18 districts</small></div>
+    <div class="nav"><span class="on">Overview</span><span>Market Trends</span><span>District Explorer</span><span>Affordability</span></div>
+    <div class="top-right"><span class="pill">Data as of Oct 2026</span><span class="pill">Dark</span></div>
+  </div>
+  <div class="pagehead" style="height:70px">
+    <div>
+      <div class="eyebrow">Hong Kong private housing</div>
+      <h1 style="font-size:28px; margin-top:5px">What drives sale and rental prices —<br>and where are the disparities?</h1>
+    </div>
+    <div class="filters"><span class="pill">1993–2026</span><span class="pill">18 districts</span><span class="pill">Estate-level history</span><span class="pill">Sale &amp; rent</span></div>
+  </div>
+  <div class="grid overview-grid" style="grid-template-columns:repeat(12,1fr); grid-template-rows:640px">
+    <div class="card" style="grid-column:span 8">
+      <div class="card-h"><div><h2>Three ways into the atlas</h2><div class="sub">One question per dashboard — filters carry across all of them.</div></div></div>
+      <div class="tiles" style="margin-top:10px">
+        <div class="tile"><div class="eyebrow">Prices</div><h3>Market Trends</h3><p>How have sale prices and rents moved, and what macro forces coincide with the turns?</p><div class="list"><div class="row"><span>RVD price and rental indices</span><span class="muted">1993–2026</span></div><div class="row"><span>Rent–price co-movement</span><span class="muted">lead / lag</span></div><div class="row"><span>Mortgage rates, volume, income</span><span class="muted">drivers</span></div></div><div class="preview"><svg viewBox="0 0 260 260" preserveAspectRatio="none"><g class="gl"><line x1="8" y1="40" x2="255" y2="40"/><line x1="8" y1="110" x2="255" y2="110"/><line x1="8" y1="180" x2="255" y2="180"/><line x1="8" y1="240" x2="255" y2="240"/></g><polyline points="8,210 30,204 52,196 74,200 96,180 118,170 140,145 162,128 184,120 206,132 228,118 255,108" fill="none" stroke="#0f766e" stroke-width="2"/><polyline points="8,220 30,216 52,214 74,208 96,198 118,192 140,178 162,166 184,158 206,162 228,152 255,146" fill="none" stroke="#b45309" stroke-width="2"/><rect x="170" y="40" width="12" height="200" fill="rgba(180,83,9,.08)"/></svg></div><div class="go">Open dashboard →</div></div>
+        <div class="tile"><div class="eyebrow">Space</div><h3>District Explorer</h3><p>Where is housing most expensive, and are the gaps between districts widening?</p><div class="list"><div class="row"><span>18-district choropleth</span><span class="muted">sale / rent</span></div><div class="row"><span>District × class heatmap</span><span class="muted">cross-filter</span></div><div class="row"><span>Sale $/ft² by region</span><span class="muted">18 districts</span></div></div><div class="preview"><svg viewBox="0 0 260 260" preserveAspectRatio="none"><rect x="8" y="30" width="244" height="200" fill="#e7eae6" rx="6"/><path d="M30 190 L60 150 L100 140 L130 110 L170 120 L200 150 L230 160 L215 210 L160 220 L100 220 L60 205 Z" fill="#ccfbf1"/><path d="M120 150 L150 130 L180 155 L165 190 L135 195 L115 175 Z" fill="#2dd4bf"/><path d="M185 130 L210 118 L235 145 L225 175 L200 180 L185 160 Z" fill="#0f766e"/><path d="M65 115 L95 95 L120 110 L105 135 L80 140 Z" fill="#5eead4"/><text x="125" y="125" font-size="8" fill="#0f766e">NT</text><text x="145" y="170" font-size="8" fill="#fff">KLN</text><text x="205" y="155" font-size="8" fill="#fff">HKI</text></svg></div><div class="go">Open dashboard →</div></div>
+        <div class="tile"><div class="eyebrow">Households</div><h3>Financing &amp; Affordability</h3><p>What return does housing offer, and who can afford to live where?</p><div class="list"><div class="row"><span>Gross yields</span><span class="muted">district</span></div><div class="row"><span>Price- and rent-to-income</span><span class="muted">rankings</span></div><div class="row"><span>Mortgage and stress test</span><span class="muted">calculator</span></div></div><div class="preview"><svg viewBox="0 0 260 260" preserveAspectRatio="none"><g class="gl"><line x1="8" y1="50" x2="255" y2="50"/><line x1="8" y1="120" x2="255" y2="120"/><line x1="8" y1="190" x2="255" y2="190"/><line x1="8" y1="240" x2="255" y2="240"/></g><g fill="rgba(37,99,235,.32)"><rect x="18" y="160" width="18" height="80"/><rect x="48" y="150" width="18" height="90"/><rect x="78" y="155" width="18" height="85"/><rect x="108" y="140" width="18" height="100"/><rect x="138" y="135" width="18" height="105"/><rect x="168" y="142" width="18" height="98"/><rect x="198" y="138" width="18" height="102"/><rect x="228" y="145" width="18" height="95"/></g><polyline points="18,115 48,120 78,112 108,104 138,96 168,102 198,92 240,88" fill="none" stroke="#b45309" stroke-width="2"/><polyline points="18,140 48,146 78,138 108,130 138,124 168,128 198,120 240,118" fill="none" stroke="#0f766e" stroke-width="2"/></svg></div><div class="go">Open dashboard →</div></div>
+      </div>
+      <div class="note">This page is already close to one screen; the redesign mainly removes the second row and shortens the cards.</div>
+    </div>
+    <div class="card" style="grid-column:span 4">
+      <div class="card-h"><div><h2>At a glance</h2><div class="sub">Latest official readings</div></div></div>
+      <div class="glance">
+        <div class="stat"><span>Price index</span><b>88.8</b></div>
+        <div class="stat"><span>Rent index</span><b>109.2</b></div>
+        <div class="stat"><span>Gross yield</span><b>2.9%</b></div>
+        <div class="stat"><span>Price-to-income</span><b>12.0×</b></div>
+      </div>
+      <div class="list" style="margin-top:10px">
+        <div class="row"><span>Official indices</span><span class="muted">1993–2026</span></div>
+        <div class="row"><span>District price history</span><span class="muted">2018–2026</span></div>
+        <div class="row"><span>Income by district</span><span class="muted">2025</span></div>
+        <div class="row"><span>Listings</span><span class="muted">current snapshot</span></div>
+      </div>
+      <div class="affordline">District estimates combine estate-level transaction series. Cells with too few observations are suppressed rather than shown as zero.</div>
+      <div style="margin-top:auto" class="note">Filters: tenure, district and class are preserved across dashboards and in the URL.</div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const names = ["C&W","Eastern","Southern","Wan Chai","Kowloon City","Kwun Tong","Sham Shui Po","Wong Tai Sin","Yau Tsim Mong","Islands","Kwai Tsing","North","Sai Kung","Sha Tin","Tai Po","Tsuen Wan","Tuen Mun","Yuen Long"];
+  const heat = document.getElementById('heat1');
+  if (heat) {
+    for (let r = 0; r < 18; r++) {
+      for (let c = 0; c < 10; c++) {
+        const cell = document.createElement('i');
+        const v = Math.sin((r + 2) * 1.7 + c * 0.9) * 0.5 + 0.5;
+        const hue = 170 - Math.round(v * 12);
+        cell.style.background = `hsl(${hue} 55% ${88 - v * 45}%)`;
+        cell.style.height = '11px';
+        heat.appendChild(cell);
+      }
+    }
+    heat.style.gridTemplateColumns = 'repeat(10, 1fr)';
+  }
+</script>
+</body>
+</html>

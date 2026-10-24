@@ -9,14 +9,14 @@ import {
 } from "../components/Cards";
 import PageHeader from "../components/PageHeader";
 import { useDistrictData } from "../data/useDistrictData";
+import { CARD_INFO } from "../data/cardInfo";
 import type { AffordabilityRow, DistrictPanelRow } from "../data/types";
 import { fmtMoney, fmtPct, fmtPctPlain, fmtPsf, fmtRatio } from "../lib/format";
 import { loanFromPayment, monthlyPayment, stressTest } from "../lib/finance";
-import { median } from "../lib/stats";
+import { linearRegression, median } from "../lib/stats";
 import { useFilters } from "../state/filters";
 
 type RankingMetric = "pti" | "rti";
-type RatioMetric = "pti" | "rti";
 
 const REGION_COLORS: Record<string, string> = {
   "HK Island": "#2563eb",
@@ -45,7 +45,7 @@ export default function Affordability() {
   const selectDistrict = useFilters((state) => state.selectDistrict);
   const setSelectedDistrict = useFilters((state) => state.setSelectedDistrict);
   const [rankingMetric, setRankingMetric] = useState<RankingMetric>("pti");
-  const [ratioMetric, setRatioMetric] = useState<RatioMetric>("pti");
+  const [calculatorOpen, setCalculatorOpen] = useState(false);
 
   const view = useMemo(() => {
     if (!data) return null;
@@ -178,7 +178,7 @@ export default function Affordability() {
 
   const rankingOption = {
     animationDuration: 300,
-    grid: { left: 118, right: 44, top: 12, bottom: 32 },
+    grid: { left: 118, right: 44, top: 8, bottom: 24 },
     tooltip: {
       trigger: "axis",
       axisPointer: { type: "shadow" },
@@ -196,7 +196,7 @@ export default function Affordability() {
       type: "category",
       inverse: true,
       data: view.rankingRows.map((row) => row.name),
-      axisLabel: { color: "#64748b", fontSize: 10 },
+      axisLabel: { color: "#64748b", fontSize: 8, interval: 0 },
       axisTick: { show: false },
       axisLine: { show: false },
     },
@@ -212,14 +212,6 @@ export default function Affordability() {
           },
         })),
         barMaxWidth: 14,
-        label: {
-          show: true,
-          position: "right",
-          fontSize: 10,
-          color: "#64748b",
-          formatter: (params: { value: number }) =>
-            rankingMetric === "pti" ? `${params.value.toFixed(1)}×` : `${params.value.toFixed(2)}`,
-        },
       },
     ],
   };
@@ -284,6 +276,20 @@ export default function Affordability() {
     ],
   };
 
+  const growthFit = linearRegression(view.growthRows.map((row) => [row.growth, row.yield]));
+  const growthFitData =
+    view.growthRows.length >= 2
+      ? (() => {
+          const xs = view.growthRows.map((row) => row.growth);
+          const min = Math.min(...xs);
+          const max = Math.max(...xs);
+          return [
+            [min, growthFit.intercept + growthFit.slope * min],
+            [max, growthFit.intercept + growthFit.slope * max],
+          ];
+        })()
+      : [];
+
   const growthOption = {
     animationDuration: 300,
     grid: { left: 52, right: 22, top: 24, bottom: 44 },
@@ -336,6 +342,18 @@ export default function Affordability() {
           data: [{ xAxis: 0 }],
         },
       },
+      ...(growthFitData.length
+        ? [
+            {
+              type: "line" as const,
+              data: growthFitData,
+              showSymbol: false,
+              lineStyle: { color: "#b45309", width: 2 },
+              itemStyle: { color: "#b45309" },
+              tooltip: { show: false },
+            },
+          ]
+        : []),
     ],
   };
 
@@ -563,72 +581,66 @@ export default function Affordability() {
   };
 
   const selectedName = selected ? view.districtNames.get(selected) : null;
-  const selectedRank = view.selectedLatest?.rank;
 
   return (
-    <div className="space-y-6">
+    <div className="desktop-dashboard space-y-6">
       <PageHeader
         eyebrow="Households & investors"
         title="Financing & Affordability"
         question="What return does housing offer, and who can afford to live where?"
       >
-        <SegmentedControl
-          value={ratioMetric}
-          options={[
-            { value: "pti", label: "Price / income" },
-            { value: "rti", label: "Rent / income" },
-          ]}
-          onChange={setRatioMetric}
-        />
         <span className="rounded-full border border-[var(--border)] px-3 py-1.5 text-[11px] text-[var(--text-muted)]">
           Income year {view.latestYear}
         </span>
       </PageHeader>
 
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-6">
+      <div className="kpi-grid grid grid-cols-2 gap-3 lg:grid-cols-6">
         <KpiCard
-          label={ratioMetric === "pti" ? "Price-to-income" : "Rent-to-income"}
-          value={
-            ratioMetric === "pti"
-              ? fmtRatio(selected ? view.selectedLatest?.pti : view.aggregate.pti)
-              : (selected ? view.selectedLatest?.rti : view.aggregate.rti)?.toFixed(2) ?? "—"
-          }
+          label="Price-to-income"
+          info={CARD_INFO.affordabilityRatioKpis}
+          value={fmtRatio(selected ? view.selectedLatest?.pti : view.aggregate.pti)}
+          note={selectedName ?? "median of districts"}
+        />
+        <KpiCard
+          label="Rent-to-income"
+          info={CARD_INFO.affordabilityRatioKpis}
+          value={(selected ? view.selectedLatest?.rti : view.aggregate.rti)?.toFixed(2) ?? "—"}
           note={selectedName ?? "median of districts"}
         />
         <KpiCard
           label="Gross yield"
+          info={CARD_INFO.affordabilityPriceKpis}
           value={fmtPctPlain(view.yieldLatest)}
           note={selectedName ?? "latest quarter"}
           accent="amber"
         />
         <KpiCard
           label="Mortgage burden"
+          info={CARD_INFO.affordabilityMortgageKpis}
           value={fmtPctPlain((selected ? view.selectedLatest?.mortgage_burden : view.aggregate.mortgage_burden) ? ((selected ? view.selectedLatest?.mortgage_burden ?? 0 : view.aggregate.mortgage_burden) as number) * 100 : null, 0)}
           note="70% LTV, 30 years"
           accent="blue"
         />
         <KpiCard
           label="Required income"
+          info={CARD_INFO.affordabilityMortgageKpis}
           value={fmtMoney(selected ? view.selectedLatest?.required_income : view.aggregate.required_income)}
           note="at 50% DSR"
           accent="neutral"
         />
         <KpiCard
           label="Median price"
+          info={CARD_INFO.affordabilityPriceKpis}
           value={fmtMoney(selected ? view.selectedLatest?.price : view.aggregate.price)}
           note={selectedName ?? "median district"}
           accent="neutral"
         />
-        <KpiCard
-          label="Rank"
-          value={selectedRank ? `#${selectedRank} / 18` : "—"}
-          note={selectedRank ? "least affordable" : "select a district"}
-          accent="neutral"
-        />
       </div>
 
-      <SectionCard
-        title="Rent, income and rent burden"
+      <div className="grid gap-3 xl:grid-cols-[2fr_1fr]">
+        <SectionCard
+          title="Rent, income and rent burden"
+          info={CARD_INFO.affordabilityTrend}
         description={`Monthly rent and median household income (left axis) and rent-to-income as bars (right axis, normally 0–1) for a ${area} ft² flat, ${view.years[0]}–${view.latestYear}.`}
         action={
           <div className="flex flex-wrap items-center gap-3">
@@ -666,8 +678,8 @@ export default function Affordability() {
           </div>
         }
       >
-        <Chart option={trendOption} height={380} />
-        <p className="mt-2 text-xs leading-relaxed text-[var(--text-muted)]">
+        <Chart option={trendOption} height={220} />
+        <p className="short-hide mt-2 text-xs leading-relaxed text-[var(--text-muted)]">
           {area} ft² flat.{" "}
           {selected
             ? `${view.districtNames.get(selected)} selected.`
@@ -681,127 +693,135 @@ export default function Affordability() {
         ) : null}
       </SectionCard>
 
-      <div className="grid gap-4 xl:grid-cols-[1.05fr_0.95fr]">
-        <SectionCard
-          title="Affordability ranking"
-          description={`${ratioMetric === "pti" ? "Price-to-income" : "Rent-to-income"} by district, ${view.latestYear}. Click a bar to select the district.`}
-          action={
-            <SegmentedControl
-              value={rankingMetric}
-              options={[
-                { value: "pti", label: "PTI" },
-                { value: "rti", label: "RTI" },
-              ]}
-              onChange={setRankingMetric}
-            />
-          }
-        >
-          <Chart
-            option={rankingOption}
-            height={520}
-            onEvents={{
-              click: (params) => {
-                const index = (params as { dataIndex?: number }).dataIndex;
-                if (index === undefined) return;
-                const row = view.rankingRows[index];
-                if (row) selectDistrict(row.district_code);
-              },
-            }}
+      <SectionCard
+        title="Affordability ranking"
+        info={CARD_INFO.affordabilityRanking}
+        description={`${rankingMetric === "pti" ? "Price-to-income" : "Rent-to-income"} by district, ${view.latestYear}. Click a bar to select the district.`}
+        action={
+          <SegmentedControl
+            value={rankingMetric}
+            options={[
+              { value: "pti", label: "PTI" },
+              { value: "rti", label: "RTI" },
+            ]}
+            onChange={setRankingMetric}
           />
-        </SectionCard>
+        }
+      >
+        <Chart
+          option={rankingOption}
+          height={220}
+          onEvents={{
+            click: (params) => {
+              const index = (params as { dataIndex?: number }).dataIndex;
+              if (index === undefined) return;
+              const row = view.rankingRows[index];
+              if (row) selectDistrict(row.district_code);
+            },
+          }}
+        />
+      </SectionCard>
+      </div>
 
+      <div className="grid gap-3 xl:grid-cols-3">
         <SectionCard
           title="Yield over time"
+          info={CARD_INFO.affordabilityYield}
           description="Gross yield = 12 × rent $/ft² ÷ sale $/ft². Selected district against the 18-district median."
         >
-          <Chart option={yieldOption} height={300} />
-          <p className="mt-2 text-xs text-[var(--text-muted)]">
-            Latest quarter: {data.as_of?.replace("-Q", " Q")} · rent history is modelled from the RVD
-            rental index.
+          <Chart option={yieldOption} height={220} />
+          <p className="short-hide mt-2 text-[10px] text-[var(--text-muted)]">
+            Latest quarter: {data.as_of?.replace("-Q", " Q")} · rent history is modelled from the RVD rental index.
           </p>
         </SectionCard>
-      </div>
 
-      <div className="grid gap-4 xl:grid-cols-2">
         <SectionCard
           title="Yield vs price growth"
-          description="Districts in the upper-left combine higher yield with weaker price growth; upper-right is high yield with strong growth. Bubble size is transaction volume."
+          info={CARD_INFO.affordabilityGrowth}
+          description="Upper-left combines higher yield with weaker price growth; bubble size is transaction volume."
         >
-          <Chart option={growthOption} height={360} />
-        </SectionCard>
-
-        <SectionCard
-          title="Price-to-income, 2018 → latest"
-          description="Each line is a district. A steeper upward line means affordability deteriorated more."
-        >
-          <Chart option={slopeOption} height={360} />
-        </SectionCard>
-      </div>
-
-      <div className="grid gap-4 xl:grid-cols-[0.95fr_1.05fr]">
-        <SectionCard
-          title="Mortgage calculator"
-          description="Indicative monthly payment and stress test. Excludes stamp duty, legal and management fees."
-        >
-          <div className="grid gap-4 sm:grid-cols-2">
-            {[
-              { label: "Property price (HK$)", value: price, set: setPrice, step: 50_000, min: 1_000_000, max: 100_000_000 },
-              { label: "Down payment (%)", value: downPct, set: setDownPct, step: 1, min: 0, max: 90 },
-              { label: "Mortgage rate (%)", value: rate, set: setRate, step: 0.1, min: 0.5, max: 15 },
-              { label: "Tenure (years)", value: years, set: setYears, step: 1, min: 5, max: 40 },
-              { label: "Monthly household income (HK$)", value: income, set: setIncome, step: 1_000, min: 5_000, max: 500_000 },
-            ].map((field) => (
-              <label key={field.label} className="block text-xs">
-                <span className="text-[var(--text-muted)]">{field.label}</span>
-                <input
-                  type="number"
-                  value={field.value}
-                  min={field.min}
-                  max={field.max}
-                  step={field.step}
-                  onChange={(event) => field.set(Number(event.target.value))}
-                  className="mt-1 w-full rounded-lg border border-[var(--border)] bg-[var(--bg-elevated)] px-3 py-2 text-sm tabular-nums outline-none focus:border-teal-700"
-                />
-              </label>
-            ))}
-          </div>
-
-          <div className="mt-4 grid grid-cols-2 gap-2 text-xs sm:grid-cols-4">
-            {[
-              ["Loan", fmtMoney(loan)],
-              ["Monthly payment", fmtMoney(payment)],
-              ["DSR", fmtPctPlain(dsr * 100, 0)],
-              ["Required income", fmtMoney(requiredIncome)],
-              ["Stress test (+2pp)", fmtMoney(stress.base)],
-              ["Stressed payment", fmtMoney(stress.stressed)],
-              ["Max price at 50% DSR", fmtMoney(maxPrice)],
-              ["Down payment", fmtMoney(price - loan)],
-            ].map(([label, value]) => (
-              <div key={label} className="rounded-lg bg-black/[0.03] p-2 dark:bg-white/[0.04]">
-                <p className="text-[10px] uppercase tracking-wide text-[var(--text-muted)]">{label}</p>
-                <p className="mt-0.5 text-sm font-semibold tabular-nums">{value}</p>
-              </div>
-            ))}
-          </div>
-          <p className="mt-3 text-[11px] leading-relaxed text-[var(--text-muted)]">
-            At {rate.toFixed(1)}% over {years} years, a {fmtMoney(price)} flat with{" "}
-            {downPct}% down needs about {fmtMoney(requiredIncome)} a month at a 50% DSR cap. The
-            +200 bp stress test raises the payment to {fmtMoney(stress.stressed)}.
-          </p>
+          <Chart option={growthOption} height={220} />
         </SectionCard>
 
         <SectionCard
           title="Tenant vs buyer"
-          description="Rent-to-income against mortgage burden for the median flat. Lower-left districts are easier on both budgets."
+          info={CARD_INFO.affordabilityTenant}
+          description="Rent-to-income against mortgage burden for the median flat."
+          action={
+            <button
+              type="button"
+              onClick={() => setCalculatorOpen(true)}
+              className="rounded-full border border-[var(--border)] px-2.5 py-1 text-[10px] text-[var(--text-muted)] transition hover:text-[var(--text)]"
+            >
+              Mortgage calculator →
+            </button>
+          }
         >
-          <Chart option={buyerRentOption} height={360} />
-          {view.selectedLatest ? (
-            <div className="mt-2 grid grid-cols-2 gap-2 text-xs sm:grid-cols-4">
+          <Chart option={buyerRentOption} height={220} />
+        </SectionCard>
+      </div>
+
+      {calculatorOpen ? (
+        <div
+          className="fixed inset-0 z-[80] flex items-start justify-center overflow-y-auto bg-slate-950/45 p-4 pt-10"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Mortgage calculator"
+          onClick={() => setCalculatorOpen(false)}
+        >
+          <div
+            className="w-full max-w-4xl rounded-2xl border border-[var(--border)] bg-[var(--bg-elevated)] p-4 shadow-2xl"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h2 className="text-sm font-semibold">Mortgage calculator</h2>
+                <p className="mt-0.5 text-[11px] text-[var(--text-muted)]">
+                  Indicative payment and stress test. Excludes stamp duty, legal and management fees.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setCalculatorOpen(false)}
+                className="rounded-full border border-[var(--border)] px-2.5 py-1 text-[10px] text-[var(--text-muted)]"
+              >
+                Close
+              </button>
+            </div>
+
+            <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
               {[
-                ["Median rent", fmtMoney(view.selectedLatest.rent)],
-                ["Mortgage payment", fmtMoney(view.selectedLatest.monthly_payment)],
-                ["Rent / income", (view.selectedLatest.rti * 100).toFixed(0) + "%"],
-                ["Mortgage / income", (view.selectedLatest.mortgage_burden * 100).toFixed(0) + "%"],
+                { label: "Property price (HK$)", value: price, set: setPrice, step: 50_000, min: 1_000_000, max: 100_000_000 },
+                { label: "Down payment (%)", value: downPct, set: setDownPct, step: 1, min: 0, max: 90 },
+                { label: "Mortgage rate (%)", value: rate, set: setRate, step: 0.1, min: 0.5, max: 15 },
+                { label: "Tenure (years)", value: years, set: setYears, step: 1, min: 5, max: 40 },
+                { label: "Monthly household income (HK$)", value: income, set: setIncome, step: 1_000, min: 5_000, max: 500_000 },
+              ].map((field) => (
+                <label key={field.label} className="block text-xs">
+                  <span className="text-[var(--text-muted)]">{field.label}</span>
+                  <input
+                    type="number"
+                    value={field.value}
+                    min={field.min}
+                    max={field.max}
+                    step={field.step}
+                    onChange={(event) => field.set(Number(event.target.value))}
+                    className="mt-1 w-full rounded-lg border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm tabular-nums outline-none focus:border-teal-700"
+                  />
+                </label>
+              ))}
+            </div>
+
+            <div className="mt-3 grid grid-cols-2 gap-2 text-xs sm:grid-cols-4">
+              {[
+                ["Loan", fmtMoney(loan)],
+                ["Monthly payment", fmtMoney(payment)],
+                ["DSR", fmtPctPlain(dsr * 100, 0)],
+                ["Required income", fmtMoney(requiredIncome)],
+                ["Stress test (+2pp)", fmtMoney(stress.base)],
+                ["Stressed payment", fmtMoney(stress.stressed)],
+                ["Max price at 50% DSR", fmtMoney(maxPrice)],
+                ["Down payment", fmtMoney(price - loan)],
               ].map(([label, value]) => (
                 <div key={label} className="rounded-lg bg-black/[0.03] p-2 dark:bg-white/[0.04]">
                   <p className="text-[10px] uppercase tracking-wide text-[var(--text-muted)]">{label}</p>
@@ -809,9 +829,15 @@ export default function Affordability() {
                 </div>
               ))}
             </div>
-          ) : null}
-        </SectionCard>
-      </div>
+
+            <p className="mt-3 text-[11px] leading-relaxed text-[var(--text-muted)]">
+              At {rate.toFixed(1)}% over {years} years, a {fmtMoney(price)} flat with {downPct}% down needs about{" "}
+              {fmtMoney(requiredIncome)} a month at a 50% DSR cap. The +200 bp stress test raises the payment to{" "}
+              {fmtMoney(stress.stressed)}.
+            </p>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

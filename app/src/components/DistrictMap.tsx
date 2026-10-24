@@ -14,6 +14,7 @@ type Props = {
   diverging?: boolean;
   formatValue?: MetricFormat;
   metricLabel?: string;
+  height?: number;
 };
 
 function scale(values: Record<string, number | null>, diverging: boolean) {
@@ -78,6 +79,7 @@ export default function DistrictMap({
   diverging = false,
   formatValue = (value) => (value === null ? "—" : String(value)),
   metricLabel = "Value",
+  height = 420,
 }: Props) {
   const container = useRef<HTMLDivElement>(null);
   const map = useRef<L.Map | null>(null);
@@ -106,7 +108,7 @@ export default function DistrictMap({
       zoomControl: true,
       attributionControl: true,
       scrollWheelZoom: false,
-      minZoom: 10,
+      minZoom: 9,
       maxZoom: 15,
     });
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -158,7 +160,7 @@ export default function DistrictMap({
 
     layer.current = geoLayer;
     const bounds = geoLayer.getBounds();
-    if (bounds.isValid()) instance.fitBounds(bounds, { padding: [16, 16] });
+    if (bounds.isValid()) instance.fitBounds(bounds, { padding: [10, 10], maxZoom: 10 });
     map.current = instance;
 
     return () => {
@@ -199,7 +201,8 @@ export default function DistrictMap({
     <div className="relative">
       <div
         ref={container}
-        className="h-[420px] w-full overflow-hidden rounded-xl border border-[var(--border)]"
+        className="w-full overflow-hidden rounded-xl border border-[var(--border)]"
+        style={{ height }}
         role="img"
         aria-label="Choropleth map of Hong Kong's 18 districts"
       />

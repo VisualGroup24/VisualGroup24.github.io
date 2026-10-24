@@ -1,6 +1,7 @@
 import { lazy } from "react";
 import { Route, Routes } from "react-router-dom";
 import Layout from "./components/Layout";
+import { DataInfoProvider } from "./components/DataInfo";
 
 const Overview = lazy(() => import("./routes/Overview"));
 const Market = lazy(() => import("./routes/Market"));
@@ -10,15 +11,17 @@ const Methods = lazy(() => import("./routes/Methods"));
 
 export default function App() {
   return (
-    <Routes>
-      <Route element={<Layout />}>
-        <Route index element={<Overview />} />
-        <Route path="market" element={<Market />} />
-        <Route path="districts" element={<Districts />} />
-        <Route path="affordability" element={<Affordability />} />
-        <Route path="methods" element={<Methods />} />
-        <Route path="*" element={<Overview />} />
-      </Route>
-    </Routes>
+    <DataInfoProvider>
+      <Routes>
+        <Route element={<Layout />}>
+          <Route index element={<Overview />} />
+          <Route path="market" element={<Market />} />
+          <Route path="districts" element={<Districts />} />
+          <Route path="affordability" element={<Affordability />} />
+          <Route path="methods" element={<Methods />} />
+          <Route path="*" element={<Overview />} />
+        </Route>
+      </Routes>
+    </DataInfoProvider>
   );
 }

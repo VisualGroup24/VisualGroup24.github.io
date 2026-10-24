@@ -132,13 +132,13 @@ export default function Layout() {
         </nav>
       </header>
 
-      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10">
+      <main className="app-main mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10">
         <Suspense fallback={<LoadingCard height={360} message="Loading dashboard…" />}>
           <Outlet />
         </Suspense>
       </main>
 
-      <footer className="mt-8 border-t border-[var(--border)]">
+      <footer className="app-footer mt-8 border-t border-[var(--border)]">
         <div className="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-6 text-xs text-[var(--text-muted)] sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <p>
             Built from RVD, HKMA, C&amp;SD, Land Registry, HAD and derived Squarefoot data. For
