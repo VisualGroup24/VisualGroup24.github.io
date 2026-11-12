@@ -33,7 +33,7 @@ export default function GuideDrawer({ open, onClose }: { open: boolean; onClose:
 
   return (
     <div className="drawer-backdrop">
-      <button type="button" aria-label="Close guide" className="absolute inset-0 cursor-default" onClick={onClose} />
+      <div className="drawer-scrim" aria-hidden="true" onClick={onClose} />
       <aside role="dialog" aria-modal="true" aria-labelledby="guide-title" className="drawer">
         <div className="drawer-head">
           <div>

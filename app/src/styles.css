@@ -971,7 +971,15 @@ button {
   backdrop-filter: blur(1px);
 }
 
+.drawer-scrim {
+  position: absolute;
+  inset: 0;
+  cursor: default;
+}
+
 .drawer {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   width: min(430px, 100%);

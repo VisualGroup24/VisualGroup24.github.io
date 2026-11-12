@@ -38,7 +38,7 @@ function Drawer({ entry, onClose }: { entry: DataNoteEntry; onClose: () => void 
 
   return (
     <div className="drawer-backdrop">
-      <button type="button" aria-label="Close data note" className="absolute inset-0 cursor-default" onClick={onClose} />
+      <div className="drawer-scrim" aria-hidden="true" onClick={onClose} />
       <aside
         role="dialog"
         aria-modal="true"

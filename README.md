@@ -26,7 +26,7 @@ The app opens on a welcome page that explains the journey. Stage 1 analyses the 
 
 ## Status
 
-The three-stage revision is complete as of **2026-11-12**. It replaces the earlier five-stage layout; `/budget` and `/decide` no longer exist and redirect to `/explore` and `/shortlist`. Nothing in `pipeline/` or `data/` changed, and no JSON schema changed.
+The three-stage revision is complete as of **2026-11-13**. It replaces the earlier five-stage layout; `/budget` and `/decide` no longer exist and redirect to `/explore` and `/shortlist`. Nothing in `pipeline/` or `data/` changed, and no JSON schema changed.
 
 | Phase | Scope | Status |
 |---|---|---|
@@ -75,15 +75,15 @@ npm --prefix app run preview
 
 A persistent rail on stages 1–3 holds the shared state:
 
-- **Path** — Buy or Rent. Unchosen until stage 1, then editable.
+- **Path** — Buy or Rent, selectable in the rail from the first load. Buy is shown until a choice is made.
 - **Household income** — slider and exact input.
 - **Flat size** — 200–800 ft², used for every per-district price and rent.
 - **Buyers** — deposit, mortgage rate, loan term and a 40/50/60% DSR cap; the rail shows the maximum price, monthly payment, DSR and the +200 bp stressed payment.
 - **Tenants** — a 30/40/50% rent-to-income cap; the rail shows the maximum rent.
 - **District** — set by the rail, a map click or a ranking/budget click; the shortlist count is shown here.
-- **Reset** — clears the brief, returns to the welcome page and re-locks stages 2 and 3.
+- **Reset** — clears the brief, returns to the welcome page and leaves stages 2 and 3 open on the buy variant.
 
-While no path is chosen, the rail keeps the mortgage inputs visible because the stage-1 buy-cost signal needs them, and shows “Ceiling: choose a path”.
+While no path is chosen, the rail shows the buy inputs and ceiling, because stages 2 and 3 default to buy. Choosing Rent switches the rail to the rent cap.
 
 ### URL state
 
@@ -98,7 +98,7 @@ The brief is mirrored into the query string with stable, validated keys:
 
 ### One-screen guarantee
 
-On desktop (≥1200 px wide) the shell is a fixed-height grid: 48 px top bar, 232 px rail, then a 40 px stage header, a 52 px KPI strip and a two-row bento grid that consumes the remaining height. Charts fill their cells and ECharts' `ResizeObserver` keeps them in sync. At **1360 × 735** every stage measures `scrollHeight = 735`; at 1440 × 900 the chart cells grow to 355 px. The welcome page and Methods use the full width without a rail; below 700 px viewport height pages scroll, and below 1200 px the rail becomes a filter bar and panels stack.
+On desktop (≥1200 px wide) the shell is a fixed-height grid: 48 px top bar, 232 px rail, then a 40 px stage header, a 52 px KPI strip and a two-row bento grid that consumes the remaining height. Charts fill their cells and ECharts' `ResizeObserver` keeps them in sync. At **1360 × 735** every stage measures `scrollHeight = 735`; at 1440 × 900 the stage-2 chart cells grow from about 222 px to 299 px. The welcome page and Methods use the full width without a rail; below 700 px viewport height pages scroll, and below 1200 px the rail becomes a filter bar and panels stack.
 
 ## Stage by stage
 
@@ -222,10 +222,10 @@ The same files are copied to `app/public/data/latest/` for the static app. The l
 app/src/
   routes/              Home, Pulse (/market), Explore, Shortlist, Methods
   components/          AppShell, StageNav, BriefRail, StageHeader, Panel, Stat,
-                       Segmented, DataNote, GuideDrawer, StageLock, TenureChoice,
+                       Segmented, DataNote, GuideDrawer, TenureChoice,
                        DistrictMap, Chart, EmptyState
   data/                typed JSON loaders, listing sample, cardInfo data notes
-  state/journey.ts     shared brief (Zustand) + theme store
+  state/               journey brief (Zustand) + theme store
   lib/                 format, stats, finance, journey budget maths,
                        listings, marketSeries, districtMetrics, chartOptions, filterUrl
 ```
@@ -269,12 +269,13 @@ Measured results:
 | Stage 2 estate boxes | five most-traded estates drawn between the map and ranking; Sha Tin 5/5, Southern 4/5 with the count stated |
 | Unchosen path on `/explore` or `/shortlist` | renders the buy variant with no lock card; the stepper links to all three stages |
 | `/methods` at 1360 × 735 | document stays 735; the main column scrolls internally |
-| 1440 × 900 | fit; chart cells grow from 273 px to 355 px |
+| 1440 × 900 | fit; stage-2 chart cells grow from about 222 px to 299 px |
 | Welcome at 390 × 844 | stacks and scrolls; no horizontal overflow |
+| Welcome arrows | 43.2 × 210 px at 20% opacity, centred on both card gaps; hidden below 900 px |
 | Dark mode at 1360 × 735 | fits; palette and map chrome switch |
 | Rent/buy choice | fresh `/market` shows both choices and an always-available next CTA; choosing adds `tenure=buy/rent` and switches both later stages |
 | Redirects | `/budget → /explore`, `/affordability → /explore`, `/decide → /shortlist`, `/districts → /explore`, query preserved |
-| Reset | returns to `/`, clears the path and re-locks stages 2 and 3 |
+| Reset | returns to `/`, clears the path; stages remain open on the buy variant |
 
 Captures for this revision are in [docs/screenshots-v3/](docs/screenshots-v3/).
 

@@ -1,7 +1,7 @@
 # HK Housing Atlas — three-stage journey with a rent/buy choice
 
 > **Complete.** The three-stage revision landed on 2026-11-12, replacing the earlier five-stage layout. This document holds the stage specifications, state model and verification record for future work.
-> **Last updated:** 2026-11-12
+> **Last updated:** 2026-11-13
 > **Repo:** `C:\Users\micha\Desktop\dsh\visualProject` (git, branch `main`)
 > **App:** React 19 · Vite 8 · Tailwind 4 · ECharts 6 · Leaflet · Zustand · React Router 7
 
@@ -178,15 +178,15 @@
 | `lib/districtMetrics.ts` | Adds `rent_yoy` and `districtBudgetRows` (per-district monthly price/rent, budget status, required income). |
 | `data/cardInfo.ts` | 15 data notes: brief/choice, four pulse notes, six explore notes (incl. most-traded estates), four shortlist notes. No PCA entry. |
 
-Data flow: brief rail → Zustand → selectors → stage charts. The URL mirrors the brief. Listing data is fetched once and cached; `pca.json` is read only for its `scores` records.
+Data flow: brief rail → Zustand → selectors → stage charts. The URL mirrors the brief. Listing data is fetched once and cached from `pca.json` as plain listing records; no PCA scores or dimension-reduction output is used.
 
 ---
 
 ## 7. File map
 
-**New:** `routes/Home.tsx`, `components/StageLock.tsx`, `components/TenureChoice.tsx`, `components/EstateBoxPlot.tsx` (reintroduced for stage 2), `lib/listings.ts` (+ test), `data/useListings.ts`.
+**New:** `routes/Home.tsx`, `components/TenureChoice.tsx`, `components/EstateBoxPlot.tsx` (reintroduced for stage 2), `lib/listings.ts` (+ test), `data/useListings.ts`.
 
-**Rewritten:** `App.tsx` (home + three stages + redirects), `components/StageNav.tsx` (3 steps, lock), `components/AppShell.tsx` (no rail/stepper on home and Methods), `components/BriefRail.tsx` (nullable path, reset to home), `routes/Pulse.tsx`, `routes/Explore.tsx`, `routes/Shortlist.tsx`, `routes/Methods.tsx`, `components/GuideDrawer.tsx`, `components/DataNote.tsx`, `data/cardInfo.ts`, `lib/filterUrl.ts` (+ tests), `lib/districtMetrics.ts`, `styles.css`, `README.md`, `app/index.html`.
+**Rewritten:** `App.tsx` (home + three stages + redirects), `components/StageNav.tsx` (3 steps), `components/AppShell.tsx` (no rail/stepper on home and Methods), `components/BriefRail.tsx` (nullable path, reset to home), `routes/Pulse.tsx`, `routes/Explore.tsx`, `routes/Shortlist.tsx`, `routes/Methods.tsx`, `components/GuideDrawer.tsx`, `components/DataNote.tsx`, `data/cardInfo.ts`, `lib/filterUrl.ts` (+ tests), `lib/districtMetrics.ts`, `styles.css`, `README.md`, `app/index.html`.
 
 **Deleted:** `routes/Budget.tsx`, `routes/Decide.tsx`, `components/PcaScreeLoadings.tsx`, `components/Checklist.tsx`, `data/usePca.ts`.
 
@@ -229,6 +229,7 @@ Unit coverage includes the rent/buy URL round-trip (`tenure=buy|sale|rent`, null
 | Check | Result |
 |---|---|
 | Fresh `/` | welcome hero, 3 cards with previews, no locked states, no rail/stepper, Start → `/market` |
+| Welcome arrows | 43.2 × 210 px at 20% opacity, centred on both card gaps; hidden below 900 px |
 | Start + choose Buy | URL gains `tenure=buy`; next CTA `/explore?tenure=buy`; rail shows Buy |
 | Buyer stage 2 | title “Where can you afford to buy…”; panels map, most-traded estate boxes, ranking, budget fit, gross yield, price trend; metrics Sale/Price YoY/Yield |
 | Most-traded estate boxes | 5 rows at 1360 × 735; Sha Tin shows 5/5 boxes, Southern 4/5 (one top estate has no chart); tooltip states volume, n and period |
