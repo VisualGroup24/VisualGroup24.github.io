@@ -3,6 +3,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import type { DistrictCollection } from "../data/types";
 import { divergingColor, divergingLegend } from "../lib/colorScale";
+import { useTheme } from "../state/theme";
 
 type MetricFormat = (value: number | null) => string;
 
@@ -14,7 +15,8 @@ type Props = {
   diverging?: boolean;
   formatValue?: MetricFormat;
   metricLabel?: string;
-  height?: number;
+  /** "100%" fills a panel body; a number renders a fixed map block. */
+  height?: number | string;
 };
 
 function scale(values: Record<string, number | null>, diverging: boolean) {
@@ -79,7 +81,7 @@ export default function DistrictMap({
   diverging = false,
   formatValue = (value) => (value === null ? "—" : String(value)),
   metricLabel = "Value",
-  height = 420,
+  height = "100%",
 }: Props) {
   const container = useRef<HTMLDivElement>(null);
   const map = useRef<L.Map | null>(null);
@@ -90,12 +92,16 @@ export default function DistrictMap({
   const onSelectRef = useRef(onSelect);
   const formatRef = useRef(formatValue);
   const labelRef = useRef(metricLabel);
+  const dark = useTheme((state) => state.mode === "dark");
+  const darkRef = useRef(dark);
+
   valuesRef.current = values;
   selectedRef.current = selected;
   divergingRef.current = diverging;
   onSelectRef.current = onSelect;
   formatRef.current = formatValue;
   labelRef.current = metricLabel;
+  darkRef.current = dark;
 
   const { min, max, colorFor, gradient, zeroPct } = useMemo(
     () => scale(values, diverging),
@@ -118,6 +124,8 @@ export default function DistrictMap({
       maxZoom: 19,
     }).addTo(instance);
 
+    const outline = () => (darkRef.current ? "#e2e8f0" : "#0f172a");
+
     const geoLayer = L.geoJSON(geojson as unknown as GeoJSON.GeoJsonObject, {
       style: (feature) => {
         const code = feature?.properties?.district_code as string | undefined;
@@ -125,12 +133,7 @@ export default function DistrictMap({
         return {
           fillColor: colorFor(value),
           fillOpacity: 0.8,
-          color:
-            code === selectedRef.current
-              ? "#0f172a"
-              : divergingRef.current
-                ? "#cbd5e1"
-                : "#ffffff",
+          color: code === selectedRef.current ? outline() : divergingRef.current ? "#cbd5e1" : "#ffffff",
           weight: code === selectedRef.current ? 3 : 1,
         };
       },
@@ -140,7 +143,7 @@ export default function DistrictMap({
         path.on({
           click: () => onSelectRef.current(code),
           mouseover: () => {
-            path.setStyle({ weight: 2.5, color: "#334155" });
+            path.setStyle({ weight: 2.5, color: darkRef.current ? "#f8fafc" : "#334155" });
             path.bringToFront();
           },
           mouseout: () => {
@@ -148,7 +151,7 @@ export default function DistrictMap({
               weight: code === selectedRef.current ? 3 : 1,
               color:
                 code === selectedRef.current
-                  ? "#0f172a"
+                  ? outline()
                   : divergingRef.current
                     ? "#cbd5e1"
                     : "#ffffff",
@@ -160,10 +163,19 @@ export default function DistrictMap({
 
     layer.current = geoLayer;
     const bounds = geoLayer.getBounds();
-    if (bounds.isValid()) instance.fitBounds(bounds, { padding: [10, 10], maxZoom: 10 });
+    if (bounds.isValid()) instance.fitBounds(bounds, { padding: [8, 8], maxZoom: 10 });
     map.current = instance;
 
+    // Panels resize when the rail collapses, the theme swaps or the window moves.
+    const observer = new ResizeObserver(() => {
+      instance.invalidateSize({ animate: false });
+    });
+    observer.observe(container.current);
+    const frame = window.requestAnimationFrame(() => instance.invalidateSize({ animate: false }));
+
     return () => {
+      window.cancelAnimationFrame(frame);
+      observer.disconnect();
       instance.remove();
       map.current = null;
       layer.current = null;
@@ -174,13 +186,14 @@ export default function DistrictMap({
   useEffect(() => {
     const geoLayer = layer.current;
     if (!geoLayer) return;
+    const outline = dark ? "#e2e8f0" : "#0f172a";
     geoLayer.setStyle((feature) => {
       const code = feature?.properties?.district_code as string | undefined;
       const value = code ? values[code] : null;
       return {
         fillColor: colorFor(value),
         fillOpacity: 0.8,
-        color: code === selected ? "#0f172a" : diverging ? "#cbd5e1" : "#ffffff",
+        color: code === selected ? outline : diverging ? "#cbd5e1" : "#ffffff",
         weight: code === selected ? 3 : 1,
       };
     });
@@ -190,47 +203,41 @@ export default function DistrictMap({
       const code = feature.properties?.district_code as string;
       const name = feature.properties?.name_en as string;
       const value = values[code];
-      (featureLayer as L.Path).bindTooltip(
-        `<div style="font-family:Inter,sans-serif;font-size:12px"><strong>${name}</strong><br/>${metricLabel}: ${formatValue(value ?? null)}</div>`,
-        { sticky: true, direction: "top", className: "hka-map-tooltip", opacity: 1 },
-      );
+      (featureLayer as L.Path)
+        .unbindTooltip()
+        .bindTooltip(
+          `<div style="font-family:Inter,sans-serif;font-size:12px"><strong>${name}</strong><br/>${metricLabel}: ${formatValue(value ?? null)}</div>`,
+          { sticky: true, direction: "top", className: "hka-map-tooltip", opacity: 1 },
+        );
     });
-  }, [values, selected, colorFor, diverging, formatValue, metricLabel]);
+  }, [values, selected, colorFor, diverging, formatValue, metricLabel, dark]);
+
+  const fill = height === "100%";
 
   return (
-    <div className="relative">
+    <div className="map-wrap" style={fill ? { height: "100%" } : undefined}>
       <div
         ref={container}
-        className="w-full overflow-hidden rounded-xl border border-[var(--border)]"
-        style={{ height }}
+        className="map-canvas"
+        style={fill ? undefined : { height }}
         role="img"
         aria-label="Choropleth map of Hong Kong's 18 districts"
       />
-      <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-[11px] text-[var(--text-muted)]">
+      <div className="map-legend">
         <div className="flex items-center gap-1.5">
           <span className="tabular-nums">{formatValue(min)}</span>
-          <div className="relative w-32">
-            <span className="block h-2 w-full rounded-full" style={{ background: gradient }} />
+          <div className="relative w-24">
+            <span className="block h-1.5 w-full rounded-full" style={{ background: gradient }} />
             {diverging && min < 0 && max > 0 ? (
-              <>
-                <span
-                  className="absolute -top-0.5 h-3 w-px -translate-x-1/2 bg-slate-500/70"
-                  style={{ left: `${zeroPct}%` }}
-                />
-                {zeroPct > 8 && zeroPct < 92 ? (
-                  <span
-                    className="absolute -bottom-3.5 -translate-x-1/2 text-[9px] leading-none tabular-nums text-[var(--text-muted)]"
-                    style={{ left: `${zeroPct}%` }}
-                  >
-                    {formatValue(0)}
-                  </span>
-                ) : null}
-              </>
+              <span
+                className="absolute -top-0.5 h-2.5 w-px -translate-x-1/2 bg-slate-500/70"
+                style={{ left: `${zeroPct}%` }}
+              />
             ) : null}
           </div>
           <span className="tabular-nums">{formatValue(max)}</span>
         </div>
-        <span>Click a district to filter · grey = insufficient data</span>
+        <span className="map-hint">Click to select · grey = no data</span>
       </div>
     </div>
   );

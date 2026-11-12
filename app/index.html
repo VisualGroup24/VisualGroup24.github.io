@@ -7,8 +7,17 @@
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
     <meta
       name="description"
-      content="HK Housing Atlas — interactive analysis of Hong Kong private housing prices, rents, district disparities and affordability."
+      content="HK Housing Atlas — a three-stage decision journey through Hong Kong's private housing market: market pulse, district explorer and shortlist, with a rent-or-buy gate."
     />
+    <script>
+      // Apply the saved theme before first paint so a refresh does not flash.
+      try {
+        document.documentElement.dataset.theme =
+          localStorage.getItem("hka-theme") === "dark" ? "dark" : "light";
+      } catch (error) {
+        document.documentElement.dataset.theme = "light";
+      }
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link

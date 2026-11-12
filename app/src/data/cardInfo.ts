@@ -1,386 +1,198 @@
-export type DataInfo = {
+export type DataSource = { label: string; url: string };
+
+export type DataNoteEntry = {
   title: string;
   what: string;
-  sources: Array<{ label: string; url: string }>;
+  sources: DataSource[];
   processing: string[];
-  caveat?: string;
-  extra?: "pca";
 };
 
-const RVD_PRICE = "https://www.rvd.gov.hk/doc/en/statistics/his_data_4.xls";
-const RVD_RENT = "https://www.rvd.gov.hk/doc/en/statistics/his_data_3.xls";
-const RVD_YIELD = "https://www.rvd.gov.hk/doc/en/statistics/his_data_15.xls";
-const RVD_SALES = "https://www.rvd.gov.hk/doc/en/statistics/his_data_16.xls";
-const RVD_COMPLETIONS =
-  "https://www.rvd.gov.hk/doc/en/statistics/private_domestic.xls";
-const HKMA_HIBOR =
-  "https://www.hkma.gov.hk/media/eng/doc/market-data-and-statistics/monthly-statistical-bulletin/T060302.xls";
-const HKMA_MORTGAGE =
-  "https://www.hkma.gov.hk/media/eng/doc/market-data-and-statistics/monthly-statistical-bulletin/T0307.xlsx";
-const CSD_INCOME =
-  "https://www.censtatd.gov.hk/api/get.php?id=130-06806&lang=en&full_series=1";
-const SQUAREFOOT = "https://www.squarefoot.com.hk/";
-const HAD_BOUNDARIES =
-  "https://www.had.gov.hk/psi/hong-kong-administrative-boundaries/hksar_18_district_boundary.json";
-const GEOHK = "https://github.com/hupili/geohk";
+const RVD: DataSource = {
+  label: "Rating and Valuation Department — property market statistics",
+  url: "https://www.rvd.gov.hk/en/publications/property_market_statistics.html",
+};
+const HKMA: DataSource = {
+  label: "HKMA — monthly statistical bulletin (mortgage survey, HIBOR, BLR)",
+  url: "https://www.hkma.gov.hk/eng/data-publications-and-research/data-and-statistics/monthly-statistical-bulletin/",
+};
+const CSD: DataSource = {
+  label: "C&SD — median household income by district (Table 130-06806)",
+  url: "https://www.censtatd.gov.hk/en/web_table.html?id=130-06806",
+};
+const HAD: DataSource = {
+  label: "Home Affairs Department — 18 District Council boundaries",
+  url: "https://data.gov.hk/en-data/dataset/hk-had-json1-hong-kong-administrative-boundaries",
+};
+const GEOHK: DataSource = {
+  label: "geohk / census2001 — land-only district geometry",
+  url: "https://github.com/hupili/geohk",
+};
+const SQUAREFOOT: DataSource = {
+  label: "Squarefoot (28Hse group) — listings and estate quarterly series",
+  url: "https://www.squarefoot.com.hk/",
+};
+const FED: DataSource = {
+  label: "US Federal Reserve — rate-hike cycle",
+  url: "https://www.federalreserve.gov/newsevents/pressreleases/monetary20220316a.htm",
+};
 
-export const CARD_INFO = {
-  houseClasses: {
-    title: "RVD house classes",
-    what: "RVD groups private domestic transactions by saleable area: A is under 40 m² (about 430 ft²), B is 40–<70 m² (about 430–<753 ft²), C is 70–<100 m² (about 753–<1,076 ft²), D is 100–<160 m² (about 1,076–<1,722 ft²), and E is 160 m² or more (about 1,722 ft²+). ALL is the published all-class series.",
-    sources: [
-      { label: "RVD price index by class", url: RVD_PRICE },
-      { label: "RVD rental index by class", url: RVD_RENT },
-      { label: "RVD property market statistics", url: "https://www.rvd.gov.hk/en/publications/property_market_statistics.html" },
-    ],
+export const DATA_NOTES: Record<string, DataNoteEntry> = {
+  "journey-brief": {
+    title: "The brief and the rent/buy choice",
+    what: "Income, flat size, the tenure path and the tenure-appropriate budget inputs are shared by every stage and mirrored into the URL. The market pulse or the Buy/Rent control in the rail sets the path; that choice switches the district explorer and shortlist between buyer and tenant variants. Until a path is chosen they show the buy variant.",
+    sources: [HKMA, CSD],
     processing: [
-      "Class boundaries and class series come from the RVD workbooks; the app filters them by the selected class.",
-      "ALL is the published all-class series, not an area-weighted average computed by this app.",
+      "Buyers set deposit, mortgage rate, term and a 40/50/60% DSR cap; tenants set a 30/40/50% rent-to-income cap.",
+      "The URL carries tenure=buy or tenure=rent plus any non-default numbers; malformed values are ignored and out-of-range numbers are clamped.",
+      "Reset clears the brief, returns to the home page and leaves stages 2 and 3 open on the buy variant. The shortlist is session-only.",
     ],
   },
-  marketPriceIndex: {
-    title: "Price index",
-    what: "The RVD private domestic price index for the selected class, rebased to 2019 = 100. The delta is the 12-month change.",
-    sources: [{ label: "RVD price index (his_data_4.xls)", url: RVD_PRICE }],
+  "pulse-indices": {
+    title: "Price and rent indices",
+    what: "RVD private domestic price and rental indices for the selected property class, rebased to 2019 = 100 so both lines share one scale. Nine curated policy and rate events are marked on the timeline.",
+    sources: [RVD, FED],
     processing: [
-      "Parse the RVD workbook, keep the selected class, drop non-numeric cells and rebase the index to the 2019 average.",
-      "YoY is the latest month divided by the same month one year earlier.",
+      "Monthly RVD index levels 1993-01 to 2026-08; the published base is 1999 = 100, rebasing to 2019 is presentation only.",
+      "Class filter uses the RVD bands A–E, or the published territory-wide ALL index.",
+      "Nine curated events (stamp duty, rate cycle, price peak) are drawn from pipeline/data/events.yml; verify each against its cited source.",
     ],
   },
-  marketRentIndex: {
-    title: "Rent index",
-    what: "The RVD private domestic rental index for the selected class, rebased to 2019 = 100. The delta is the 12-month change.",
-    sources: [{ label: "RVD rental index (his_data_3.xls)", url: RVD_RENT }],
+  "pulse-yield-spread": {
+    title: "Yield vs effective mortgage rate",
+    what: "Gross rental yield for the selected class against two mortgage-rate proxies. The shaded band is the spread — positive when the flat earns more in rent than the loan costs in interest.",
+    sources: [RVD, HKMA],
     processing: [
-      "Parse the RVD rental workbook, keep the selected class, drop non-numeric cells and rebase to 2019 = 100.",
-      "YoY is the latest month divided by the same month one year earlier.",
+      "Gross yield = 12 × monthly rent/ft² ÷ sale price/ft² from RVD class averages; fees, rates and taxes excluded.",
+      "H-plan proxy = 1-month HIBOR + 1.3pp; P-plan proxy = best lending rate − 2.5pp. Both are benchmarks, not quoted bank offers.",
+      "“All classes” is the unweighted mean of the five RVD class yields because the source does not publish an aggregate yield.",
     ],
   },
-  marketPriceRent: {
-    title: "Price / rent",
-    what: "The price index divided by the rental index for the selected class. It is a relative price measure, not a yield.",
-    sources: [
-      { label: "RVD price index", url: RVD_PRICE },
-      { label: "RVD rental index", url: RVD_RENT },
-    ],
+  "pulse-buy-rent": {
+    title: "Buy vs rent, same flat",
+    what: "The 18-district median monthly rent and mortgage payment for a standard 500 ft² flat, 2001–2025. The crossover marks the most recent year buying became dearer or cheaper than renting.",
+    sources: [RVD, CSD, HAD],
     processing: [
-      "Both indices are rebased to 2019 = 100 before the ratio is taken.",
-      "A value above 1 means prices have risen more than rents since 2019; below 1 means the reverse.",
+      "Rent = district rent/ft² × 500; payment uses a 70% 30-year loan at each year's effective rate proxy.",
+      "Median across the 18 districts, so the line describes a typical district rather than a specific one.",
+      "Income is the C&SD median household income for the same district-year; the series ends in 2025 while prices run to 2026.",
     ],
   },
-  marketYield: {
+  "pulse-decision": {
+    title: "Rent or buy? Your call",
+    what: "Three signals that summarise the market pulse, then the choice that sets the variants of stages 2 and 3. The signals compare price and rent momentum, the yield against the mortgage proxy, and the monthly cost of buying versus renting your flat size.",
+    sources: [RVD, HKMA, CSD, HAD],
+    processing: [
+      "Momentum = latest year-on-year change in the RVD price and rent indices for the selected class.",
+      "Yield spread = latest gross yield − (1-month HIBOR + 1.3pp).",
+      "Monthly cost uses the latest 18-district median sale and rent $/ft² at your flat size; the payment uses your deposit, rate and term, not your income.",
+      "The signals are descriptive, not advice. Choosing a path does not change the data; it changes which budget and charts stages 2 and 3 show.",
+    ],
+  },
+  "explore-map": {
+    title: "District map",
+    what: "The selected metric for one quarter on the 18 District Council boundaries. Levels use quantile breaks; price and rent change use a diverging scale centred on zero. Districts outside the budget can be greyed out.",
+    sources: [HAD, GEOHK, SQUAREFOOT, RVD],
+    processing: [
+      "Boundaries are HAD polygons intersected with the land-only census2001 geometry, so sea is excluded; reclamation after 2001 is not shown.",
+      "The in-budget toggle greys districts whose price or rent for your flat size exceeds the ceiling or rent cap.",
+      "Click a district to select it; click the selected district again to clear.",
+    ],
+  },
+  "explore-ranking": {
+    title: "District ranking",
+    what: "All 18 districts sorted on the current metric, coloured by region. The selected district and the comparison district are emphasised; clicking sets the comparison.",
+    sources: [SQUAREFOOT, RVD],
+    processing: [
+      "Ranking uses the same quarter and metric as the map, so the two always agree.",
+      "Tooltips add the price or rent at your flat size and the income required at your budget settings.",
+      "Districts with a suppressed or missing value are excluded rather than ranked last.",
+    ],
+  },
+  "explore-top-estates": {
+    title: "Most-traded estates",
+    what: "Box plot of the five estates with the most latest-quarter transactions in the selected district (Hong Kong-wide when no district is selected). Each box is the estate's quarterly average sale $/ft² history.",
+    sources: [SQUAREFOOT],
+    processing: [
+      "Estates are ranked by latest-quarter transaction volume from the district panel.",
+      "Box = Q1–Q3 of every positive quarterly average sale $/ft² in the estate's chart history; the centre line is the median and whiskers are min–max; n is the number of quarters.",
+      "A top estate without a quarterly chart is omitted and the footer states how many of the five are shown; no zeros or imputed distributions are used.",
+    ],
+  },
+  "explore-scatter": {
+    title: "Price vs rent",
+    what: "District sale $/ft² against rent $/ft² for the selected quarter. Bubbles are transactions; dashed lines mark your buy ceiling and rent cap at your flat size.",
+    sources: [SQUAREFOOT, RVD],
+    processing: [
+      "Both axes are the latest-quarter panel values; rent history before that quarter is modelled from the RVD cycle.",
+      "The vertical line is your price ceiling divided by your flat size; the horizontal line is your monthly rent cap divided by it.",
+      "In rent mode only the rent-cap line is drawn.",
+    ],
+  },
+  "explore-yield": {
     title: "Gross yield",
-    what: "RVD’s gross rental yield for the selected class: annual rent divided by sale price. For ALL, the app shows the mean of the A–E class yields.",
-    sources: [{ label: "RVD market yields (his_data_15.xls)", url: RVD_YIELD }],
+    what: "Gross yield of the selected district against the median of the 18 districts since 2018. With no district selected, only the median is drawn.",
+    sources: [SQUAREFOOT, RVD],
     processing: [
-      "Read the latest RVD yield workbook row for the selected class.",
-      "For ALL, average the latest A–E class yields; the value is gross of costs and vacancy.",
+      "Gross yield = 12 × monthly rent $/ft² ÷ sale price $/ft², before management fees, taxes and vacancy.",
+      "The HK line is the median of the 18 district yields each quarter, not a transaction-weighted territory figure.",
+      "Estate averages outside HK$5,000–80,000/ft² (sale) or HK$5–300/ft² (rent) are excluded upstream; cells with few estates stay provisional.",
+      "A single quarter can spike when the estate mix changes; read it as the panel's composition rather than a clean market-wide yield.",
     ],
   },
-  marketSales: {
-    title: "Monthly ASPs",
-    what: "The number of sale transactions in the latest RVD month across primary and secondary residential sales.",
-    sources: [{ label: "RVD sale transactions (his_data_16.xls)", url: RVD_SALES }],
+  "explore-trend": {
+    title: "District trend",
+    what: "The selected and comparison districts since 2018 against the territory median for the chosen metric. In rent mode, rent is paired with the rent-to-income ratio of your flat size and income on a right-hand axis.",
+    sources: [SQUAREFOOT, RVD],
     processing: [
-      "Parse the RVD monthly sales workbook and take the latest month’s total transaction count.",
-      "This is a count of transactions, not the number of units or listings.",
+      "Each quarter is the volume-weighted median estate $/ft² in that district.",
+      "The HK line is the median across the 18 district values, not a transaction-weighted territory figure.",
+      "Rent history before the latest quarter is modelled; YoY compares the same quarter a year earlier and can swing when the estate mix changes.",
+      "Rent-to-income = rent $/ft² × your flat size ÷ your monthly income, for the selected district (HK median when none is selected). The right axis stays 0–100% while every point is below 1 and otherwise scales to the highest ratio.",
+      "Bars are green below your rent-to-income cap, amber from the cap to 100% of income, and red above 100%.",
     ],
   },
-  marketHibor: {
-    title: "HIBOR 1M",
-    what: "The monthly average 1-month Hong Kong Interbank Offered Rate, in percent.",
-    sources: [{ label: "HKMA 1-month HIBOR (T060302.xls)", url: HKMA_HIBOR }],
+  "explore-budget-fit": {
+    title: "Can I afford this district?",
+    what: "All 18 districts sorted by the monthly price or rent of your flat size, against your ceiling or rent cap. Buyers also see the ceiling after a 200 bp rate rise; tenants see the rent cap.",
+    sources: [RVD, HKMA, CSD, HAD],
     processing: [
-      "Parse the HKMA monthly workbook and take the latest monthly fixing average.",
-      "The rate is a funding-cost indicator, not a mortgage rate; the affordability calculator uses HIBOR + 1.3 percentage points as a proxy.",
+      "Buyer price = district transaction-panel sale $/ft² × your flat size; monthly payment uses your deposit, rate and term.",
+      "Rent = district rental-panel rent $/ft² × your flat size; required income = rent ÷ your rent-to-income cap.",
+      "Bars are green inside the ceiling, amber within 10% of it and grey outside. Clicking a bar selects that district.",
     ],
   },
-  marketIndices: {
-    title: "Price and rental indices",
-    what: "Monthly RVD private domestic price and rental indices for Hong Kong, shown for all classes or a single class A–E. The app rebases the published series to 2019 = 100.",
-    sources: [
-      { label: "RVD price index (his_data_4.xls)", url: RVD_PRICE },
-      { label: "RVD rental index (his_data_3.xls)", url: RVD_RENT },
-    ],
+  "shortlist-budget-buys": {
+    title: "What your budget buys",
+    what: "Current listings in the selected district as saleable area against total asking price (buy) or monthly rent (rent). The budget and flat-size lines show what the current snapshot offers at your cap.",
+    sources: [SQUAREFOOT],
     processing: [
-      "Parse the RVD legacy workbooks, melt the class columns and drop non-numeric cells.",
-      "Join price and rent by month and property class; rebase both series to the 2019 average = 100.",
-      "Policy and market events are curated separately and shown as vertical markers.",
-    ],
-    caveat:
-      "The published RVD base is 1999 = 100; rebasing to 2019 only changes presentation. Class ALL is the published all-class series, not a computed average.",
-  },
-  marketDynamics: {
-    title: "Rent–price dynamics",
-    what: "The co-movement view plots monthly log changes of the RVD price and rental indices with an OLS fit. The lead/lag view correlates price change at t with rent change at t + lag.",
-    sources: [
-      { label: "RVD price index", url: RVD_PRICE },
-      { label: "RVD rental index", url: RVD_RENT },
-    ],
-    processing: [
-      "Compute month-on-month log changes from the two rebased indices.",
-      "Co-movement: scatter the price change against the rent change and fit an OLS line; report R² and slope.",
-      "Lead/lag: correlate price change at t with rent change at t + lag for lags −12 to +12 months; the strongest absolute correlation is labelled.",
-    ],
-    caveat:
-      "Positive lags mean rents follow prices in this sample; this is a correlation pattern, not a causal estimate.",
-  },
-  marketClass: {
-    title: "Year-on-year change",
-    what: "Year-on-year price and rent growth for the class selected in the dashboard’s Class switch (All, or A–E), from 2018 onwards.",
-    sources: [
-      { label: "RVD price index", url: RVD_PRICE },
-      { label: "RVD rental index", url: RVD_RENT },
-    ],
-    processing: [
-      "Take the selected class series from the top Class switch and compute 12-month percentage changes.",
-      "Filter the chart to 2018 onwards so the class cycles are comparable on the mockup’s window.",
-    ],
-    caveat:
-      "Small classes can be thin; the line is the published RVD class index, not a transaction-level average.",
-  },
-  marketDrivers: {
-    title: "What moves with prices?",
-    what: "A bivariate view of the all-class RVD price index against one macro factor at a time: mortgage rate, transaction volume, household income or completions.",
-    sources: [
-      { label: "HKMA 1-month HIBOR", url: HKMA_HIBOR },
-      { label: "RVD sale transactions", url: RVD_SALES },
-      { label: "RVD completions", url: RVD_COMPLETIONS },
-      { label: "C&SD median household income", url: CSD_INCOME },
-    ],
-    processing: [
-      "Align the monthly price index with the selected factor on common months.",
-      "Plot the raw points and an OLS fit; report n and R².",
-      "Factors are shown one at a time and are not combined into a multivariate model.",
-    ],
-    caveat:
-      "These are associations, not causal effects. The overlapping sample changes with the factor and the selected period.",
-  },
-  marketPca: {
-    title: "Composition: what differentiates listings?",
-    what: "A PCA description of current Squarefoot residential listings. It summarises how area, bedrooms, bathrooms, floor, age, MTR walk time and tenure co-vary. Sale $/ft² is used only as a supplementary colour.",
-    sources: [
-      { label: "Squarefoot listings and estate pages", url: SQUAREFOOT },
-    ],
-    processing: [
-      "Use the 13,431 listings with complete attributes from the current crawl.",
-      "Standardise log saleable area, bedrooms, bathrooms, floor-zone ordinal, building age, MTR walking minutes and a rental-listing dummy; median-impute missing numeric values.",
-      "Fit PCA and show PC1/PC2 scores with loading vectors. Price per ft² is not a PCA input.",
-    ],
-    extra: "pca",
-    caveat:
-      "Descriptive current-sample analysis, not a representative survey or a causal model. MTR walk time is the estate’s stated walking time, not a routed distance.",
-  },
-  districtPriceKpis: {
-    title: "District price KPIs",
-    what: "Latest-quarter sale $/ft², rent $/ft², gross yield and price YoY for the selected district, or the median of the 18 district estimates for Hong Kong.",
-    sources: [{ label: "Squarefoot estate transaction and rental pages", url: SQUAREFOOT }],
-    processing: [
-      "Sale and rent are transaction/rental-volume-weighted medians across estates in the latest quarter.",
-      "Gross yield = 12 × rent $/ft² ÷ sale $/ft²; price YoY compares the latest quarter with four quarters earlier.",
+      "This uses the pipeline's listing-level snapshot (13,431 complete listings) as plain records: area, $/ft², district and tenure.",
+      "Total price = area × asking $/ft²; rent rows show monthly rent instead. Axes are clipped at the 99th percentile of area and total cost, with the clipped count stated.",
+      "The reachable share is computed before clipping. Asking prices are not transactions; the footer shows the district's median asking premium where class medians exist.",
     ],
   },
-  districtCountKpis: {
-    title: "District coverage KPIs",
-    what: "Current listings, estates with latest-quarter transactions, and latest-quarter transaction count for the selected district or Hong Kong.",
-    sources: [{ label: "Squarefoot listings and estate pages", url: SQUAREFOOT }],
+  "shortlist-table": {
+    title: "Shortlist table",
+    what: "The matching estates as rows with price or rent per ft², yield, age, MTR walk and transactions. Sort, click a row to profile it and star it into the shortlist.",
+    sources: [SQUAREFOOT],
     processing: [
-      "Listings are the current crawl snapshot (sale and rent combined).",
-      "Estates and transactions are counted from the latest-quarter estate panel; districts with too few estates are suppressed.",
+      "Rows are filtered by the stage filters: age band, MTR walk, minimum transactions and the budget cap.",
+      "The shortlist is in-session only and is not serialised into the URL.",
+      "Yield values outside 0–15% are flagged by the pipeline and excluded from the best-yield KPI.",
     ],
   },
-  districtMap: {
-    title: "18 districts",
-    what: "A choropleth of the 18 HAD districts for the selected metric and latest quarter. Click a district to cross-filter the rest of the dashboard.",
-    sources: [
-      { label: "HAD 18-district boundaries", url: HAD_BOUNDARIES },
-      { label: "geohk land-only geometry", url: GEOHK },
-      { label: "Squarefoot estate transaction series", url: SQUAREFOOT },
-    ],
+  "shortlist-profile": {
+    title: "Estate profile",
+    what: "The selected estate's latest metrics and where it sits in its market. Buyers see the full-history sale quartile range and the district median; tenants see the district's current rent distribution with the estate and rent cap marked.",
+    sources: [SQUAREFOOT],
     processing: [
-      "Intersect HAD district polygons with the census2001 land-only geometry and simplify for the web map.",
-      "Join the district panel for the selected metric; districts with too few estates are suppressed and shown grey.",
-      "The clicked district is stored in the shared filter state and persists across dashboards.",
-    ],
-    caveat:
-      "The land mask uses a 2001 coastline, so post-2001 reclamation is not represented. Grey means insufficient data, never zero.",
-  },
-  estateBox: {
-    title: "Top estates by volume",
-    what: "The six estates with the most latest-quarter transactions in the selected district or Hong Kong. The sidebar shows the distribution of each estate’s quarterly average sale $/ft² over its full recorded history.",
-    sources: [{ label: "Squarefoot estate pages and quarterly charts", url: SQUAREFOOT }],
-    processing: [
-      "Rank estates by latest-quarter transaction volume and keep the top six.",
-      "For each estate, take every positive AVG Price value from its quarterly chart.",
-      "Compute the minimum, Q1, median, Q3 and maximum; the box spans Q1–Q3 and the whiskers span min–max.",
+      "Buyer range = the estate's quarterly average sale $/ft²: Q1–Q3 band, median line, min–max whiskers; the marker is its latest transaction $/ft².",
+      "Tenant range = p10–p90 of current rental-listing rent $/ft² in the district, with the p25–p75 band, median, this estate and your rent cap.",
+      "Distributions with fewer than three listings are not drawn. Cost at your flat size is the estate $/ft² × your flat size.",
     ],
   },
-  districtProfile: {
-    title: "Hong Kong profile",
-    what: "Headline sale $/ft², rent $/ft², gross yield and price YoY for the selected district or Hong Kong overall, plus the six estates with the most transactions in the latest quarter.",
-    sources: [
-      { label: "Squarefoot estate transaction and rental pages", url: SQUAREFOOT },
-    ],
-    processing: [
-      "District sale and rent are transaction/rental-volume-weighted medians across estates; Hong Kong is the median of the 18 district estimates.",
-      "Gross yield = 12 × rent $/ft² ÷ sale $/ft²; price YoY compares the latest quarter with four quarters earlier.",
-      "Top estates are ranked by latest-quarter transaction volume; bar height is volume and colour is Sale $/ft².",
-    ],
-    caveat:
-      "Estate-based estimates are not a random sample of the housing stock. The latest quarter may be provisional when fewer than three estates are available.",
-  },
-  districtHeatmap: {
-    title: "District × quarter heatmap",
-    what: "Sale $/ft² by district and quarter from 2018 onwards, or current-listing median sale $/ft² by RVD class. Each cell is a district-period estimate; clicking selects the district.",
-    sources: [
-      { label: "Squarefoot estate transaction series", url: SQUAREFOOT },
-    ],
-    processing: [
-      "For each district-quarter, take the transaction-volume-weighted median of estate average $/ft².",
-      "For the class view, aggregate current sale listings by district and RVD class A–E.",
-      "Suppress cells with fewer than three estates or too few listings; never fill missing cells with zero.",
-    ],
-    caveat:
-      "Quarterly cells are estate-based and can be provisional. Class medians use asking prices from the current listing snapshot, not transactions.",
-  },
-  districtScatter: {
-    title: "Building age and price",
-    what: "Estate-level sale $/ft² against building age or walking time to the nearest MTR station. Bubble area is transaction volume.",
-    sources: [
-      { label: "Squarefoot estate pages and introductions", url: SQUAREFOOT },
-    ],
-    processing: [
-      "Use latest-quarter estate sale $/ft² and transaction volume.",
-      "Building age is the estate’s completion year subtracted from the data date.",
-      "MTR walk time is parsed from the estate introduction phrase “about N min(s) walking distance to MTR” and merged by estate.",
-    ],
-    caveat:
-      "MTR time is the estate’s stated walking time, not a routed distance. Only 461 of the 1,337 latest-quarter estates have one, so the MTR view uses a smaller sample.",
-  },
-  districtRegion: {
-    title: "Sale $/ft² by region",
-    what: "Quarterly sale $/ft² for Hong Kong Island, Kowloon and the New Territories from 2018 Q1 to 2026 Q4.",
-    sources: [
-      { label: "Squarefoot estate transaction series", url: SQUAREFOOT },
-    ],
-    processing: [
-      "Assign each district to HK Island, Kowloon or New Territories.",
-      "For each region-quarter, compute a transaction-volume-weighted average of district sale $/ft².",
-      "Plot one line per region; hover shows the quarter and regional values.",
-    ],
-    caveat:
-      "Derived regional aggregate, not an official RVD regional index. Changes in the district mix can move the regional average.",
-  },
-  affordabilityRatioKpis: {
-    title: "Price- and rent-to-income",
-    what: "Price-to-income (PTI) and rent-to-income (RTI) for the selected district or the median of the 18 districts. Both use a standard 500 ft² flat and median household income.",
-    sources: [
-      { label: "C&SD median household income", url: CSD_INCOME },
-      { label: "Squarefoot district price and rent panel", url: SQUAREFOOT },
-    ],
-    processing: [
-      "Price = sale $/ft² × 500; rent = rent $/ft² × 500.",
-      "PTI = price ÷ (12 × monthly household income); RTI = monthly rent ÷ monthly household income.",
-      "Hong Kong values are medians of the 18 district estimates.",
-    ],
-  },
-  affordabilityMortgageKpis: {
-    title: "Mortgage burden and required income",
-    what: "Monthly mortgage payment as a share of household income, and the income needed to keep that payment at 50% of income.",
-    sources: [
-      { label: "C&SD median household income", url: CSD_INCOME },
-      { label: "HKMA mortgage survey", url: HKMA_MORTGAGE },
-      { label: "HKMA 1-month HIBOR", url: HKMA_HIBOR },
-    ],
-    processing: [
-      "Assume a 500 ft² flat, 70% loan-to-value, 30-year amortisation and a mortgage rate of 1-month HIBOR + 1.3 percentage points.",
-      "Mortgage burden = monthly payment ÷ monthly household income; required income = payment ÷ 0.50.",
-      "The same assumptions drive the calculator overlay.",
-    ],
-  },
-  affordabilityPriceKpis: {
-    title: "Gross yield and median price",
-    what: "Latest gross rental yield and median district sale price for the standard flat. Median price is the median of the district price estimates, not the median transaction price.",
-    sources: [{ label: "Squarefoot district price and rent panel", url: SQUAREFOOT }],
-    processing: [
-      "Gross yield = 12 × rent $/ft² ÷ sale $/ft².",
-      "Median price = median district sale $/ft² × 500 ft²; for a selected district, the district value is used.",
-    ],
-  },
-  affordabilityTrend: {
-    title: "Rent, income and rent burden",
-    what: "Monthly rent and median household income for a standard flat, with rent-to-income (RTI) bars. The flat-size slider changes the assumed saleable area; the district selector switches between Hong Kong and a district.",
-    sources: [
-      { label: "C&SD median household income", url: CSD_INCOME },
-      { label: "Squarefoot / RVD district rent panel", url: SQUAREFOOT },
-      { label: "RVD rental index", url: RVD_RENT },
-    ],
-    processing: [
-      "Rent = district rent $/ft² × selected flat area; income is annual C&SD median household income, interpolated to months.",
-      "RTI = monthly rent ÷ monthly household income; the right axis is normally 0–1.",
-      "Historical district rent is modelled as current district rent × RVD rent index / latest RVD rent index; the latest quarter uses observed estate rental statistics.",
-    ],
-    caveat:
-      "Historical district rent is modelled, not observed. Income is household income, not buyer income; the standard flat is a comparison device, not a typical unit.",
-  },
-  affordabilityRanking: {
-    title: "Affordability ranking",
-    what: "Districts ranked by price-to-income (PTI) or rent-to-income (RTI) for the latest income year. Click a bar to select the district.",
-    sources: [
-      { label: "C&SD median household income", url: CSD_INCOME },
-      { label: "Squarefoot district price panel", url: SQUAREFOOT },
-    ],
-    processing: [
-      "Use a standard 500 ft² saleable flat for every district.",
-      "PTI = (sale $/ft² × 500) ÷ (12 × median monthly household income); RTI = (rent $/ft² × 500) ÷ monthly income.",
-      "Rank districts within the income year; rank 1 is least affordable.",
-    ],
-    caveat:
-      "The ranking uses a standard flat and household income, not actual buyer incomes or actual unit sizes. Income is annual and currently ends in 2025.",
-  },
-  affordabilityYield: {
-    title: "Yield over time",
-    what: "Gross rental yield for the selected district against the 18-district median, from 2018 onwards.",
-    sources: [
-      { label: "Squarefoot district rent and sale panel", url: SQUAREFOOT },
-      { label: "RVD rental index", url: RVD_RENT },
-    ],
-    processing: [
-      "Gross yield = 12 × rent $/ft² ÷ sale $/ft².",
-      "District rent history is modelled from the RVD rental index; the latest quarter uses observed 90-day estate rents.",
-      "The median line is the median across the 18 district yields in each quarter.",
-    ],
-    caveat:
-      "Yields are gross: management fees, rates, taxes and vacancy are excluded. Values outside 0–15% are flagged.",
-  },
-  affordabilityGrowth: {
-    title: "Yield vs price growth",
-    what: "Districts plotted by three-year sale-price CAGR and current gross yield; bubble area is transaction volume. An OLS line summarises the association.",
-    sources: [
-      { label: "Squarefoot district price and rent panel", url: SQUAREFOOT },
-    ],
-    processing: [
-      "Compute the three-year CAGR from district sale $/ft² and the latest gross yield.",
-      "Size bubbles by latest-quarter transaction volume; colour by region.",
-      "Fit an OLS line to the district points and show it as a guide, not a prediction.",
-    ],
-    caveat:
-      "Small or thin districts can be influential. The line is descriptive and is not a causal relationship.",
-  },
-  affordabilityTenant: {
-    title: "Tenant vs buyer",
-    what: "Rent-to-income against mortgage burden for the standard flat in each district. Lower-left districts are easier on both renting and buying budgets.",
-    sources: [
-      { label: "C&SD median household income", url: CSD_INCOME },
-      { label: "Squarefoot district rent and sale panel", url: SQUAREFOOT },
-      { label: "HKMA mortgage rate survey", url: HKMA_MORTGAGE },
-    ],
-    processing: [
-      "Use a 500 ft² flat, 70% loan-to-value and 30-year amortisation.",
-      "Mortgage burden = monthly payment ÷ monthly household income; RTI = monthly rent ÷ monthly income.",
-      "The mortgage rate proxy is 1-month HIBOR + 1.3 percentage points; the calculator applies the same assumptions.",
-    ],
-    caveat:
-      "Excludes stamp duty, legal and agency fees, management fees and vacancy. Household income is not buyer income.",
-  },
-} satisfies Record<string, DataInfo>;
+};
+
+export function getDataNote(id: string): DataNoteEntry | null {
+  return DATA_NOTES[id] ?? null;
+}

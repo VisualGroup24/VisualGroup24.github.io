@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { crossCorrelation, linearRegression, median, pctChange, rebase } from "./stats";
+import { crossCorrelation, linearRegression, median, pctChange, rebase, weightedMedian } from "./stats";
 
 describe("stats helpers", () => {
   it("computes median for odd and even lengths", () => {
@@ -28,6 +28,23 @@ describe("stats helpers", () => {
     );
     expect(rebased[0].value).toBe(100);
     expect(rebased[1].value).toBeCloseTo(110);
+  });
+
+  it("finds the weighted median", () => {
+    expect(
+      weightedMedian([
+        { value: 10, weight: 1 },
+        { value: 20, weight: 8 },
+        { value: 30, weight: 1 },
+      ]),
+    ).toBe(20);
+    expect(weightedMedian([])).toBe(0);
+    expect(
+      weightedMedian([
+        { value: 0, weight: 5 },
+        { value: 10, weight: 0 },
+      ]),
+    ).toBe(0);
   });
 
   it("computes percentage change", () => {

@@ -21,6 +21,21 @@ export function quantile(values: number[], q: number): number {
   return sorted[base];
 }
 
+/** Median of a weighted sample: the value where cumulative weight reaches 50%. */
+export function weightedMedian(pairs: Array<{ value: number; weight: number }>): number {
+  const clean = pairs
+    .filter((pair) => Number.isFinite(pair.value) && pair.value > 0 && pair.weight > 0)
+    .sort((a, b) => a.value - b.value);
+  const total = clean.reduce((sum, pair) => sum + pair.weight, 0);
+  if (!clean.length || total <= 0) return 0;
+  let cumulative = 0;
+  for (const pair of clean) {
+    cumulative += pair.weight;
+    if (cumulative >= total / 2) return pair.value;
+  }
+  return clean[clean.length - 1].value;
+}
+
 export function linearRegression(points: Array<[number, number]>): {
   slope: number;
   intercept: number;

@@ -43,9 +43,15 @@ export type MortgagePoint = {
 
 export type RatePoint = {
   month: string;
+  hibor_overnight?: number | null;
+  hibor_1w?: number | null;
   hibor_1m: number | null;
   hibor_3m: number | null;
+  hibor_6m?: number | null;
+  hibor_9m?: number | null;
+  hibor_12m?: number | null;
   best_lending_rate: number | null;
+  savings_deposit_rate?: number | null;
 };
 
 export type IncomePoint = {
@@ -119,7 +125,11 @@ export type DistrictCollection = {
 export type DistrictPanelRow = {
   district_code: string;
   quarter: string;
+  /** "estates" (transaction panel), "listings" or "listings_rent" (asking). */
+  basis?: string;
   sale_psf: number | null;
+  sale_psf_p25?: number | null;
+  sale_psf_p75?: number | null;
   rent_psf: number | null;
   yield_pct: number | null;
   n_estates: number;
